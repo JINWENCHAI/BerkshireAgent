@@ -471,6 +471,43 @@ This integration is retrieval-only. Document insertion, indexing, and graph
 mutation remain in LightRAG and are not exposed as Agent tools or BerkshireAgent
 APIs.
 
+### Qdrant Knowledge Retrieval
+
+Qdrant integration is disabled by default. It is an alternative provider for the same read-only `knowledge_search` tool: an operator picks RAGFlow, LightRAG, or Qdrant by which entry appears in the `tools:` list — the entries share one name, and on duplicate names BerkshireAgent keeps the **first** configured entry, so configure exactly one. Works against self-hosted Qdrant and Qdrant Cloud (the same REST API). The provider is read-only: document insertion, payload updates, and collection management remain in Qdrant and are not exposed as Agent tools or BerkshireAgent APIs.
+
+```yaml
+tool_groups:
+  - name: knowledge
+
+tools:
+  - name: knowledge_search
+    group: knowledge
+    use: deerflow.community.qdrant.tools:knowledge_search_tool
+    base_url: https://your-cluster.qdrant.io  # Qdrant Cloud or self-hosted
+    api_key: $QDRANT_API_KEY                   # Omit only for unauthenticated trusted servers
+    collection_name: my_documents              # REQUIRED: collection to search
+    vector_name: ""                            # Optional: named vector (default = unnamed)
+    query_vector:                              # REQUIRED: dense embedding to search with
+      - 0.0123
+      - -0.0456
+      # ... one float per embedding dimension, e.g. 768 / 1024 / 1536
+    limit: 5                                   # Max points returned (1-1000)
+    score_threshold: 0.7                       # Optional: filter low-score matches
+    timeout: 30
+    max_chars_per_chunk: 800
+    max_total_chars: 8000
+
+  - name: list_knowledge_bases
+    group: knowledge
+    use: deerflow.community.qdrant.tools:list_knowledge_bases_tool
+```
+
+The Agent does not embed the user's query itself — BerkshireAgent's runtime is vector-agnostic. The operator supplies a pre-computed dense vector via `query_vector` (one float per embedding dimension), or wires a Qdrant-side inference model and extends the tool to forward `query_text` instead. `vector_name` selects a named vector when the collection stores multiple vectors per point (omit it for the unnamed/default vector). `score_threshold` filters low-confidence matches in Qdrant itself; the returned points keep their `score` in the formatted text so the Agent can prioritize citations. `limit` is bounded to 1–1000 by the schema (matching Qdrant's server-side cap). The `api_key` is sent as the `api-key` header and redacted from every model-visible error and server log; blank values are treated as unauthenticated. `base_url` must not contain embedded username or password information, and for Docker or Kubernetes it must be reachable from the Gateway container or Pod — `localhost` refers to that container or Pod, not the host machine.
+
+Qdrant point ids (numeric or UUID) are never exposed to the Agent. Citations use the operator-readable payload field — store a `source`, `file_path`, `document`, `title`, or `text` field when ingesting documents so each chunk surfaces a usable label. When the payload contains a `text` (or `content` / `chunk` / `page_content` / `body`) field the formatter uses it as the cited chunk; otherwise it falls back to a compact `key=value` rendering of the payload so the model still sees the chunk anchor.
+
+The companion `list_knowledge_bases` tool calls Qdrant's `GET /collections` endpoint and returns `{"collections": ["name1", "name2", ...]}` as JSON. Enable it when the Agent should be able to discover configured collection names before issuing a search. Both tools honor `timeout` and reuse the same credentials and base URL — the `knowledge_search` entry's settings apply.
+
 ### Tool Groups
 
 Organize tools into logical groups:
@@ -1208,6 +1245,7 @@ models:
 - `GROUNDROUTE_API_KEY` - GroundRoute meta-search API key for `web_search` and `web_fetch` (routes across Serper, Brave, Exa, Tavily, Firecrawl, Perplexity with gain-share pricing)
 - `SOFYA_API_KEY` - [Sofya](https://sofya.co) key for `web_search` and `web_fetch`
 - `UNBROWSE_API_KEY` - [Unbrowse](https://unbrowse.ai) key for `web_fetch`
+- `QDRANT_API_KEY` - [Qdrant](https://qdrant.tech) API key for the `knowledge_search` tool (vector retrieval). Omit for unauthenticated self-hosted Qdrant.
 - `BROWSERLESS_TOKEN` - Browserless Cloud token for `web_capture` (optional for self-hosted Browserless)
 - `DEER_FLOW_PROJECT_ROOT` - Project root for relative runtime paths
 - `DEER_FLOW_CONFIG_PATH` - Custom config file path

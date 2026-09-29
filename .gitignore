@@ -38,6 +38,10 @@ extensions_config.json
 .idea/
 .vscode/
 
+# Local working notes (drop your own scratch files alongside the project;
+# match the pathless filename you actually create).
+/BerkshireAgent
+
 # Coverage report
 coverage.xml
 coverage/

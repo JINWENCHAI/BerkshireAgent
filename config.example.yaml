@@ -891,6 +891,41 @@ tools:
   #   max_chars_per_chunk: 800
   #   max_total_chars: 8000
 
+  # Qdrant vector retrieval (read-only). Alternative provider for the same
+  # knowledge_search tool; uncomment this entry instead of the RAGFlow /
+  # LightRAG one — duplicate names keep the first entry, so configure exactly
+  # one. Works against self-hosted Qdrant and Qdrant Cloud. The API key is
+  # optional for unauthenticated local servers; when set it is sent as the
+  # `api-key` header and redacted from every model-visible error and log.
+  # The Agent does not embed the user's query — supply a pre-computed dense
+  # vector via `query_vector`, or wire a Qdrant-side inference model and
+  # extend the tool to forward `query_text` instead. Score threshold filters
+  # out low-confidence matches in Qdrant itself. Internal point ids are never
+  # exposed to the model; store a `source` or `file_path` payload field for
+  # human-readable citations.
+  # - name: knowledge_search
+  #   group: knowledge
+  #   use: deerflow.community.qdrant.tools:knowledge_search_tool
+  #   base_url: https://your-cluster.qdrant.io  # Qdrant Cloud or self-hosted
+  #   api_key: $QDRANT_API_KEY  # Omit only for unauthenticated trusted servers
+  #   collection_name: my_documents            # REQUIRED: collection to search
+  #   vector_name: ""                          # Optional: named vector (default = unnamed)
+  #   query_vector:                            # REQUIRED: dense embedding to search with
+  #     - 0.0123
+  #     - -0.0456
+  #     # ... one float per embedding dimension, e.g. 768 / 1024 / 1536
+  #   limit: 5                                 # Max points returned (1-1000)
+  #   score_threshold: 0.7                     # Optional: filter low-score matches
+  #   timeout: 30
+  #   max_chars_per_chunk: 800
+  #   max_total_chars: 8000
+
+  # Qdrant list-collections companion tool. Enable alongside knowledge_search
+  # so the Agent can discover which collections exist before issuing a search.
+  # - name: list_knowledge_bases
+  #   group: knowledge
+  #   use: deerflow.community.qdrant.tools:list_knowledge_bases_tool
+
   # Web search tool (uses DuckDuckGo, no API key required)
   - name: web_search
     group: web
