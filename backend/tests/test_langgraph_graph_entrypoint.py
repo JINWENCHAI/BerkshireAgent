@@ -11,7 +11,7 @@ BACKEND_DIR = Path(__file__).resolve().parents[1]
 
 
 def test_langgraph_config_loads_the_repository_environment_file():
-    """Standalone Studio should reuse the root environment used by DeerFlow."""
+    """Standalone Studio should reuse the root environment used by BerkshireAgent."""
     import json
 
     config = json.loads((BACKEND_DIR / "langgraph.json").read_text(encoding="utf-8"))

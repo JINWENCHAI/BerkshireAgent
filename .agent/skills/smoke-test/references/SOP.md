@@ -1,12 +1,12 @@
-# DeerFlow Smoke Test Standard Operating Procedure (SOP)
+# BerkshireAgent Smoke Test Standard Operating Procedure (SOP)
 
-This document describes the detailed operating steps for each phase of the DeerFlow smoke test.
+This document describes the detailed operating steps for each phase of the BerkshireAgent smoke test.
 
 ## Phase 1: Code Update Check
 
 ### 1.1 Confirm Current Directory
 
-**Objective**: Verify that the current working directory is the DeerFlow project root.
+**Objective**: Verify that the current working directory is the BerkshireAgent project root.
 
 **Steps**:
 1. Run `pwd` to view the current working directory
@@ -140,7 +140,7 @@ This document describes the detailed operating steps for each phase of the DeerF
    lsof -i :8001  # Gateway
    ```
 
-**Success Criteria**: All ports are free, or they are occupied only by DeerFlow-related processes.
+**Success Criteria**: All ports are free, or they are occupied only by BerkshireAgent-related processes.
 
 **Failure Handling**:
 - If a port is occupied, ask the user to stop the related process
@@ -184,7 +184,7 @@ This document describes the detailed operating steps for each phase of the DeerF
 **Steps**:
 1. Run `lsof -i :2026` (macOS/Linux) or `netstat -ano | findstr :2026` (Windows)
 
-**Success Criteria**: Port 2026 is free, or it is occupied only by a DeerFlow-related process.
+**Success Criteria**: Port 2026 is free, or it is occupied only by a BerkshireAgent-related process.
 
 **Failure Handling**:
 - If the port is occupied by another process, ask the user to stop that process or change the configuration
@@ -384,9 +384,9 @@ curl http://localhost:2026/health
 **Steps**:
 1. Run `docker ps`
 2. Confirm that the following containers are running:
-   - `deer-flow-nginx`
-   - `deer-flow-frontend`
-   - `deer-flow-gateway`
+   - `berkshire-agent-nginx`
+   - `berkshire-agent-frontend`
+   - `berkshire-agent-gateway`
 
 ---
 

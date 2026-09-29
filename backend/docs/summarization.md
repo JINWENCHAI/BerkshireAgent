@@ -1,6 +1,6 @@
 # Conversation Summarization
 
-DeerFlow includes automatic conversation summarization to handle long conversations that approach model token limits. When enabled, the system automatically condenses older messages while preserving recent context.
+BerkshireAgent includes automatic conversation summarization to handle long conversations that approach model token limits. When enabled, the system automatically condenses older messages while preserving recent context.
 
 New checkpoints no longer use raw task-result or skill-read transcript content to derive durable context. The capture path consumes bounded structured metadata stamped on the corresponding `ToolMessage.additional_kwargs`; transcript text remains display/model content, not the state-capture protocol.
 

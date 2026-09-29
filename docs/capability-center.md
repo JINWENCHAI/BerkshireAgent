@@ -1,6 +1,6 @@
 # Capability Center integration contract
 
-Capability Center is a discovery and configuration layer over DeerFlow's existing
+Capability Center is a discovery and configuration layer over BerkshireAgent's existing
 MCP, Lark CLI, and skill services. It uses the existing administrator/user roles.
 Agent selections configure the tools and skills assembled for a run; they are not
 an authorization boundary. Customer-specific authorization can remain in the
@@ -20,7 +20,7 @@ deferred to a separate proposal and PR.
 | Validated manifest schema | `deerflow.capabilities.catalog.PluginManifest` |
 | Installation/status adapters | `backend/app/gateway/capabilities.py` |
 | Catalog and safe discovery HTTP API | `backend/app/gateway/routers/capabilities.py` |
-| Personal MCP settings, secrets, enable/delete | `/api/mcp/personal/config` and `.deer-flow/users/<user_id>/integrations/mcp.json` |
+| Personal MCP settings, secrets, enable/delete | `/api/mcp/personal/config` and `.berkshire-agent/users/<user_id>/integrations/mcp.json` |
 | Deployment MCP settings and cache reload | Administrator-only `/api/mcp/config` and `extensions_config.json` |
 | Lark installation and personal account authorization | Existing `/api/integrations/lark` services |
 | Skill archives, enable state, user storage | Existing `/api/skills` services |
@@ -48,13 +48,13 @@ HubSpot needs `crm.objects.companies.read` for company queries and
 `crm.objects.contacts.write` for contact creation. A read-only token can be used
 when only company lookup is needed; the provider rejects unauthorized writes.
 Notifications do not read chats, documents, or calendars and do not configure
-DeerFlow's incoming IM channels. Existing manually configured CLI connections
+BerkshireAgent's incoming IM channels. Existing manually configured CLI connections
 are not rewritten when the catalog entry changes.
 
 Configuration saves credentials without sending a message or creating a CRM
 record. Connections created in the web interface are personal: credentials,
 enabled state and edits belong to the signed-in user, including administrators.
-They are stored under `.deer-flow/users/<user_id>/integrations/mcp.json` and
+They are stored under `.berkshire-agent/users/<user_id>/integrations/mcp.json` and
 remain masked in the editor. Existing deployment connections in
 `extensions_config.json` stay shared and are not copied to any personal account.
 The page separates **Platform provided** (deployment setup guides and shared MCP

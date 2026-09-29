@@ -57,7 +57,7 @@ _BASES = [
     "/host/dir with spaces",
     "/host/re+meta(chars)[x]",
     "/host/dots.in.name",
-    "/Users/a/.deer-flow/users/u1/threads/t1/user-data",
+    "/Users/a/.berkshire-agent/users/u1/threads/t1/user-data",
     "C:\\host\\skills",
     "/host/技能",
     # Drive root: the only base either caller can hand the helper that still ends in a

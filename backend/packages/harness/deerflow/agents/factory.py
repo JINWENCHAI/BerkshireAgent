@@ -1,4 +1,4 @@
-"""Pure-argument factory for DeerFlow agents.
+"""Pure-argument factory for BerkshireAgent agents.
 
 ``create_deerflow_agent`` accepts plain Python arguments — it does not load
 YAML or install process-global runtime dependencies. It is the SDK-level entry
@@ -81,7 +81,7 @@ def create_deerflow_agent(
     subagent_runtime: SubagentRuntime | None = None,
     pii_redaction_config: PiiRedactionConfig | None = None,
 ) -> CompiledStateGraph:
-    """Create a DeerFlow agent from plain Python arguments.
+    """Create a BerkshireAgent agent from plain Python arguments.
 
     The factory assembly itself reads no config files. Pass ``subagent_runtime``
     when direct SDK-created graphs must share an explicit native-subagent
@@ -124,7 +124,7 @@ def create_deerflow_agent(
     subagent_runtime:
         Explicit process runtime shared by direct SDK-created graphs. Required
         only when the caller needs non-default native-subagent capacity or a
-        caller-managed durable batch worker without Gateway/DeerFlowClient
+        caller-managed durable batch worker without Gateway/BerkshireAgentClient
         startup. Requires ``features.subagent`` to be enabled.
     pii_redaction_config:
         Optional PII redaction policy (#3190). ``None`` leaves redaction off;
@@ -145,7 +145,7 @@ def create_deerflow_agent(
             "persisted graphs built here bypass checkpoint mode marker injection and the fail-closed "
             "compatibility gate (see deerflow.runtime.checkpoint_mode), so a mixed-mode store would "
             "silently corrupt thread state.  Use the guarded application paths (make_lead_agent or "
-            "DeerFlowClient) for delta persistence; delta without a checkpointer is ephemeral and allowed."
+            "BerkshireAgentClient) for delta persistence; delta without a checkpointer is ephemeral and allowed."
         )
     if middleware is not None and extra_middleware:
         raise ValueError("Cannot use 'extra_middleware' with 'middleware' (full takeover).")

@@ -246,7 +246,7 @@ function mockStreamMessages(
   responseMessage: Record<string, unknown> = {
     type: "ai",
     id: "msg-ai-1",
-    content: "Hello from DeerFlow!",
+    content: "Hello from BerkshireAgent!",
   },
 ) {
   const submittedMessages = inputMessages
@@ -365,7 +365,7 @@ export function mockLangGraphAPI(page: Page, options?: MockAPIOptions) {
     skills_installed: 0,
     installed_skills: [] as string[],
     enabled_skills: [] as string[],
-    install_path: "/tmp/deer-flow/integrations/skills/lark-cli",
+    install_path: "/tmp/berkshire-agent/integrations/skills/lark-cli",
     cli: {
       available: false,
       path: null as string | null,
@@ -1957,7 +1957,7 @@ export function mockLangGraphAPI(page: Page, options?: MockAPIOptions) {
         skills_installed: 3,
         installed_skills: ["lark-doc", "lark-im", "lark-shared"],
         enabled_skills: ["lark-doc", "lark-im", "lark-shared"],
-        install_path: "/tmp/deer-flow/integrations/skills/lark-cli",
+        install_path: "/tmp/berkshire-agent/integrations/skills/lark-cli",
         cli: {
           available: true,
           path: "/usr/bin/lark-cli",
@@ -2161,7 +2161,7 @@ export function mockLangGraphAPI(page: Page, options?: MockAPIOptions) {
 
 /**
  * Build a minimal SSE stream that the LangGraph SDK can parse.
- * The stream returns a single AI message: "Hello from DeerFlow!".
+ * The stream returns a single AI message: "Hello from BerkshireAgent!".
  */
 export function handleRunStream(
   route: Route,
@@ -2176,7 +2176,7 @@ export function handleRunStream(
   const responseMessage = options?.responseMessage ?? {
     type: "ai",
     id: "msg-ai-1",
-    content: "Hello from DeerFlow!",
+    content: "Hello from BerkshireAgent!",
   };
   const events = [
     {

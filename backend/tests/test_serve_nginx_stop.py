@@ -71,7 +71,7 @@ def test_repo_nginx_pid_accepts_macos_rewritten_master_command(tmp_path):
     # runs this test, so build the fixture with forward slashes explicitly;
     # on Windows a Path would render with backslashes and never match the
     # "$root"/docker/nginx/... pattern the shell function greps for.
-    repo_root = (tmp_path / "deer-flow").as_posix()
+    repo_root = (tmp_path / "berkshire-agent").as_posix()
     nginx_conf = f"{repo_root}/docker/nginx/nginx.local.conf"
 
     assert _is_repo_nginx_pid(
@@ -82,7 +82,7 @@ def test_repo_nginx_pid_accepts_macos_rewritten_master_command(tmp_path):
 
 
 def test_repo_nginx_pid_accepts_macos_rewritten_worker_after_repo_check(tmp_path):
-    repo_root = tmp_path / "deer-flow"
+    repo_root = tmp_path / "berkshire-agent"
 
     assert _is_repo_nginx_pid(
         command="nginx: worker process",
@@ -96,7 +96,7 @@ def test_repo_nginx_pid_accepts_macos_rewritten_worker_after_repo_check(tmp_path
     ("command", "args", "deerflow_pid"),
     [
         ("nginx: worker process", "nginx: worker process", False),
-        ("python", "python -m nginx /tmp/deer-flow/docker/nginx/nginx.local.conf", True),
+        ("python", "python -m nginx /tmp/berkshire-agent/docker/nginx/nginx.local.conf", True),
     ],
 )
 def test_repo_nginx_pid_rejects_unowned_or_non_nginx_processes(
@@ -108,6 +108,6 @@ def test_repo_nginx_pid_rejects_unowned_or_non_nginx_processes(
     assert not _is_repo_nginx_pid(
         command=command,
         args=args,
-        repo_root=tmp_path / "deer-flow",
+        repo_root=tmp_path / "berkshire-agent",
         deerflow_pid=deerflow_pid,
     )

@@ -142,7 +142,7 @@ def test_get_context_injects_facts_only_in_middleware_mode(deermem_data_dir):
     middleware.import_memory(
         {
             "user": {
-                "workContext": {"summary": "Works on DeerFlow memory."},
+                "workContext": {"summary": "Works on BerkshireAgent memory."},
             },
             "history": {
                 "recentMonths": {"summary": "Recently redesigned storage."},
@@ -163,10 +163,10 @@ def test_get_context_injects_facts_only_in_middleware_mode(deermem_data_dir):
     middleware_context = middleware.get_context(user_id="u")
     tool_context = DeerMem(backend_config=backend_config, mode="tool").get_context(user_id="u")
 
-    assert "Works on DeerFlow memory." in middleware_context
+    assert "Works on BerkshireAgent memory." in middleware_context
     assert "Recently redesigned storage." in middleware_context
     assert "Use FTS5 for active fact recall." in middleware_context
-    assert "Works on DeerFlow memory." in tool_context
+    assert "Works on BerkshireAgent memory." in tool_context
     assert "Recently redesigned storage." in tool_context
     assert "Use FTS5 for active fact recall." not in tool_context
     assert "Facts:" not in tool_context

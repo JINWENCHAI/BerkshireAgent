@@ -1,4 +1,4 @@
-"""Data contracts for DeerFlow SkillScan.
+"""Data contracts for BerkshireAgent SkillScan.
 
 Every ``SecurityFinding`` field has a Phase 1 consumer: the blocking policy
 reads ``severity``; the Gateway rejection response, the agent tool error, and

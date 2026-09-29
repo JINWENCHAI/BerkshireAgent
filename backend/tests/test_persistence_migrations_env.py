@@ -1,7 +1,7 @@
 """Tests for the ``include_object`` filter used by ``migrations/env.py``.
 
 LangGraph checkpointer tables (``checkpoints`` and friends) live alongside
-DeerFlow's own tables in the same database. Alembic must NEVER emit DDL for
+BerkshireAgent's own tables in the same database. Alembic must NEVER emit DDL for
 them or a future ``alembic revision --autogenerate`` would propose
 ``drop_table('checkpoints')`` whenever LangGraph's tables are reflected from
 a live DB.

@@ -1,6 +1,6 @@
 """ISO 8601 timestamp helpers for the Gateway and embedded runtime.
 
-DeerFlow stores and serializes thread/run timestamps as ISO 8601 UTC
+BerkshireAgent stores and serializes thread/run timestamps as ISO 8601 UTC
 strings to match the LangGraph Platform schema (see
 ``langgraph_sdk.schema.Thread``, where ``created_at`` / ``updated_at``
 are ``datetime`` and JSON-encode to ISO 8601). All timestamp generation
@@ -59,7 +59,7 @@ def coerce_iso(value: object) -> str:
     """Best-effort coerce a stored timestamp to an ISO 8601 string.
 
     Translates legacy unix-timestamp floats / strings written by older
-    DeerFlow versions into ISO without a one-shot migration. ISO strings
+    BerkshireAgent versions into ISO without a one-shot migration. ISO strings
     pass through unchanged; ``datetime`` instances are normalised to UTC
     (tz-naive values are assumed to be UTC) and emitted via
     ``isoformat()`` so the wire format always uses the ``T`` separator;

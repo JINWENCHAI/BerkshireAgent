@@ -1,4 +1,4 @@
-# 🦌 DeerFlow - 2.0
+# 🦌 BerkshireAgent - 2.0
 
 [English](./README.md) | [中文](./README_zh.md) | 日本語 | [Français](./README_fr.md) | [Русский](./README_ru.md)
 
@@ -6,35 +6,35 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white)](./Makefile)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-<a href="https://trendshift.io/repositories/14699" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14699" alt="bytedance%2Fdeer-flow | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-> 2026年2月28日、バージョン2のリリースに伴い、DeerFlowはGitHub Trendingで🏆 第1位を獲得しました。素晴らしいコミュニティの皆さん、ありがとうございます！💪🔥
+<a href="https://trendshift.io/repositories/14699" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14699" alt="bytedance%2Fberkshire-agent | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+> 2026年2月28日、バージョン2のリリースに伴い、BerkshireAgentはGitHub Trendingで🏆 第1位を獲得しました。素晴らしいコミュニティの皆さん、ありがとうございます！💪🔥
 
-DeerFlow（**D**eep **E**xploration and **E**fficient **R**esearch **Flow**）は、**サブエージェント**、**メモリ**、**サンドボックス**を統合し、**拡張可能なスキル**によってあらゆるタスクを実行できるオープンソースの**スーパーエージェントハーネス**です。
+BerkshireAgent（**D**eep **E**xploration and **E**fficient **R**esearch **Flow**）は、**サブエージェント**、**メモリ**、**サンドボックス**を統合し、**拡張可能なスキル**によってあらゆるタスクを実行できるオープンソースの**スーパーエージェントハーネス**です。
 
 https://github.com/user-attachments/assets/a8bcadc4-e040-4cf2-8fda-dd768b999c18
 
 > [!NOTE]
-> **DeerFlow 2.0はゼロからの完全な書き直しです。** v1とコードを共有していません。オリジナルのDeep Researchフレームワークをお探しの場合は、[`1.x`ブランチ](https://github.com/bytedance/deer-flow/tree/main-1.x)で引き続きメンテナンスされています。現在の開発は2.0に移行しています。
+> **BerkshireAgent 2.0はゼロからの完全な書き直しです。** v1とコードを共有していません。オリジナルのDeep Researchフレームワークをお探しの場合は、[`1.x`ブランチ](https://github.com/bytedance/berkshire-agent/tree/main-1.x)で引き続きメンテナンスされています。現在の開発は2.0に移行しています。
 
 ## 公式ウェブサイト
 
-**実際のデモ**は[**公式ウェブサイト**](https://deerflow.tech)でご覧いただけます。
+**実際のデモ**は[**公式ウェブサイト**](https://berkshireagent.dev)でご覧いただけます。
 
 ## 姉妹プロジェクト
 
 <img width="446" height="280" alt="image" align="middle" src="https://github.com/user-attachments/assets/077edef4-d560-41af-bb0d-d0a5f14fcc20" />
 
-- [**LLM Space**](https://github.com/deer-flow/llm-space) - DeerFlow の秘密兵器をご紹介 — agent のアイデアをプロトタイピングし、ハーネスの各ステップを検査し、失敗を再生し、パフォーマンスをベンチマークするためのデスクトップツールです。
+- [**LLM Space**](https://github.com/berkshire-agent/llm-space) - BerkshireAgent の秘密兵器をご紹介 — agent のアイデアをプロトタイピングし、ハーネスの各ステップを検査し、失敗を再生し、パフォーマンスをベンチマークするためのデスクトップツールです。
 
 ## ByteDance Volcengine のコーディングプラン
 
-- DeerFlowの実行には、Doubao-Seed-2.0-Code、DeepSeek v3.2、Kimi 2.5の使用を強く推奨します
-- [詳細はこちら](https://www.byteplus.com/en/activity/codingplan?utm_campaign=deer_flow&utm_content=deer_flow&utm_medium=devrel&utm_source=OWO&utm_term=deer_flow)
-- [中国大陸の開発者はこちらをクリック](https://www.volcengine.com/activity/codingplan?utm_campaign=deer_flow&utm_content=deer_flow&utm_medium=devrel&utm_source=OWO&utm_term=deer_flow)
+- BerkshireAgentの実行には、Doubao-Seed-2.0-Code、DeepSeek v3.2、Kimi 2.5の使用を強く推奨します
+- [詳細はこちら](https://www.byteplus.com/en/activity/codingplan?utm_campaign=berkshire_agent&utm_content=berkshire_agent&utm_medium=devrel&utm_source=OWO&utm_term=berkshire_agent)
+- [中国大陸の開発者はこちらをクリック](https://www.volcengine.com/activity/codingplan?utm_campaign=berkshire_agent&utm_content=berkshire_agent&utm_medium=devrel&utm_source=OWO&utm_term=berkshire_agent)
 
 ## InfoQuest
 
-DeerFlowは、BytePlusが独自に開発したインテリジェント検索・クローリングツールセット「[InfoQuest（無料オンライン体験対応）](https://docs.byteplus.com/en/docs/InfoQuest/What_is_Info_Quest)」を新たに統合しました。
+BerkshireAgentは、BytePlusが独自に開発したインテリジェント検索・クローリングツールセット「[InfoQuest（無料オンライン体験対応）](https://docs.byteplus.com/en/docs/InfoQuest/What_is_Info_Quest)」を新たに統合しました。
 
 <a href="https://docs.byteplus.com/en/docs/InfoQuest/What_is_Info_Quest" target="_blank">
   <img
@@ -46,7 +46,7 @@ DeerFlowは、BytePlusが独自に開発したインテリジェント検索・�
 
 ## 目次
 
-- [🦌 DeerFlow - 2.0](#-deerflow---20)
+- [🦌 BerkshireAgent - 2.0](#-deerflow---20)
   - [公式ウェブサイト](#公式ウェブサイト)
   - [ByteDance Volcengine のコーディングプラン](#bytedance-volcengine-のコーディングプラン)
   - [InfoQuest](#infoquest)
@@ -90,7 +90,7 @@ DeerFlowは、BytePlusが独自に開発したインテリジェント検索・�
 Claude Code、Codex、Cursor、Windsurf などの coding agent を使っているなら、次の一文をそのまま渡せます。
 
 ```text
-DeerFlow がまだ clone されていなければ先に clone してから、https://raw.githubusercontent.com/bytedance/deer-flow/main/Install.md に従ってローカル開発環境を初期化してください
+BerkshireAgent がまだ clone されていなければ先に clone してから、https://raw.githubusercontent.com/bytedance/berkshire-agent/main/Install.md に従ってローカル開発環境を初期化してください
 ```
 
 このプロンプトは coding agent 向けです。必要なら先にリポジトリを clone し、Docker が使える場合は Docker を優先して初期セットアップを行い、最後に次の起動コマンドと不足している設定項目だけを返します。
@@ -99,16 +99,16 @@ DeerFlow がまだ clone されていなければ先に clone してから、htt
 
 ### 設定
 
-1. **DeerFlowリポジトリをクローン**
+1. **BerkshireAgentリポジトリをクローン**
 
    ```bash
-   git clone https://github.com/bytedance/deer-flow.git
-   cd deer-flow
+   git clone https://github.com/bytedance/berkshire-agent.git
+   cd berkshire-agent
    ```
 
 2. **セットアップウィザードの実行（推奨）**
 
-   プロジェクトルートディレクトリ（`deer-flow/`）から以下を実行します：
+   プロジェクトルートディレクトリ（`berkshire-agent/`）から以下を実行します：
 
    ```bash
    make setup
@@ -117,7 +117,7 @@ DeerFlow がまだ clone されていなければ先に clone してから、htt
    対話式ウィザードが起動し、LLMプロバイダーの選択、オプションのWeb検索、そしてサンドボックスモード・bash権限・ファイル書き込みツールなどの実行/安全設定を順に案内します。最小構成の`config.yaml`を生成し、APIキーを`.env`に書き込みます。所要時間は約2分です。
 
    いつでも`make doctor`を実行して、設定を確認し、具体的な修正ヒントを得られます。
-   ローカルセットアップや実行時の問題についてGitHub issueを起票する場合は、`make support-bundle`を実行してください。このコマンドは報告者向けの次のステップを表示し、issueに貼り付けるための`*-issue-summary.md`ファイルと、AI支援でissueを起票するための`*-issue-draft.md`ファイルを書き出し、オプションで証跡zipを`.deer-flow/support-bundles/`以下に作成します。AIアシスタントがissueを起票する場合は、ドラフトを起点にして、不足している事実を創作するのではなく、すべてのREQUIREDプレースホルダーを置き換えてください。zipは、メンテナーから求められた場合、またはサマリーだけでは不十分な場合にのみ添付してください。メンテナーやAIトリアージツールは`triage.json`から確認を始められます。バンドルに含まれるのはリダクト済みの診断情報とファイルマニフェストのみで、`.env`、生の会話メッセージ、ユーザーファイルの内容は含まれません。
+   ローカルセットアップや実行時の問題についてGitHub issueを起票する場合は、`make support-bundle`を実行してください。このコマンドは報告者向けの次のステップを表示し、issueに貼り付けるための`*-issue-summary.md`ファイルと、AI支援でissueを起票するための`*-issue-draft.md`ファイルを書き出し、オプションで証跡zipを`.berkshire-agent/support-bundles/`以下に作成します。AIアシスタントがissueを起票する場合は、ドラフトを起点にして、不足している事実を創作するのではなく、すべてのREQUIREDプレースホルダーを置き換えてください。zipは、メンテナーから求められた場合、またはサマリーだけでは不十分な場合にのみ添付してください。メンテナーやAIトリアージツールは`triage.json`から確認を始められます。バンドルに含まれるのはリダクト済みの診断情報とファイルマニフェストのみで、`.env`、生の会話メッセージ、ユーザーファイルの内容は含まれません。
 
    > **上級者向け / 手動設定**：`config.yaml`を直接編集したい場合は、代わりに`make config`を実行して完全なテンプレートをコピーしてください。CLI連携プロバイダー（Codex CLI、Claude Code OAuth）、OpenRouter、Responses APIなどを含む完全なリファレンスは`config.example.yaml`を参照してください。
 
@@ -164,7 +164,7 @@ DeerFlow がまだ clone されていなければ先に clone してから、htt
 
    OpenAIモデルを`/v1/responses`経由でルーティングするには、引き続き`langchain_openai:ChatOpenAI`を使用し、`use_responses_api: true`と`output_version: responses/v1`を設定してください。
 
-   vLLM 0.19.0では`deerflow.models.vllm_provider:VllmChatModel`を使用してください。Qwen系のreasoningモデルでは、DeerFlowは`extra_body.chat_template_kwargs.enable_thinking`でreasoningを切り替え、マルチターンのツールコール会話にわたってvLLM独自の非標準`reasoning`フィールドを保持します。従来の`thinking`設定は後方互換性のため自動的に正規化されます。reasoningモデルはサーバー側で`--reasoning-parser ...`を付けて起動する必要がある場合もあります。ローカルのvLLMデプロイメントが空でない任意のAPIキーを受け付ける場合でも、`VLLM_API_KEY`にはプレースホルダー値を設定しておけます。
+   vLLM 0.19.0では`deerflow.models.vllm_provider:VllmChatModel`を使用してください。Qwen系のreasoningモデルでは、BerkshireAgentは`extra_body.chat_template_kwargs.enable_thinking`でreasoningを切り替え、マルチターンのツールコール会話にわたってvLLM独自の非標準`reasoning`フィールドを保持します。従来の`thinking`設定は後方互換性のため自動的に正規化されます。reasoningモデルはサーバー側で`--reasoning-parser ...`を付けて起動する必要がある場合もあります。ローカルのvLLMデプロイメントが空でない任意のAPIキーを受け付ける場合でも、`VLLM_API_KEY`にはプレースホルダー値を設定しておけます。
 
    CLI連携プロバイダーの例：
 
@@ -234,7 +234,7 @@ make down   # コンテナを停止して削除
 
 サービスをローカルで実行する場合：
 
-前提条件：上記の「設定」手順を先に完了してください（`make setup`）。`make dev`にはプロジェクトルートに有効な`config.yaml`が必要です。`DEER_FLOW_PROJECT_ROOT`でプロジェクトルートを明示的に指定するか、`DEER_FLOW_CONFIG_PATH`で特定の設定ファイルを指定できます。実行時の状態はデフォルトでプロジェクトルート直下の`.deer-flow`に書き込まれ、`DEER_FLOW_HOME`で移動できます。skillsはデフォルトでプロジェクトルート直下の`skills/`から読み込まれ、`DEER_FLOW_SKILLS_PATH`で移動できます。起動前に`make doctor`を実行して設定を確認してください。
+前提条件：上記の「設定」手順を先に完了してください（`make setup`）。`make dev`にはプロジェクトルートに有効な`config.yaml`が必要です。`DEER_FLOW_PROJECT_ROOT`でプロジェクトルートを明示的に指定するか、`DEER_FLOW_CONFIG_PATH`で特定の設定ファイルを指定できます。実行時の状態はデフォルトでプロジェクトルート直下の`.berkshire-agent`に書き込まれ、`DEER_FLOW_HOME`で移動できます。skillsはデフォルトでプロジェクトルート直下の`skills/`から読み込まれ、`DEER_FLOW_SKILLS_PATH`で移動できます。起動前に`make doctor`を実行して設定を確認してください。
 Windowsでは、ローカル開発フローはGit Bashから実行してください。bashベースのサービススクリプトはネイティブの`cmd.exe`やPowerShellではサポートされておらず、一部のスクリプトがGit for Windowsの`cygpath`などのユーティリティに依存しているため、WSLでの動作も保証されません。
 
 1. **前提条件の確認**：
@@ -263,7 +263,7 @@ Windowsでは、ローカル開発フローはGit Bashから実行してくだ�
 ### 詳細設定
 #### サンドボックスモード
 
-DeerFlowは複数のサンドボックス実行モードをサポートしています：
+BerkshireAgentは複数のサンドボックス実行モードをサポートしています：
 - **ローカル実行**（ホストマシン上で直接サンドボックスコードを実行）
 - **Docker実行**（分離されたDockerコンテナ内でサンドボックスコードを実行）
 - **KubernetesによるDocker実行**（プロビジョナーサービス経由でKubernetesポッドでサンドボックスコードを実行）
@@ -274,15 +274,15 @@ Docker開発では、サービスの起動は`config.yaml`のサンドボック�
 
 #### MCPサーバー
 
-DeerFlowは、機能を拡張するための設定可能なMCPサーバーとスキルをサポートしています。
+BerkshireAgentは、機能を拡張するための設定可能なMCPサーバーとスキルをサポートしています。
 HTTP/SSE MCPサーバーでは、OAuthトークンフロー（`client_credentials`、`refresh_token`）がサポートされています。
 詳細な手順は[MCPサーバーガイド](backend/docs/MCP_SERVER.md)をご覧ください。
 
 #### IMチャネル
 
-DeerFlowはメッセージングアプリからのタスク受信をサポートしています。チャネルは設定時に自動的に開始されます。いずれもパブリックIPは不要です。
+BerkshireAgentはメッセージングアプリからのタスク受信をサポートしています。チャネルは設定時に自動的に開始されます。いずれもパブリックIPは不要です。
 
-DeerFlowはワークスペースUIでユーザー所有のIMチャネル接続を公開することもできます。`channel_connections`を有効にすると、ログイン済みユーザーはサイドバー / Settings > ChannelsからTelegram、Slack、Discord、Feishu/Lark、DingTalk、WeChat、WeComをバインドできます。これは既存の`channels.*`送信トランスポートを再利用するため、パブリックIPやプロバイダーのコールバックURLは不要です。受信したIMメッセージは接続したDeerFlowユーザーアカウントの下で実行されます。セットアップとセキュリティ上の注意は[IM Channel Connections](backend/docs/IM_CHANNEL_CONNECTIONS.md)をご覧ください。
+BerkshireAgentはワークスペースUIでユーザー所有のIMチャネル接続を公開することもできます。`channel_connections`を有効にすると、ログイン済みユーザーはサイドバー / Settings > ChannelsからTelegram、Slack、Discord、Feishu/Lark、DingTalk、WeChat、WeComをバインドできます。これは既存の`channels.*`送信トランスポートを再利用するため、パブリックIPやプロバイダーのコールバックURLは不要です。受信したIMメッセージは接続したBerkshireAgentユーザーアカウントの下で実行されます。セットアップとセキュリティ上の注意は[IM Channel Connections](backend/docs/IM_CHANNEL_CONNECTIONS.md)をご覧ください。
 
 | チャネル | トランスポート | 難易度 |
 |---------|-----------|------------|
@@ -356,7 +356,7 @@ channels:
     qrcode_login_enabled: true      # オプション：bot_tokenがない場合に初回のQRブートストラップを許可
     allowed_users: []               # 空 = 全員許可
     polling_timeout: 35
-    state_dir: ./.deer-flow/wechat/state
+    state_dir: ./.berkshire-agent/wechat/state
     max_inbound_image_bytes: 20971520
     max_outbound_image_bytes: 20971520
     max_inbound_file_bytes: 52428800
@@ -422,7 +422,7 @@ DINGTALK_CLIENT_SECRET=your_client_secret
 1. `config.yaml`で`wechat`チャネルを有効にします。
 2. `.env`に`WECHAT_BOT_TOKEN`を設定するか、初回のQRブートストラップのために`qrcode_login_enabled: true`を設定します。
 3. `bot_token`がなくQRブートストラップが有効な場合は、バックエンドログでiLinkが返したQRコンテンツを監視し、バインドフローを完了します。
-4. QRフローが成功した後、DeerFlowは取得したトークンを`state_dir`に永続化し、以降の再起動で再利用します。
+4. QRフローが成功した後、BerkshireAgentは取得したトークンを`state_dir`に永続化し、以降の再起動で再利用します。
 5. Docker Composeデプロイでは、`state_dir`を永続ボリュームに置き、`get_updates_buf`カーソルと保存済みの認証ステートが再起動後も保持されるようにしてください。
 
 **WeComのセットアップ**
@@ -442,7 +442,7 @@ DINGTALK_CLIENT_SECRET=your_client_secret
 
 **コマンド**
 
-チャネル接続後、チャットから直接DeerFlowと対話できます：
+チャネル接続後、チャットから直接BerkshireAgentと対話できます：
 
 | コマンド | 説明 |
 |---------|-------------|
@@ -452,11 +452,11 @@ DINGTALK_CLIENT_SECRET=your_client_secret
 | `/memory` | メモリを表示 |
 | `/help` | ヘルプを表示 |
 
-> コマンドプレフィックスのないメッセージは通常のチャットとして扱われ、DeerFlowがスレッドを作成して会話形式で応答します。
+> コマンドプレフィックスのないメッセージは通常のチャットとして扱われ、BerkshireAgentがスレッドを作成して会話形式で応答します。
 
 #### LangSmithトレーシング
 
-DeerFlowには[LangSmith](https://smith.langchain.com)による可観測性が組み込まれています。有効にすると、すべてのLLM呼び出し、エージェント実行、ツール実行がトレースされ、LangSmithダッシュボードで確認できます。
+BerkshireAgentには[LangSmith](https://smith.langchain.com)による可観測性が組み込まれています。有効にすると、すべてのLLM呼び出し、エージェント実行、ツール実行がトレースされ、LangSmithダッシュボードで確認できます。
 
 `.env`ファイルに以下を追加します：
 
@@ -469,7 +469,7 @@ LANGSMITH_PROJECT=xxx
 
 #### Langfuseトレーシング
 
-DeerFlowは、LangChain互換の実行に対して[Langfuse](https://langfuse.com)による可観測性もサポートしています。
+BerkshireAgentは、LangChain互換の実行に対して[Langfuse](https://langfuse.com)による可観測性もサポートしています。
 
 `.env`ファイルに以下を追加します：
 
@@ -488,27 +488,27 @@ LANGFUSE_BASE_URL=https://cloud.langfuse.com
 - `user_id` = `get_effective_user_id()`から取得した有効なユーザー（認証なしモードでは`default`にフォールバック）
 - `trace_name` = assistant id（デフォルトは`lead-agent`）
 - `tags` = `[env:<DEER_FLOW_ENV>, model:<model_name>]`（未設定の場合は省略）
-- `metadata.deerflow_trace_id` = DeerFlowのリクエスト関連付けid。常に同じリクエストが返す`X-Trace-Id`レスポンスヘッダーと一致します（`logging.enhance.enabled`はこのidをログに出力するかどうかのみを制御します）
+- `metadata.deerflow_trace_id` = BerkshireAgentのリクエスト関連付けid。常に同じリクエストが返す`X-Trace-Id`レスポンスヘッダーと一致します（`logging.enhance.enabled`はこのidをログに出力するかどうかのみを制御します）
 
-これらは、gatewayパス（`runtime/runs/worker.py::run_agent`）と埋め込みパス（`client.py::DeerFlowClient.stream`）の両方で、グラフ呼び出しのルートで`RunnableConfig.metadata`に注入されるため、LangChain互換の任意のcallbackから読み取れます。`DEER_FLOW_ENV`（または`ENVIRONMENT`）を設定すると、デプロイ環境ごとにトレースにタグを付けられます。
+これらは、gatewayパス（`runtime/runs/worker.py::run_agent`）と埋め込みパス（`client.py::BerkshireAgentClient.stream`）の両方で、グラフ呼び出しのルートで`RunnableConfig.metadata`に注入されるため、LangChain互換の任意のcallbackから読み取れます。`DEER_FLOW_ENV`（または`ENVIRONMENT`）を設定すると、デプロイ環境ごとにトレースにタグを付けられます。
 
 #### 両方のプロバイダーを使用する
 
-LangSmithとLangfuseの両方を有効にすると、DeerFlowは両方のトレーシングcallbackを取り付け、同じモデルアクティビティを両方のシステムに報告します。
+LangSmithとLangfuseの両方を有効にすると、BerkshireAgentは両方のトレーシングcallbackを取り付け、同じモデルアクティビティを両方のシステムに報告します。
 
-あるプロバイダーが明示的に有効化されているにもかかわらず必要な認証情報が欠けている場合、またはそのcallbackの初期化に失敗した場合、DeerFlowはモデル作成時のトレーシング初期化中に早期に失敗（fail fast）し、エラーメッセージには失敗の原因となったプロバイダー名が示されます。
+あるプロバイダーが明示的に有効化されているにもかかわらず必要な認証情報が欠けている場合、またはそのcallbackの初期化に失敗した場合、BerkshireAgentはモデル作成時のトレーシング初期化中に早期に失敗（fail fast）し、エラーメッセージには失敗の原因となったプロバイダー名が示されます。
 
 Dockerデプロイでは、トレーシングはデフォルトで無効です。`.env`で`LANGSMITH_TRACING=true`と`LANGSMITH_API_KEY`を設定して有効にします。
 
 ## Deep Researchからスーパーエージェントハーネスへ
 
-DeerFlowはDeep Researchフレームワークとして始まり、コミュニティがそれを大きく発展させました。リリース以来、開発者たちはリサーチを超えて活用してきました：データパイプラインの構築、スライドデッキの生成、ダッシュボードの立ち上げ、コンテンツワークフローの自動化。私たちが予想もしなかったことです。
+BerkshireAgentはDeep Researchフレームワークとして始まり、コミュニティがそれを大きく発展させました。リリース以来、開発者たちはリサーチを超えて活用してきました：データパイプラインの構築、スライドデッキの生成、ダッシュボードの立ち上げ、コンテンツワークフローの自動化。私たちが予想もしなかったことです。
 
-これは重要なことを示していました：DeerFlowは単なるリサーチツールではなかったのです。それは**ハーネス**——エージェントが実際に仕事をこなすためのインフラを提供するランタイムでした。
+これは重要なことを示していました：BerkshireAgentは単なるリサーチツールではなかったのです。それは**ハーネス**——エージェントが実際に仕事をこなすためのインフラを提供するランタイムでした。
 
 そこで、ゼロから再構築しました。
 
-DeerFlow 2.0は、もはやつなぎ合わせるフレームワークではありません。バッテリー同梱、完全に拡張可能なスーパーエージェントハーネスです。LangGraphとLangChainの上に構築され、エージェントが必要とするすべてを標準搭載しています：ファイルシステム、メモリ、スキル、サンドボックス実行、そして複雑なマルチステップタスクのためのプランニングとサブエージェントの生成機能。
+BerkshireAgent 2.0は、もはやつなぎ合わせるフレームワークではありません。バッテリー同梱、完全に拡張可能なスーパーエージェントハーネスです。LangGraphとLangChainの上に構築され、エージェントが必要とするすべてを標準搭載しています：ファイルシステム、メモリ、スキル、サンドボックス実行、そして複雑なマルチステップタスクのためのプランニングとサブエージェントの生成機能。
 
 そのまま使うもよし。分解して自分のものにするもよし。
 
@@ -516,15 +516,15 @@ DeerFlow 2.0は、もはやつなぎ合わせるフレームワークではあ�
 
 ### スキルとツール
 
-スキルこそが、DeerFlowを*ほぼ何でもできる*ものにしています。
+スキルこそが、BerkshireAgentを*ほぼ何でもできる*ものにしています。
 
-標準的なエージェントスキルは構造化された機能モジュールです——ワークフロー、ベストプラクティス、サポートリソースへの参照を定義するMarkdownファイルです。DeerFlowにはリサーチ、レポート生成、スライド作成、Webページ、画像・動画生成などの組み込みスキルが付属しています。しかし、真の力は拡張性にあります：独自のスキルを追加し、組み込みスキルを置き換え、複合ワークフローに組み合わせることができます。
+標準的なエージェントスキルは構造化された機能モジュールです——ワークフロー、ベストプラクティス、サポートリソースへの参照を定義するMarkdownファイルです。BerkshireAgentにはリサーチ、レポート生成、スライド作成、Webページ、画像・動画生成などの組み込みスキルが付属しています。しかし、真の力は拡張性にあります：独自のスキルを追加し、組み込みスキルを置き換え、複合ワークフローに組み合わせることができます。
 
-スキルはプログレッシブに読み込まれます——タスクが必要とする時にのみ、一度にすべてではありません。これによりコンテキストウィンドウを軽量に保ち、トークンに敏感なモデルでもDeerFlowがうまく動作します。
+スキルはプログレッシブに読み込まれます——タスクが必要とする時にのみ、一度にすべてではありません。これによりコンテキストウィンドウを軽量に保ち、トークンに敏感なモデルでもBerkshireAgentがうまく動作します。
 
-Gateway経由で`.skill`アーカイブをインストールする際、DeerFlowは`version`、`author`、`compatibility`などの標準的なオプショナルフロントマターメタデータを受け入れ、有効な外部スキルを拒否しません。
+Gateway経由で`.skill`アーカイブをインストールする際、BerkshireAgentは`version`、`author`、`compatibility`などの標準的なオプショナルフロントマターメタデータを受け入れ、有効な外部スキルを拒否しません。
 
-ツールも同じ哲学に従います。DeerFlowにはコアツールセット——Web検索、Webフェッチ、ファイル操作、bash実行——が付属し、MCPサーバーやPython関数によるカスタムツールをサポートしています。何でも入れ替え可能、何でも追加可能です。
+ツールも同じ哲学に従います。BerkshireAgentにはコアツールセット——Web検索、Webフェッチ、ファイル操作、bash実行——が付属し、MCPサーバーやPython関数によるカスタムツールをサポートしています。何でも入れ替え可能、何でも追加可能です。
 
 Gatewayが生成するフォローアップ提案は、プレーン文字列のモデル出力とブロック/リスト形式のリッチコンテンツの両方をJSON配列レスポンスの解析前に正規化するため、プロバイダー固有のコンテンツラッパーが提案をサイレントにドロップすることはありません。
 
@@ -543,20 +543,20 @@ Gatewayが生成するフォローアップ提案は、プレーン文字列の�
 
 #### Claude Code連携
 
-`claude-to-deerflow`スキルを使えば、[Claude Code](https://docs.anthropic.com/en/docs/claude-code)から直接、実行中のDeerFlowインスタンスと対話できます。リサーチタスクの送信、ステータスの確認、スレッドの管理——すべてターミナルから離れずに実行できます。
+`claude-to-deerflow`スキルを使えば、[Claude Code](https://docs.anthropic.com/en/docs/claude-code)から直接、実行中のBerkshireAgentインスタンスと対話できます。リサーチタスクの送信、ステータスの確認、スレッドの管理——すべてターミナルから離れずに実行できます。
 
 **スキルのインストール**：
 
 ```bash
-npx skills add https://github.com/bytedance/deer-flow --skill claude-to-deerflow
+npx skills add https://github.com/bytedance/berkshire-agent --skill claude-to-deerflow
 ```
 
-DeerFlowが実行中であることを確認し（デフォルトは`http://localhost:2026`）、Claude Codeで`/claude-to-deerflow`コマンドを使用します。
+BerkshireAgentが実行中であることを確認し（デフォルトは`http://localhost:2026`）、Claude Codeで`/claude-to-deerflow`コマンドを使用します。
 
 **できること**：
-- DeerFlowにメッセージを送信してストリーミングレスポンスを取得
+- BerkshireAgentにメッセージを送信してストリーミングレスポンスを取得
 - 実行モードの選択：flash（高速）、standard、pro（プランニング）、ultra（サブエージェント）
-- DeerFlowのヘルスチェック、モデル/スキル/エージェントの一覧表示
+- BerkshireAgentのヘルスチェック、モデル/スキル/エージェントの一覧表示
 - スレッドと会話履歴の管理
 - 分析用ファイルのアップロード
 
@@ -572,7 +572,7 @@ DEERFLOW_LANGGRAPH_URL=http://localhost:2026/api/langgraph  # LangGraph API
 
 ### セッションゴール (Session Goals)
 
-`/goal <完了条件>`を使うと、現在のスレッドに1つのアクティブな完了条件を紐付けられます。このゴールはスレッドスコープのステートであり、スキルの有効化ではないため、DeerFlowが満たされたと判定するか、あなたがクリアするまでターンをまたいで有効なまま維持されます。
+`/goal <完了条件>`を使うと、現在のスレッドに1つのアクティブな完了条件を紐付けられます。このゴールはスレッドスコープのステートであり、スキルの有効化ではないため、BerkshireAgentが満たされたと判定するか、あなたがクリアするまでターンをまたいで有効なまま維持されます。
 
 対応するコマンド：
 
@@ -582,21 +582,21 @@ DEERFLOW_LANGGRAPH_URL=http://localhost:2026/api/langgraph  # LangGraph API
 /goal clear        # クリアする
 ```
 
-各Gateway駆動のrunの後に、DeerFlowはnon-thinkingな評価モデルを使って、可視の会話をアクティブなゴールと照らし合わせます。評価モデルは型付きblocker（`missing_evidence`、`needs_user_input`、`run_failed`、`external_wait`、`goal_not_met_yet`）と可視の証拠を返さなければなりません。DeerFlowがhidden continuationを注入するのは、直近のassistantターンが耐久性のあるチェックポイントに保存され、blockerが`goal_not_met_yet`であり、評価中にスレッドが変化せず、no-progressブレーカーが発火していない場合のみです。安全上限はデフォルトで8回のhidden continuationで、同一の非進行評価が繰り返されると2回で停止します。`/goal clear`と、ユーザーが手書きした新規入力はすべて、キュー内のcontinuationより優先されます。ゴールが満たされると、DeerFlowは自動的にクリアし、更新されたスレッドステートを公開します。
+各Gateway駆動のrunの後に、BerkshireAgentはnon-thinkingな評価モデルを使って、可視の会話をアクティブなゴールと照らし合わせます。評価モデルは型付きblocker（`missing_evidence`、`needs_user_input`、`run_failed`、`external_wait`、`goal_not_met_yet`）と可視の証拠を返さなければなりません。BerkshireAgentがhidden continuationを注入するのは、直近のassistantターンが耐久性のあるチェックポイントに保存され、blockerが`goal_not_met_yet`であり、評価中にスレッドが変化せず、no-progressブレーカーが発火していない場合のみです。安全上限はデフォルトで8回のhidden continuationで、同一の非進行評価が繰り返されると2回で停止します。`/goal clear`と、ユーザーが手書きした新規入力はすべて、キュー内のcontinuationより優先されます。ゴールが満たされると、BerkshireAgentは自動的にクリアし、更新されたスレッドステートを公開します。
 
 Web UIは入力欄の上にアクティブなゴールを表示します。同じコマンドはTUIとサポート対象のIMチャネルからも利用できます。Web UIとサポート対象のIMチャネルでは、`/goal <完了条件>`を設定するとその条件をタスクとしてrunを開始します。ステータス確認やクリアのコマンドはゴールステートの管理のみを行います。
 
 ### サブエージェント
 
-複雑なタスクは単一のパスに収まりません。DeerFlowはそれを分解します。
+複雑なタスクは単一のパスに収まりません。BerkshireAgentはそれを分解します。
 
 リードエージェントはオンザフライでサブエージェントを生成できます——それぞれ独自のスコープ付きコンテキスト、ツール、終了条件を持ちます。サブエージェントは可能な限り並列で実行され、構造化された結果を報告し、リードエージェントがすべてを一貫した出力に統合します。
 
-これがDeerFlowが数分から数時間かかるタスクを処理する方法です：リサーチタスクが十数のサブエージェントに展開され、それぞれが異なる角度を探索し、1つのレポート——またはWebサイト——または生成されたビジュアル付きのスライドデッキに収束します。1つのハーネス、多くの手。
+これがBerkshireAgentが数分から数時間かかるタスクを処理する方法です：リサーチタスクが十数のサブエージェントに展開され、それぞれが異なる角度を探索し、1つのレポート——またはWebサイト——または生成されたビジュアル付きのスライドデッキに収束します。1つのハーネス、多くの手。
 
 ### サンドボックスとファイルシステム
 
-DeerFlowは物事を*語る*だけではありません。自分のコンピューターを持っています。
+BerkshireAgentは物事を*語る*だけではありません。自分のコンピューターを持っています。
 
 各タスクは、完全なファイルシステムを持つ分離されたDockerコンテナ内で実行されます——スキル、ワークスペース、アップロード、出力。エージェントはファイルの読み書き・編集を行います。bashコマンドを実行し、コーディングを行います。画像を表示します。すべてサンドボックス化され、すべて監査可能で、セッション間の汚染はゼロです。
 
@@ -614,19 +614,19 @@ DeerFlowは物事を*語る*だけではありません。自分のコンピュ�
 
 **分離されたサブエージェントコンテキスト**：各サブエージェントは独自の分離されたコンテキストで実行されます。これにより、サブエージェントはメインエージェントや他のサブエージェントのコンテキストを見ることができません。これは、サブエージェントが目の前のタスクに集中し、メインエージェントや他のサブエージェントのコンテキストに気を取られないようにするために重要です。
 
-**要約化**：セッション内で、DeerFlowはコンテキストを積極的に管理します——完了したサブタスクの要約、中間結果のファイルシステムへのオフロード、もはや直接関係のないものの圧縮。これにより、コンテキストウィンドウを超えることなく、長いマルチステップタスク全体を通じてシャープさを維持します。
+**要約化**：セッション内で、BerkshireAgentはコンテキストを積極的に管理します——完了したサブタスクの要約、中間結果のファイルシステムへのオフロード、もはや直接関係のないものの圧縮。これにより、コンテキストウィンドウを超えることなく、長いマルチステップタスク全体を通じてシャープさを維持します。
 
 ### 長期メモリ
 
-ほとんどのエージェントは、会話が終わるとすべてを忘れます。DeerFlowは記憶します。
+ほとんどのエージェントは、会話が終わるとすべてを忘れます。BerkshireAgentは記憶します。
 
-セッションをまたいで、DeerFlowはあなたのプロフィール、好み、蓄積された知識の永続的なメモリを構築します。使えば使うほど、あなたのことをよく知るようになります——あなたの文体、技術スタック、繰り返されるワークフロー。メモリはローカルに保存され、あなたの管理下にあります。
+セッションをまたいで、BerkshireAgentはあなたのプロフィール、好み、蓄積された知識の永続的なメモリを構築します。使えば使うほど、あなたのことをよく知るようになります——あなたの文体、技術スタック、繰り返されるワークフロー。メモリはローカルに保存され、あなたの管理下にあります。
 
 メモリ更新は適用時に重複するファクトエントリをスキップするようになり、繰り返される好みやコンテキストがセッションをまたいで際限なく蓄積されることはありません。
 
 ## 推奨モデル
 
-DeerFlowはモデルに依存しません——OpenAI互換APIを実装する任意のLLMで動作します。とはいえ、以下をサポートするモデルで最高のパフォーマンスを発揮します：
+BerkshireAgentはモデルに依存しません——OpenAI互換APIを実装する任意のLLMで動作します。とはいえ、以下をサポートするモデルで最高のパフォーマンスを発揮します：
 
 - **長いコンテキストウィンドウ**（10万トークン以上）：深いリサーチとマルチステップタスク向け
 - **推論能力**：適応的なプランニングと複雑な分解向け
@@ -635,12 +635,12 @@ DeerFlowはモデルに依存しません——OpenAI互換APIを実装する任
 
 ## 組み込みPythonクライアント
 
-DeerFlowは、完全なHTTPサービスを実行せずに組み込みPythonライブラリとして使用できます。`DeerFlowClient`は、すべてのエージェントとGateway機能へのプロセス内直接アクセスを提供し、HTTP Gateway APIと同じレスポンススキーマを返します。HTTP Gatewayは、LangGraphスレッド自体が削除された後にDeerFlow管理下のローカルスレッドデータを削除するための`DELETE /api/threads/{thread_id}`も公開しています：
+BerkshireAgentは、完全なHTTPサービスを実行せずに組み込みPythonライブラリとして使用できます。`BerkshireAgentClient`は、すべてのエージェントとGateway機能へのプロセス内直接アクセスを提供し、HTTP Gateway APIと同じレスポンススキーマを返します。HTTP Gatewayは、LangGraphスレッド自体が削除された後にBerkshireAgent管理下のローカルスレッドデータを削除するための`DELETE /api/threads/{thread_id}`も公開しています：
 
 ```python
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 
-client = DeerFlowClient()
+client = BerkshireAgentClient()
 
 # チャット
 response = client.chat("Analyze this paper for me", thread_id="my-thread")
@@ -664,17 +664,17 @@ client.clear_goal("thread-1")
 
 ## スケジュールタスク (Scheduled Tasks)
 
-DeerFlowには現在、ワークスペース内でファーストクラスのスケジュールタスクMVPが組み込まれています。
+BerkshireAgentには現在、ワークスペース内でファーストクラスのスケジュールタスクMVPが組み込まれています。
 
 現在のMVPの機能：
 
 - `/workspace/scheduled-tasks`でタスクを管理
 - 各スケジュールタスクがスレッドを再利用するか、実行ごとに新しいスレッドを作成するかを選択可能
 - `once`、`cron`、`interval`のスケジュールをサポート
-- バックグラウンドのスケジュール実行を非対話型のDeerFlow runとして実行（`ask_clarification`はここでは公開されません）
+- バックグラウンドのスケジュール実行を非対話型のBerkshireAgent runとして実行（`ask_clarification`はここでは公開されません）
 - 再利用された同じスレッド上でアクティブなrunと衝突する期限到来のcron実行に対して`skip`オーバーラップ挙動を使用
 - タスクの一時停止、再開、トリガー、履歴確認、削除
-- スケジュールされた作業を通常のDeerFlow runライフサイクルを通じて実行
+- スケジュールされた作業を通常のBerkshireAgent runライフサイクルを通じて実行
 
 現在のMVPの制限：
 
@@ -686,9 +686,9 @@ DeerFlowには現在、ワークスペース内でファーストクラスのス
 
 ## ターミナルワークベンチ (TUI)
 
-`deerflow`は、シェルに暮らす人々のためのターミナルネイティブなワークベンチです。**組み込み**で`DeerFlowClient`上で実行され、Gateway、フロントエンド、nginx、Dockerは不要ですが、DeerFlowの他の部分と同じ`config.yaml`、checkpointer、スキル、メモリ、MCP、サンドボックス設定を尊重します。
+`deerflow`は、シェルに暮らす人々のためのターミナルネイティブなワークベンチです。**組み込み**で`BerkshireAgentClient`上で実行され、Gateway、フロントエンド、nginx、Dockerは不要ですが、BerkshireAgentの他の部分と同じ`config.yaml`、checkpointer、スキル、メモリ、MCP、サンドボックス設定を尊重します。
 
-![DeerFlow TUI](docs/tui/tui-preview.svg)
+![BerkshireAgent TUI](docs/tui/tui-preview.svg)
 
 ```bash
 uv pip install 'deerflow-harness[tui]'        # オプションの'textual'依存関係
@@ -715,19 +715,19 @@ deerflow --json  "hello"                       # ヘッドレスで改行区切�
 
 ### 不適切なデプロイはセキュリティリスクを引き起こす可能性があります
 
-DeerFlowは**システムコマンドの実行、リソース操作、ビジネスロジックの呼び出し**などの重要な高権限機能を備えており、デフォルトでは**ローカルの信頼できる環境（127.0.0.1のループバックアクセスのみ）にデプロイされる設計**になっています。信頼できないLAN、公開クラウドサーバー、または複数のエンドポイントからアクセス可能なネットワーク環境にエージェントをデプロイし、厳格なセキュリティ対策を講じない場合、以下のようなセキュリティリスクが生じる可能性があります：
+BerkshireAgentは**システムコマンドの実行、リソース操作、ビジネスロジックの呼び出し**などの重要な高権限機能を備えており、デフォルトでは**ローカルの信頼できる環境（127.0.0.1のループバックアクセスのみ）にデプロイされる設計**になっています。信頼できないLAN、公開クラウドサーバー、または複数のエンドポイントからアクセス可能なネットワーク環境にエージェントをデプロイし、厳格なセキュリティ対策を講じない場合、以下のようなセキュリティリスクが生じる可能性があります：
 
 - **不正な違法呼び出し**：エージェントの機能が権限のない第三者や悪意のあるインターネットスキャナーに発見され、システムコマンドやファイル読み書きなどの高リスク操作を実行する不正な一括リクエストが引き起こされ、重大なセキュリティ上の問題が発生する可能性があります。
 - **コンプライアンスおよび法的リスク**：エージェントがサイバー攻撃やデータ窃取などの違法行為に不正使用された場合、法的責任やコンプライアンス上のリスクが生じる可能性があります。
 
 ### セキュリティ推奨事項
 
-**注意：DeerFlowはローカルの信頼できるネットワーク環境にデプロイすることを強く推奨します。** クロスデバイス・クロスネットワークのデプロイが必要な場合は、以下のような厳格なセキュリティ対策を実装する必要があります：
+**注意：BerkshireAgentはローカルの信頼できるネットワーク環境にデプロイすることを強く推奨します。** クロスデバイス・クロスネットワークのデプロイが必要な場合は、以下のような厳格なセキュリティ対策を実装する必要があります：
 
 - **IPホワイトリストの設定**：`iptables`を使用するか、ハードウェアファイアウォール / ACL機能付きスイッチをデプロイして**IPホワイトリストルールを設定**し、他のすべてのIPアドレスからのアクセスを拒否します。
 - **前置認証**：リバースプロキシ（nginxなど）を設定し、**強力な前置認証を有効化**して、認証なしのアクセスをブロックします。
 - **ネットワーク分離**：可能であれば、エージェントと信頼できるデバイスを**同一の専用VLAN**に配置し、他のネットワークデバイスから隔離します。
-- **アップデートを継続的に確認**：DeerFlowのセキュリティ機能のアップデートを継続的にフォローしてください。
+- **アップデートを継続的に確認**：BerkshireAgentのセキュリティ機能のアップデートを継続的にフォローしてください。
 
 ## コントリビュート
 
@@ -741,24 +741,24 @@ DeerFlowは**システムコマンドの実行、リソース操作、ビジネ�
 
 ## 謝辞
 
-DeerFlowはオープンソースコミュニティの素晴らしい成果の上に構築されています。DeerFlowを可能にしてくれたすべてのプロジェクトとコントリビューターに深く感謝いたします。まさに、巨人の肩の上に立っています。
+BerkshireAgentはオープンソースコミュニティの素晴らしい成果の上に構築されています。BerkshireAgentを可能にしてくれたすべてのプロジェクトとコントリビューターに深く感謝いたします。まさに、巨人の肩の上に立っています。
 
 以下のプロジェクトの貴重な貢献に心からの感謝を申し上げます：
 
 - **[LangChain](https://github.com/langchain-ai/langchain)**：その優れたフレームワークがLLMのインタラクションとチェーンを支え、シームレスな統合と機能を実現しています。
-- **[LangGraph](https://github.com/langchain-ai/langgraph)**：マルチエージェントオーケストレーションへの革新的なアプローチが、DeerFlowの洗練されたワークフローの実現に大きく貢献しています。
+- **[LangGraph](https://github.com/langchain-ai/langgraph)**：マルチエージェントオーケストレーションへの革新的なアプローチが、BerkshireAgentの洗練されたワークフローの実現に大きく貢献しています。
 
 これらのプロジェクトはオープンソースコラボレーションの変革的な力を体現しており、その基盤の上に構築できることを誇りに思います。
 
 ### 主要コントリビューター
 
-`DeerFlow`のコア著者に心からの感謝を捧げます。そのビジョン、情熱、献身がこのプロジェクトに命を吹き込みました：
+`BerkshireAgent`のコア著者に心からの感謝を捧げます。そのビジョン、情熱、献身がこのプロジェクトに命を吹き込みました：
 
 - **[Daniel Walnut](https://github.com/hetaoBackend/)**
 - **[Henry Li](https://github.com/magiccube/)**
 
-揺るぎないコミットメントと専門知識が、DeerFlowの成功の原動力です。この旅の先頭に立ってくださっていることを光栄に思います。
+揺るぎないコミットメントと専門知識が、BerkshireAgentの成功の原動力です。この旅の先頭に立ってくださっていることを光栄に思います。
 
 ## Star History
 
-[![Star History Chart](https://star-history.dera.page/svg?repos=bytedance/deer-flow&type=Date)](https://star-history.dera.page/#bytedance/deer-flow&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=bytedance/berkshire-agent&type=Date)](https://star-history.dera.page/#bytedance/berkshire-agent&Date)

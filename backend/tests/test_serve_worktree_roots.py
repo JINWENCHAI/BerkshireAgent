@@ -1,4 +1,4 @@
-"""``scripts/serve.sh`` must discover every deer-flow worktree root verbatim.
+"""``scripts/serve.sh`` must discover every berkshire-agent worktree root verbatim.
 
 ``DEERFLOW_ROOTS`` is the set of checkout roots whose dev-port holders
 ``make stop`` / ``make dev`` may reclaim. It is built from
@@ -41,7 +41,7 @@ def _git(*args: str, cwd: Path) -> None:
 
 
 def _repo_with_spaced_worktree(tmp_path: Path) -> tuple[Path, Path]:
-    main = tmp_path / "deer-flow"
+    main = tmp_path / "berkshire-agent"
     main.mkdir()
     _git("init", "-q", cwd=main)
     _git("-c", "user.email=t@example.com", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "init", cwd=main)

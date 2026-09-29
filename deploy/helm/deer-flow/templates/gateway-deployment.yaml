@@ -1,36 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "deer-flow.fullname" . }}-gateway
-  namespace: {{ include "deer-flow.namespace" . }}
+  name: {{ include "berkshire-agent.fullname" . }}-gateway
+  namespace: {{ include "berkshire-agent.namespace" . }}
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
     app.kubernetes.io/component: gateway
 spec:
   replicas: {{ .Values.gateway.replicas }}
   selector:
     matchLabels:
-      {{- include "deer-flow.selectorLabels" . | nindent 6 }}
+      {{- include "berkshire-agent.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: gateway
   template:
     metadata:
       labels:
-        {{- include "deer-flow.selectorLabels" . | nindent 8 }}
+        {{- include "berkshire-agent.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: gateway
       annotations:
         # Roll pods when the mounted ConfigMaps change (subPath mounts don't
         # get live updates, so without this a config-only upgrade is ignored).
-        checksum/config: {{ include "deer-flow.configChecksum" . }}
-        checksum/extensions: {{ include "deer-flow.extensionsChecksum" . }}
+        checksum/config: {{ include "berkshire-agent.configChecksum" . }}
+        checksum/extensions: {{ include "berkshire-agent.extensionsChecksum" . }}
     spec:
-      {{- include "deer-flow.imagePullSecrets" . | nindent 6 }}
+      {{- include "berkshire-agent.imagePullSecrets" . | nindent 6 }}
       # MUST exceed channel stop (~5s) + memory shutdown_flush_timeout_seconds
       # (default 30s) + buffer, or K8s SIGKILLs the memory drain mid-flight
       # (values.yaml gateway.terminationGracePeriodSeconds). K8s defaults to 30s.
       terminationGracePeriodSeconds: {{ .Values.gateway.terminationGracePeriodSeconds | default 45 }}
       securityContext:
         # Non-root: the gateway image has no USER directive and would otherwise
-        # run as root. uid/gid 1000; fsGroup 1000 so the .deer-flow PVC is
+        # run as root. uid/gid 1000; fsGroup 1000 so the .berkshire-agent PVC is
         # group-writable for memory/sqlite/custom-agent state.
         runAsNonRoot: true
         runAsUser: 1000
@@ -44,7 +44,7 @@ spec:
       initContainers:
         - name: init-home
           image: busybox:1.36
-          command: ["sh", "-c", "mkdir -p /home-pvc/deer-flow/data /home-pvc/deer-flow/extensions-config"]
+          command: ["sh", "-c", "mkdir -p /home-pvc/berkshire-agent/data /home-pvc/berkshire-agent/extensions-config"]
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -71,10 +71,10 @@ spec:
               readOnly: true
             - name: home
               mountPath: /extensions-runtime
-              subPath: deer-flow/extensions-config
+              subPath: berkshire-agent/extensions-config
       containers:
         - name: gateway
-          image: {{ include "deer-flow.gatewayImage" . }}
+          image: {{ include "berkshire-agent.gatewayImage" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
@@ -98,17 +98,17 @@ spec:
             - name: DEER_FLOW_PROJECT_ROOT
               value: /app
             - name: DEER_FLOW_HOME
-              value: /app/backend/.deer-flow
+              value: /app/backend/.berkshire-agent
             - name: DEER_FLOW_CONFIG_PATH
               value: /app/backend/config.yaml
             - name: DEER_FLOW_EXTENSIONS_CONFIG_PATH
-              value: /app/backend/.deer-flow/extensions-config/extensions_config.json
+              value: /app/backend/.berkshire-agent/extensions-config/extensions_config.json
             - name: DEER_FLOW_CHANNELS_LANGGRAPH_URL
               value: http://gateway:8001/api
             - name: DEER_FLOW_CHANNELS_GATEWAY_URL
               value: http://gateway:8001
             - name: DEER_FLOW_HOST_BASE_DIR
-              value: /app/backend/.deer-flow
+              value: /app/backend/.berkshire-agent
             - name: GATEWAY_HOST
               value: 0.0.0.0
             - name: GATEWAY_PORT
@@ -116,7 +116,7 @@ spec:
             - name: DEER_FLOW_INTERNAL_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "deer-flow.appSecret" . }}
+                  name: {{ include "berkshire-agent.appSecret" . }}
                   key: DEER_FLOW_INTERNAL_AUTH_TOKEN
             {{- /* PostgreSQL DSN — only mounted when postgres is configured
                   (bundled StatefulSet, external databaseUrl, or an existing
@@ -127,18 +127,18 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "deer-flow.databaseUrlSecret" . }}
+                  name: {{ include "berkshire-agent.databaseUrlSecret" . }}
                   key: database-url
             {{- end }}
             {{- /* Redis stream-bridge URL — only mounted when redis is configured
                   (bundled StatefulSet, external URL, or an existing Secret).
                   Drives cross-pod SSE delivery (PR #3191). redis-py connects via
                   raw TCP so HTTP_PROXY/NO_PROXY do not apply. */ -}}
-            {{- if (include "deer-flow.redisConfigured" .) }}
+            {{- if (include "berkshire-agent.redisConfigured" .) }}
             - name: DEER_FLOW_STREAM_BRIDGE_REDIS_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "deer-flow.redisUrlSecret" . }}
+                  name: {{ include "berkshire-agent.redisUrlSecret" . }}
                   key: redis-url
             {{- end }}
             - name: NO_PROXY
@@ -148,7 +148,7 @@ spec:
           {{- if or .Values.secrets .Values.existingSecret }}
           envFrom:
             - secretRef:
-                name: {{ include "deer-flow.providerSecret" . }}
+                name: {{ include "berkshire-agent.providerSecret" . }}
           {{- end }}
           ports:
             - containerPort: 8001
@@ -192,15 +192,15 @@ spec:
               mountPath: /app/skills
               readOnly: true
             - name: home
-              mountPath: /app/backend/.deer-flow
-              subPath: deer-flow
+              mountPath: /app/backend/.berkshire-agent
+              subPath: berkshire-agent
       volumes:
         - name: config
           configMap:
-            name: {{ include "deer-flow.fullname" . }}-config
+            name: {{ include "berkshire-agent.fullname" . }}-config
         - name: extensions-seed
           configMap:
-            name: {{ include "deer-flow.fullname" . }}-extensions
+            name: {{ include "berkshire-agent.fullname" . }}-extensions
         - name: skills
           {{- if .Values.skills.existingClaim }}
           persistentVolumeClaim:
@@ -214,7 +214,7 @@ spec:
         - name: home
           {{- if .Values.persistence.home.enabled }}
           persistentVolumeClaim:
-            claimName: {{ include "deer-flow.homePVC" . }}
+            claimName: {{ include "berkshire-agent.homePVC" . }}
           {{- else }}
           emptyDir: {}
         {{- end }}

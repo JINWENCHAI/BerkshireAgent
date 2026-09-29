@@ -44,7 +44,7 @@ def _stop_container(container_name: str) -> None:
 
 # Use a lightweight image for testing to avoid pulling the heavy sandbox image
 E2E_TEST_IMAGE = "busybox:latest"
-E2E_PREFIX = "deer-flow-sandbox-e2e-test"
+E2E_PREFIX = "berkshire-agent-sandbox-e2e-test"
 
 
 @pytest.fixture(autouse=True)
@@ -206,7 +206,7 @@ class TestOrphanReconciliationE2E:
 
             # Should find ours but not unrelated
             assert "ours001" in found_ids
-            # "unrelated-test-container" doesn't match "deer-flow-sandbox-e2e-test-" prefix
+            # "unrelated-test-container" doesn't match "berkshire-agent-sandbox-e2e-test-" prefix
             for info in running:
                 assert not info.sandbox_id.startswith("unrelated")
 

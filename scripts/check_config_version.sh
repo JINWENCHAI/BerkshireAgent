@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check the Helm chart's embedded config_version is not behind config.example.yaml.
 #
-# The chart's `config:` block in deploy/helm/deer-flow/values.yaml embeds a
+# The chart's `config:` block in deploy/helm/berkshire-agent/values.yaml embeds a
 # config_version that must not lag config.example.yaml. A stale version is
 # silent in-cluster (the image ships no example to compare against, so
 # _check_config_version never warns) but means the chart's config is authored
@@ -22,7 +22,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 EXAMPLE_YAML="$ROOT/config.example.yaml"
-VALUES_YAML="$ROOT/deploy/helm/deer-flow/values.yaml"
+VALUES_YAML="$ROOT/deploy/helm/berkshire-agent/values.yaml"
 
 for f in "$EXAMPLE_YAML" "$VALUES_YAML"; do
   if [ ! -f "$f" ]; then
@@ -43,7 +43,7 @@ if [ -z "$example" ] || [ -z "$chart" ]; then
 fi
 
 if [ "$chart" -lt "$example" ]; then
-  echo "::error::chart config_version ($chart) is behind config.example.yaml ($example). Bump 'config_version' in deploy/helm/deer-flow/values.yaml (and the README example) to $example." >&2
+  echo "::error::chart config_version ($chart) is behind config.example.yaml ($example). Bump 'config_version' in deploy/helm/berkshire-agent/values.yaml (and the README example) to $example." >&2
   exit 1
 fi
 

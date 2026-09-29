@@ -277,7 +277,7 @@ def _running_studio_server(
 
 @pytest.fixture(scope="module")
 def studio_client(tmp_path_factory: pytest.TempPathFactory) -> Iterator[httpx.Client]:
-    """Run the locked dev server with a tiny graph and DeerFlow's real auth."""
+    """Run the locked dev server with a tiny graph and BerkshireAgent's real auth."""
     runtime_dir = tmp_path_factory.mktemp("langgraph-studio-routes")
     with _running_studio_server(
         runtime_dir,

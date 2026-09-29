@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://deerflow.dev/contracts/skill_review/waiver_manifest.v1.schema.json",
-  "title": "DeerFlow Skill Review Waiver Manifest v1",
+  "title": "BerkshireAgent Skill Review Waiver Manifest v1",
   "type": "object",
   "required": ["schema_version", "waivers"],
   "properties": {

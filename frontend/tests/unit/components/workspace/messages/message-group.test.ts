@@ -60,7 +60,7 @@ describe("MessageGroup", () => {
           {
             id: "call-1",
             name: "web_search",
-            args: { query: "DeerFlow issue 4027" },
+            args: { query: "BerkshireAgent issue 4027" },
           },
         ],
       } as Message,
@@ -69,7 +69,7 @@ describe("MessageGroup", () => {
     expect(html).toContain(
       "The browser action failed, so I will try another approach.",
     );
-    expect(html).toContain("DeerFlow issue 4027");
+    expect(html).toContain("BerkshireAgent issue 4027");
   });
 
   it("keeps assistant text visible while older tool steps stay collapsed", () => {
@@ -328,7 +328,7 @@ describe("MessageGroup", () => {
           {
             id: "call-1",
             name: "browser_navigate",
-            args: { url: "https://github.com/bytedance/deer-flow" },
+            args: { url: "https://github.com/bytedance/berkshire-agent" },
           },
         ],
       } as Message,
@@ -341,7 +341,7 @@ describe("MessageGroup", () => {
         additional_kwargs: {
           browser_view: {
             screenshot: "/mnt/user-data/outputs/browser.png",
-            url: "https://github.com/bytedance/deer-flow",
+            url: "https://github.com/bytedance/berkshire-agent",
           },
         },
       } as Message,
@@ -478,7 +478,7 @@ describe("MessageGroup", () => {
           {
             id: "call-search",
             name: "web_search",
-            args: { query: "DeerFlow" },
+            args: { query: "BerkshireAgent" },
           },
         ],
       } as Message,
@@ -540,7 +540,7 @@ describe("MessageGroup tool links", () => {
   it.each(unsafeUrls)("marks a web_search result at %s as omitted", (url) => {
     const html = renderToolCall(
       "web_search",
-      { query: "DeerFlow" },
+      { query: "BerkshireAgent" },
       JSON.stringify([
         { title: "Safe source", url: "https://safe.example" },
         { title: "Injected source", url },
@@ -558,7 +558,7 @@ describe("MessageGroup tool links", () => {
     (url) => {
       const html = renderToolCall(
         "image_search",
-        { query: "DeerFlow" },
+        { query: "BerkshireAgent" },
         JSON.stringify({
           results: [
             {
@@ -583,7 +583,7 @@ describe("MessageGroup tool links", () => {
     });
     const imageHtml = renderToolCall(
       "image_search",
-      { query: "DeerFlow" },
+      { query: "BerkshireAgent" },
       JSON.stringify({
         results: [
           {

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { handleRunStream, mockLangGraphAPI } from "./utils/mock-api";
 
 /**
- * Regression for https://github.com/bytedance/deer-flow/issues/2746.
+ * Regression for https://github.com/bytedance/berkshire-agent/issues/2746.
  *
  * On a brand-new chat, the LangGraph SDK's useStream eagerly fetches
  * `/threads/{id}/history` the moment it receives a thread id, and the
@@ -72,7 +72,7 @@ test.describe("Chat: thread API request ordering on first send", () => {
     await textarea.press("Enter");
 
     // Wait for streaming response so all init requests have a chance to fire.
-    await expect(page.getByText("Hello from DeerFlow!")).toBeVisible({
+    await expect(page.getByText("Hello from BerkshireAgent!")).toBeVisible({
       timeout: 15_000,
     });
 

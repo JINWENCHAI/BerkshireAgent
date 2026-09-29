@@ -26,7 +26,7 @@ _CHANNEL_ID = "136852ee-63e1-49c2-8927-413b5ee8e5f7"
 def _event() -> dict:
     tags = [["h", _CHANNEL_ID], ["p", _BOT_PUBLIC]]
     created_at = 1_700_000_100
-    content = "@DeerFlow hello"
+    content = "@BerkshireAgent hello"
     return {
         "id": buzz_nostr.event_id(_OWNER_PUBLIC, created_at, 9, tags, content),
         "pubkey": _OWNER_PUBLIC,

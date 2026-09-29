@@ -169,7 +169,7 @@ async def test_put_offloads_write_via_to_thread():
 # ---------------------------------------------------------------------------
 # put_batch failure rollback: a failed append must not leave partial records
 # so a caller re-buffering the batch on retry does not produce duplicates.
-# Regression for deer-flow PR #4082 (review feedback from willem-bd).
+# Regression for berkshire-agent PR #4082 (review feedback from willem-bd).
 # ---------------------------------------------------------------------------
 
 

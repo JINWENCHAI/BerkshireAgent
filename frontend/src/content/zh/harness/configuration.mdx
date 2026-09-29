@@ -1,6 +1,6 @@
 ---
 title: 配置
-description: DeerFlow 的配置系统围绕一个目标设计：每一个有意义的行为都应该可以在配置文件中表达，而不是硬编码在应用程序中。这使部署可重现、可审计，并且易于按环境定制。
+description: BerkshireAgent 的配置系统围绕一个目标设计：每一个有意义的行为都应该可以在配置文件中表达，而不是硬编码在应用程序中。这使部署可重现、可审计，并且易于按环境定制。
 ---
 
 import { Callout } from "nextra/components";
@@ -8,15 +8,15 @@ import { Callout } from "nextra/components";
 # 配置
 
 <Callout type="info" emoji="⚙️">
-  所有 DeerFlow Harness 行为都由 <code>config.yaml</code>{" "}
+  所有 BerkshireAgent Harness 行为都由 <code>config.yaml</code>{" "}
   驱动。一个文件控制哪些模型可用、沙箱如何运行、加载哪些工具，以及每个子系统的行为。
 </Callout>
 
-DeerFlow 的配置系统围绕一个目标设计：每一个有意义的行为都应该可以在配置文件中表达，而不是硬编码在应用程序中。这使部署可重现、可审计，并且易于按环境定制。
+BerkshireAgent 的配置系统围绕一个目标设计：每一个有意义的行为都应该可以在配置文件中表达，而不是硬编码在应用程序中。这使部署可重现、可审计，并且易于按环境定制。
 
 ## 配置文件位置
 
-DeerFlow 使用以下优先级顺序解析 `config.yaml`：
+BerkshireAgent 使用以下优先级顺序解析 `config.yaml`：
 
 1. 显式传递给 `AppConfig.from_file(config_path)` 的路径。
 2. `DEER_FLOW_CONFIG_PATH` 环境变量。
@@ -68,7 +68,7 @@ tools:
     api_key: $TAVILY_API_KEY
 ```
 
-这是 DeerFlow 实现可插拔性而不硬编码类引用的方式。
+这是 BerkshireAgent 实现可插拔性而不硬编码类引用的方式。
 
 ## 额外字段透传
 

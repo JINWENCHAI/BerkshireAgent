@@ -32,7 +32,7 @@ superstep 上限的作用，是让停止接收写入的通道重放深度也有�
 | 常量 | 键与位置 | 写入时机 | 含义 |
 | --- | --- | --- | --- |
 | `CHECKPOINT_MODE_METADATA_KEY` | `config["metadata"]` 中的 `deerflow_checkpoint_channel_mode` | 仅 `delta`，取值 `"delta"` | 持久化的模式标记。`full` 模式会移除该键，因此**缺失即 `full`**，功能上线前的检查点无需迁移 |
-| `counters_since_delta_snapshot` | LangGraph 自己的检查点元数据键，一个含 `"messages"` 的字典 | 由 LangGraph 写入 | 兜底识别：即使没有 DeerFlow 标记，只要它存在也按增量处理 |
+| `counters_since_delta_snapshot` | LangGraph 自己的检查点元数据键，一个含 `"messages"` 的字典 | 由 LangGraph 写入 | 兜底识别：即使没有 BerkshireAgent 标记，只要它存在也按增量处理 |
 | `INTERNAL_CHECKPOINT_MODE_KEY` | `config["configurable"]` 中的 `__deerflow_checkpoint_channel_mode` | 每个请求，两种模式都写 | 仅供内部分流，由 `inject_checkpoint_mode` 写入。它永远不是持久化的元数据键，也不会出现在线上报文里；调用方传入的取值会被 Gateway 的 run-config 构建器丢弃，首次冻结时被忽略，冻结之后再传不同取值则被拒绝 |
 
 快照节奏刻意**不**写入检查点元数据，这也是标记契约不受节奏取值影响的原因：
@@ -62,7 +62,7 @@ superstep 上限的作用，是让停止接收写入的通道重放深度也有�
 
 > A mismatch means the thread's persisted checkpoints conflict with the process's frozen mode (operator-actionable, 409); a reconfiguration means the process itself is mid mode-flip (transient, 503).
 
-只有线程路由映射这两个错误；创建运行的路径会把同一段不一致文本异步地写进 run 记录或 SSE `error` 帧 —— 例外是线程的 run event 流为空、检查点头部必须在准入前被物化时，播种读取会把这个不一致变成普通的 `500`。映射中的 `503` 一半属于防御性代码：重新配置错误在构建图时抛出（Gateway 启动、`make_lead_agent`、`DeerFlowClient.__init__`），而没有任何状态、历史或线程路由会构建 agent，所以改完 `config.yaml` 却没重启的运维人员看到的是失败的 run，而不是 `503`。见[可观测性](/docs/harness/checkpoints/observability)与[故障排查](/docs/harness/checkpoints/troubleshooting)。
+只有线程路由映射这两个错误；创建运行的路径会把同一段不一致文本异步地写进 run 记录或 SSE `error` 帧 —— 例外是线程的 run event 流为空、检查点头部必须在准入前被物化时，播种读取会把这个不一致变成普通的 `500`。映射中的 `503` 一半属于防御性代码：重新配置错误在构建图时抛出（Gateway 启动、`make_lead_agent`、`BerkshireAgentClient.__init__`），而没有任何状态、历史或线程路由会构建 agent，所以改完 `config.yaml` 却没重启的运维人员看到的是失败的 run，而不是 `503`。见[可观测性](/docs/harness/checkpoints/observability)与[故障排查](/docs/harness/checkpoints/troubleshooting)。
 
 ## 跨进程不变量
 

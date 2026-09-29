@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""DeerFlow Health Check (make doctor).
+"""BerkshireAgent Health Check (make doctor).
 
 Checks system requirements, configuration, LLM provider, and optional
 components, then prints an actionable report.
@@ -306,7 +306,7 @@ def resolve_config_path() -> tuple[Path, CheckResult | None]:
         return Path(config_env) if config_env else default_path, CheckResult(
             "config.yaml found",
             "fail",
-            f"cannot import the DeerFlow harness to resolve it ({type(exc).__name__}: {exc})",
+            f"cannot import the BerkshireAgent harness to resolve it ({type(exc).__name__}: {exc})",
             fix="Run 'make install'",
         )
 
@@ -327,7 +327,7 @@ def resolve_config_path() -> tuple[Path, CheckResult | None]:
             "config.yaml found",
             "fail",
             str(exc),
-            fix="Point DEER_FLOW_PROJECT_ROOT at the DeerFlow checkout, or unset it",
+            fix="Point DEER_FLOW_PROJECT_ROOT at the BerkshireAgent checkout, or unset it",
         )
 
 
@@ -844,7 +844,7 @@ def main() -> int:
     config_path, config_failure = resolve_config_path()
 
     print()
-    print(bold("DeerFlow Health Check"))
+    print(bold("BerkshireAgent Health Check"))
     print("═" * 40)
 
     sections: list[tuple[str, list[CheckResult]]] = []
@@ -910,10 +910,10 @@ def main() -> int:
     print("═" * 40)
     if total_fails == 0 and total_warns == 0:
         print(f"Status: {green('Ready')}")
-        print(f"Run {cyan('make dev')} to start DeerFlow")
+        print(f"Run {cyan('make dev')} to start BerkshireAgent")
     elif total_fails == 0:
         print(f"Status: {yellow(f'Ready ({total_warns} warning(s))')}")
-        print(f"Run {cyan('make dev')} to start DeerFlow")
+        print(f"Run {cyan('make dev')} to start BerkshireAgent")
     else:
         print(f"Status: {red(f'{total_fails} error(s), {total_warns} warning(s)')}")
         print("Fix the errors above, then run 'make doctor' again.")

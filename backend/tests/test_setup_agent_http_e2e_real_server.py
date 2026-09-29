@@ -54,11 +54,11 @@ def _build_fake_create_chat_model(agent_name: str):
 
 
 @pytest.fixture
-def isolated_deer_flow_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    """Stand up an isolated DeerFlow data root + config under tmp_path.
+def isolated_berkshire_agent_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """Stand up an isolated BerkshireAgent data root + config under tmp_path.
 
     - Sets ``DEER_FLOW_HOME`` so paths land under tmp_path, not the real
-      ``.deer-flow`` directory.
+      ``.berkshire-agent`` directory.
     - Stages a copy of the project's ``config.yaml`` (or ``config.example.yaml``
       on a fresh CI checkout where ``config.yaml`` is gitignored) and pins
       ``DEER_FLOW_CONFIG_PATH`` to it, so lifespan boot doesn't depend on the
@@ -67,7 +67,7 @@ def isolated_deer_flow_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
       ``$OPENAI_API_KEY`` that gets resolved at parse time; the LLM itself is
       mocked, so any non-empty value works.
     """
-    home = tmp_path / "deer-flow-home"
+    home = tmp_path / "berkshire-agent-home"
     home.mkdir()
     monkeypatch.setenv("DEER_FLOW_HOME", str(home))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-fake-key-not-used-because-llm-is-mocked")
@@ -145,7 +145,7 @@ def _reset_process_singletons(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture
-def isolated_app(isolated_deer_flow_home: Path, monkeypatch: pytest.MonkeyPatch):
+def isolated_app(isolated_berkshire_agent_home: Path, monkeypatch: pytest.MonkeyPatch):
     """Build a fresh FastAPI app inside a clean DEER_FLOW_HOME.
 
     Each test gets its own sqlite DB and checkpoint store under ``tmp_path``,
@@ -158,7 +158,7 @@ def isolated_app(isolated_deer_flow_home: Path, monkeypatch: pytest.MonkeyPatch)
     from deerflow.config import app_config as app_config_module
 
     cfg = app_config_module.get_app_config()
-    cfg.database.sqlite_dir = str(isolated_deer_flow_home / "db")
+    cfg.database.sqlite_dir = str(isolated_berkshire_agent_home / "db")
 
     from app.gateway.app import create_app
 
@@ -210,7 +210,7 @@ def _wait_for_file(path: Path, *, timeout: float = 10.0) -> bool:
 @pytest.mark.no_auto_user
 def test_real_http_create_agent_lands_in_authenticated_user_dir(
     isolated_app: Any,
-    isolated_deer_flow_home: Path,
+    isolated_berkshire_agent_home: Path,
     monkeypatch: pytest.MonkeyPatch,
 ):
     """The full real-server contract test.
@@ -306,8 +306,8 @@ def test_real_http_create_agent_lands_in_authenticated_user_dir(
         assert "event:" in transcript, f"no SSE events in response: {transcript[:500]!r}"
 
         # --- 4. Verify filesystem outcome ---
-        expected_dir = isolated_deer_flow_home / "users" / auth_uid / "agents" / agent_name
-        default_dir = isolated_deer_flow_home / "users" / "default" / "agents" / agent_name
+        expected_dir = isolated_berkshire_agent_home / "users" / auth_uid / "agents" / agent_name
+        default_dir = isolated_berkshire_agent_home / "users" / "default" / "agents" / agent_name
 
         # The setup_agent tool runs inside the background asyncio task spawned
         # by start_run; SSE-drain typically waits for it, but we add a bounded
@@ -315,7 +315,7 @@ def test_real_http_create_agent_lands_in_authenticated_user_dir(
         assert _wait_for_file(expected_dir / "SOUL.md", timeout=15.0), (
             "SOUL.md did not appear under users/<auth_uid>/agents/. "
             f"Expected: {expected_dir / 'SOUL.md'}. "
-            f"tmp tree: {sorted(str(p.relative_to(isolated_deer_flow_home)) for p in isolated_deer_flow_home.rglob('SOUL.md'))}. "
+            f"tmp tree: {sorted(str(p.relative_to(isolated_berkshire_agent_home)) for p in isolated_berkshire_agent_home.rglob('SOUL.md'))}. "
             f"SSE transcript tail: {transcript[-1000:]!r}"
         )
 

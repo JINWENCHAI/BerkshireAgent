@@ -37,7 +37,7 @@ class SandboxNetworkConfig(BaseModel):
         description="Lifetime in seconds for the temporary approval choice.",
     )
     proxy_image: str = Field(
-        default="ghcr.io/bytedance/deer-flow-sandbox-network-proxy:latest",
+        default="ghcr.io/bytedance/berkshire-agent-sandbox-network-proxy:latest",
         min_length=1,
         description="Managed Python runtime image used for the trusted network-policy sidecar.",
     )
@@ -141,7 +141,7 @@ class VolumeMountConfig(BaseModel):
             "``LocalSandboxProvider`` checks this path from the gateway process — in "
             "``make dev`` that is the host machine, but in Docker deployments "
             "(``make up`` / docker-compose) it is the path *inside* the "
-            "``deer-flow-gateway`` container, so the host directory must also be "
+            "``berkshire-agent-gateway`` container, so the host directory must also be "
             "bind-mounted into the gateway service for the mount to take effect. "
             "``AioSandboxProvider`` (DooD) passes this value straight to ``docker -v`` "
             "for the sandbox container, where it is resolved by the host Docker daemon "
@@ -173,7 +173,7 @@ class SandboxConfig(BaseModel):
 
     AioSandboxProvider specific options:
         port: Base port for sandbox containers (default: 8080)
-        container_prefix: Prefix for container names (default: deer-flow-sandbox)
+        container_prefix: Prefix for container names (default: berkshire-agent-sandbox)
         mounts: List of volume mounts to share directories with the container
         thread_data_mounts: Override whether thread data is already visible to
             the sandbox through shared mounts. Omit to auto-detect from the backend.

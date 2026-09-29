@@ -1,4 +1,4 @@
-"""Operator-facing installation management for packaged DeerFlow extensions."""
+"""Operator-facing installation management for packaged BerkshireAgent extensions."""
 
 from __future__ import annotations
 
@@ -117,7 +117,7 @@ def _read_optional_bytes(path: Path) -> bytes | None:
 
 
 class ExtensionManager:
-    """Install trusted Python extensions into one DeerFlow checkout."""
+    """Install trusted Python extensions into one BerkshireAgent checkout."""
 
     def __init__(self, project_root: str | Path, *, config_path: str | Path | None = None) -> None:
         self.project_root = Path(project_root).resolve()
@@ -476,20 +476,20 @@ class ExtensionManager:
 
     def _read_plugins(self) -> tuple[str, list[Any]]:
         if not self.config_path.is_file():
-            raise FileNotFoundError(f"DeerFlow config not found: {self.config_path}")
+            raise FileNotFoundError(f"BerkshireAgent config not found: {self.config_path}")
         with self.config_path.open("r", encoding="utf-8", newline="") as stream:
             original = stream.read()
         try:
             config_node = yaml.compose(original)
             config = yaml.safe_load(original) or {}
         except yaml.YAMLError as exc:
-            raise ValueError("invalid DeerFlow config YAML") from exc
+            raise ValueError("invalid BerkshireAgent config YAML") from exc
         if isinstance(config_node, yaml.MappingNode):
             plugins_keys = [key for key, _ in config_node.value if isinstance(key, yaml.ScalarNode) and key.value == "plugins"]
             if len(plugins_keys) > 1:
                 raise ValueError("config.yaml contains duplicate top-level plugins keys")
         if not isinstance(config, dict):
-            raise ValueError("DeerFlow config root must be a mapping")
+            raise ValueError("BerkshireAgent config root must be a mapping")
         plugins = config.get("plugins")
         if plugins is None:
             plugins = []
@@ -523,7 +523,7 @@ def _retry_until_locked(acquire: Callable[[], None], *, sleep: Callable[[float],
 @contextmanager
 def _manager_lock(project_root: Path) -> Iterator[None]:
     """Serialize extension mutations across processes for one checkout."""
-    lock_directory = project_root / ".deer-flow"
+    lock_directory = project_root / ".berkshire-agent"
     lock_directory.mkdir(parents=True, exist_ok=True)
     lock_path = lock_directory / "extension-manager.lock"
     with lock_path.open("a+b") as stream:
@@ -644,9 +644,9 @@ def _validate_remote_source(source: str) -> None:
     if _is_scp_like_reference(raw_source):
         raise ValueError("Git SSH shorthand is not deployable; remote Git sources must use public HTTPS, as in git+https://host/org/repo.git")
     if not scheme:
-        raise ValueError("local path references are not deployable; pass a local directory so DeerFlow can snapshot it")
+        raise ValueError("local path references are not deployable; pass a local directory so BerkshireAgent can snapshot it")
     if scheme == "file":
-        raise ValueError("file URLs are not deployable; pass a local directory so DeerFlow can snapshot it")
+        raise ValueError("file URLs are not deployable; pass a local directory so BerkshireAgent can snapshot it")
     if scheme == "ssh":
         raise ValueError("remote Git sources must use public HTTPS; SSH sources are not deployable by the stock Docker builder")
     if scheme == "http" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:

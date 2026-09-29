@@ -1,6 +1,6 @@
 # Session continuity evaluation
 
-Historical research prototype motivating the opt-in implementation in this PR. The measurements below were completed before production integration; they are not measurements of the implementation shipped here. The reported baseline uses the exact installed default summarization prompt, not the entire DeerFlow runtime. The protocol deliberately enables forced compaction to examine loss/recovery under context pressure.
+Historical research prototype motivating the opt-in implementation in this PR. The measurements below were completed before production integration; they are not measurements of the implementation shipped here. The reported baseline uses the exact installed default summarization prompt, not the entire BerkshireAgent runtime. The protocol deliberately enables forced compaction to examine loss/recovery under context pressure.
 
 ## Published package
 
@@ -27,7 +27,7 @@ For an offline consistency check of the published counts (without omitted raw da
 
 ## Runtime
 
-Python 3.12 with `httpx`, `numpy`, `tiktoken`, `pytest` (plus `matplotlib` for plotting); the existing DeerFlow backend environment was used. Credentials and addresses are supplied through `--endpoints /path/to/private.json`, outside this directory. The JSON keys are `llm_base`, `llm_model`, `embedding_base`, `embedding_model`, `embedding_key`. Bases include `/v1`. LLM requests have no Authorization header. Never publish the runtime configuration.
+Python 3.12 with `httpx`, `numpy`, `tiktoken`, `pytest` (plus `matplotlib` for plotting); the existing BerkshireAgent backend environment was used. Credentials and addresses are supplied through `--endpoints /path/to/private.json`, outside this directory. The JSON keys are `llm_base`, `llm_model`, `embedding_base`, `embedding_model`, `embedding_key`. Bases include `/v1`. LLM requests have no Authorization header. Never publish the runtime configuration.
 
 ## Run
 
@@ -60,7 +60,7 @@ Network execution is an explicitly authorized manual experiment. Unit tests neve
 
 It does not establish general coding-agent reliability, production restart recovery, a merged feature, or an official benchmark leaderboard score. The small stratified public sample is exploratory. Task fixtures are authored simulations with fixed history prefixes followed by live native tool calls, not naturally occurring full trajectories. A/B/C have the same hard context cap but consume different amounts; the report shows this overhead rather than attributing all added information to superior representation.
 
-The compact summary/notebook output limits are intentional pressure-test conditions and frequently cause length-limited generations. They are **not** DeerFlow's complete production defaults, and the observed A score must not be presented as its normal deployed performance. Extending actor execution does not undo prior information loss from these compactions; both mechanisms are reported separately.
+The compact summary/notebook output limits are intentional pressure-test conditions and frequently cause length-limited generations. They are **not** BerkshireAgent's complete production defaults, and the observed A score must not be presented as its normal deployed performance. Extending actor execution does not undo prior information loss from these compactions; both mechanisms are reported separately.
 
 The original public dataset includes reference/evidence metadata. `prepare.py` writes model-facing records and scorer-only gold to separate directories. Neither notes nor summaries receive the final question, answer or evidence labels. Task acceptance values stay inside the verifier; failed validation exposes no expected values.
 

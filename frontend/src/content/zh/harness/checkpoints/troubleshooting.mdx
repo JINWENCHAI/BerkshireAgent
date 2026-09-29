@@ -60,7 +60,7 @@ checkpoint_channel_mode is restart-required and cannot change in a running proce
 checkpoint_delta.snapshot_frequency is restart-required and cannot change in a running process
 ```
 
-**原因**：`CheckpointModeReconfigurationError`。进程在启动时冻结了模式与节奏，而某处用不同的值构建了图 —— 即一次与启动冻结值分歧的配置热重载。只有 Gateway 启动、`make_lead_agent` 与 `DeerFlowClient.__init__` 会调用冻结辅助函数，而没有任何状态、历史或线程路由会构建 agent（这些路由读取启动时冻结的 `app.state` 值），所以这是 run 侧的失败：它们都不会因配置改动返回 `503`。路由层的 `503` 映射为该错误类而存在，但 threads 路由中没有任何路径会抛出它。
+**原因**：`CheckpointModeReconfigurationError`。进程在启动时冻结了模式与节奏，而某处用不同的值构建了图 —— 即一次与启动冻结值分歧的配置热重载。只有 Gateway 启动、`make_lead_agent` 与 `BerkshireAgentClient.__init__` 会调用冻结辅助函数，而没有任何状态、历史或线程路由会构建 agent（这些路由读取启动时冻结的 `app.state` 值），所以这是 run 侧的失败：它们都不会因配置改动返回 `503`。路由层的 `503` 映射为该错误类而存在，但 threads 路由中没有任何路径会抛出它。
 
 两个开关的行为不同：
 
@@ -73,7 +73,7 @@ checkpoint_delta.snapshot_frequency is restart-required and cannot change in a r
 
 **症状**：你改了 `database.checkpoint_channel_mode` 或 `database.checkpoint_delta.snapshot_frequency`，但线程行为照旧。
 
-**原因**：模式在进程首次构建 agent 时按启动快照全局冻结；节奏随之一起冻结。首次冻结时，客户端传入的 `configurable.__deerflow_checkpoint_channel_mode` 会被忽略；一旦冻结，任何不同的值都会 fail-closed。内嵌 `DeerFlowClient` 也以同样方式冻结模式与节奏。另注意 `checkpoint_delta.*` 在 full 模式下被忽略。
+**原因**：模式在进程首次构建 agent 时按启动快照全局冻结；节奏随之一起冻结。首次冻结时，客户端传入的 `configurable.__deerflow_checkpoint_channel_mode` 会被忽略；一旦冻结，任何不同的值都会 fail-closed。内嵌 `BerkshireAgentClient` 也以同样方式冻结模式与节奏。另注意 `checkpoint_delta.*` 在 full 模式下被忽略。
 
 **处理**：重启共享该检查点数据库的每个进程；它们必须使用相同的值。通过读取线程标记确认切换（见[可观测性](/docs/harness/checkpoints/observability)）。只有一个相关键会在运行期重新读取：`database.checkpoint_graph_cache.accessor_graph_max`（每次淘汰检查时）。`database.checkpoint_cache.*` **不冻结**——它不会损坏线程，也允许多 worker 取值不同——但它同样不是热重载，见[下一条](#历史缓存的改动没有生效)。
 
@@ -113,7 +113,7 @@ Failed to list checkpoints for regenerate thread %s
 - 进程仍在 `full`（默认值）—— 键从未设置，或设置了但未重启。`checkpoint_delta.*` 在 full 模式下不起作用，历史缓存也只在 delta 模式下包裹 saver。
 - 你比较错了表。delta 把每步载荷移入 writes 表，因此公平的比较要同时统计检查点载荷字节**与** writes 行。存储守卫测试断言 delta 至多保留一个快照 blob，而 full 至少保留四个。
 
-一个相关提醒：任何保留策略在删除中间检查点时，都不得删掉保留下来的检查点与最近 `_DeltaSnapshot` 之间的祖先检查点或 writes，否则 delta 通道会静默重建为空且不报错。DeerFlow 不提供 `prune`/`aprune` 的生产触发点，因此这只是对接线方式的约束，不是现网故障。
+一个相关提醒：任何保留策略在删除中间检查点时，都不得删掉保留下来的检查点与最近 `_DeltaSnapshot` 之间的祖先检查点或 writes，否则 delta 通道会静默重建为空且不报错。BerkshireAgent 不提供 `prune`/`aprune` 的生产触发点，因此这只是对接线方式的约束，不是现网故障。
 
 **处理**：从线程标记确认模式，必要时重启，并比较检查点载荷加 writes 行。见[历史缓存](/docs/harness/checkpoints/history-cache)与[运维检查点](/docs/harness/checkpoints/operations)。
 
@@ -129,11 +129,11 @@ Failed to list checkpoints for regenerate thread %s
 
 ### 重新生成后旧回答复活
 
-**症状**：在分叉线程里重新生成后，刷新页面时被替换掉的助手消息和新回答并列存在，且当种子行共用一个 run id 时分支历史可能损坏（[#4458](https://github.com/bytedance/deer-flow/issues/4458)）。
+**症状**：在分叉线程里重新生成后，刷新页面时被替换掉的助手消息和新回答并列存在，且当种子行共用一个 run id 时分支历史可能损坏（[#4458](https://github.com/bytedance/berkshire-agent/issues/4458)）。
 
 **原因**：delta 无法正确分叉 —— 分叉本身会被接受，坏的是读取。从较旧的检查点恢复会分叉谱系，而 delta 历史回走会收集每条在路径上的祖先的**全部** `pending_writes` —— 但共享父级还带着被放弃的兄弟孩子的写入，于是这些写入被回放进分叉，run 从一份仍包含「本应被替换掉的回答」的消息列表开始。已在 Postgres、SQLite 与内存 saver 上复现；full 模式不受影响，因为它的检查点携带完整通道值。
 
-**处理**：DeerFlow 改为线性化而不分叉。它物化所选检查点的状态，以替换语义写到当前 head（head 没有其他孩子），把只存在于较新 head 的通道重置为 schema 默认值或 `None`，消费掉选择器，然后线性续跑。当模式为 full、没有 checkpointer、选择器已经指向 head，或命名空间非根时，线性化是空操作；它**fail-closed**，绝不回退到分叉：
+**处理**：BerkshireAgent 改为线性化而不分叉。它物化所选检查点的状态，以替换语义写到当前 head（head 没有其他孩子），把只存在于较新 head 的通道重置为 schema 默认值或 `None`，消费掉选择器，然后线性续跑。当模式为 full、没有 checkpointer、选择器已经指向 head，或命名空间非根时，线性化是空操作；它**fail-closed**，绝不回退到分叉：
 
 ```
 Run {run_id} could not materialize resume checkpoint {checkpoint_id}
@@ -147,7 +147,7 @@ Run {run_id} could not materialize resume checkpoint {checkpoint_id}
 
 **原因**：已固定的上游缺陷（[langgraph #8382](https://github.com/langchain-ai/langgraph/issues/8382)），open，修复 PR [#8544](https://github.com/langchain-ai/langgraph/pull/8544) 未合并，无已发布版本。delta 回放按哈希后的 `(task_id, idx)` 排序写入，而不是实时 `apply_writes` 使用的路径顺序，于是同一 super-step 的写入被重排。存在于 `langgraph-checkpoint 4.2.0`；已在 memory、SQLite 与 Postgres 上复现。
 
-**处理**：本地无解。DeerFlow 的测试断言正确契约，并在缺陷存在时触发 skip，同时点名该 issue：
+**处理**：本地无解。BerkshireAgent 的测试断言正确契约，并在缺陷存在时触发 skip，同时点名该 issue：
 
 ```
 upstream langgraph#8382 unfixed in langgraph-checkpoint 4.2.0: delta replay orders writes by hashed (task_id, idx) instead of the path order apply_writes used live, so get_state/resume reorders same-superstep writes
@@ -179,7 +179,7 @@ upstream langgraph#8448 unfixed in langgraph-checkpoint-postgres 3.1.2: the page
 database.checkpoint_cache.type 'redis' is not supported on the sync checkpointer path (TUI/embedded); use 'memory'.
 ```
 
-**原因**：TUI 与无头模式构建的是 `DeerFlowClient(checkpointer=get_checkpointer())` —— **同步**单例检查点器 —— 而同步路径只支持 `memory` 后端（它本来就是进程本地的）。因此对 Gateway 有效的配置可能让 TUI 起不来。
+**原因**：TUI 与无头模式构建的是 `BerkshireAgentClient(checkpointer=get_checkpointer())` —— **同步**单例检查点器 —— 而同步路径只支持 `memory` 后端（它本来就是进程本地的）。因此对 Gateway 有效的配置可能让 TUI 起不来。
 
 **处理**：设置 `database.checkpoint_cache.type: memory`。仅跑 Gateway 的部署可以保留 `redis`，它是异步路径的共享缓存。
 
@@ -205,12 +205,12 @@ database.checkpoint_cache.type 'redis' is not supported on the sync checkpointer
 **症状**：调用 `create_deerflow_agent(..., checkpoint_channel_mode="delta", checkpointer=...)` 抛出 `ValueError`：
 
 ```
-create_deerflow_agent does not support checkpoint_channel_mode='delta' with a checkpointer: persisted graphs built here bypass checkpoint mode marker injection and the fail-closed compatibility gate (see deerflow.runtime.checkpoint_mode), so a mixed-mode store would silently corrupt thread state.  Use the guarded application paths (make_lead_agent or DeerFlowClient) for delta persistence; delta without a checkpointer is ephemeral and allowed.
+create_deerflow_agent does not support checkpoint_channel_mode='delta' with a checkpointer: persisted graphs built here bypass checkpoint mode marker injection and the fail-closed compatibility gate (see deerflow.runtime.checkpoint_mode), so a mixed-mode store would silently corrupt thread state.  Use the guarded application paths (make_lead_agent or BerkshireAgentClient) for delta persistence; delta without a checkpointer is ephemeral and allowed.
 ```
 
 **原因**：这样直接构建的图绕过了标记注入与 fail-closed 兼容门，混合模式的存储可能静默破坏线程状态。**不带**检查点器的 delta 是临时的，允许使用。
 
-**处理**：需要 delta 持久化时走受保护路径 —— `make_lead_agent` 或 `DeerFlowClient`。若只需一个临时的 delta 图，去掉 checkpointer 即可。
+**处理**：需要 delta 持久化时走受保护路径 —— `make_lead_agent` 或 `BerkshireAgentClient`。若只需一个临时的 delta 图，去掉 checkpointer 即可。
 
 <Callout type="tip">
   排查任何症状前先拿到两个事实：进程的冻结模式（来自 `config.yaml`

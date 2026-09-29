@@ -289,7 +289,7 @@ def _build_owner_map_from_db(paths: Paths) -> dict[str, str]:
     """
     import sqlite3
 
-    db_path = paths.base_dir / "deer-flow.db"
+    db_path = paths.base_dir / "berkshire-agent.db"
     if not db_path.exists():
         logger.info("No database found at %s — using empty owner map.", db_path)
         return {}
@@ -306,7 +306,7 @@ def _build_owner_map_from_db(paths: Paths) -> dict[str, str]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Migrate DeerFlow data to per-user layout")
+    parser = argparse.ArgumentParser(description="Migrate BerkshireAgent data to per-user layout")
     parser.add_argument("--dry-run", action="store_true", help="Log actions without making changes")
     parser.add_argument(
         "--user-id",

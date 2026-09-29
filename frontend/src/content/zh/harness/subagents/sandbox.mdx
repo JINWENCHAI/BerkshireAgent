@@ -29,7 +29,7 @@ Lead Agent 和它派出的所有子 Agent 使用**同一个线程沙箱**：同�
 
 ## 匹配 AIO 的会话上限
 
-AIO 镜像默认最多 10 个 shell 会话（`MAX_SHELL_SESSIONS`），超出时会驱逐最旧的空闲会话；被驱逐的子 Agent 下一条命令会收到 `404 Session not found`。DeerFlow 需要的会话数是 `subagent_runtime.max_running + 1`，多出的 1 留给 Lead Agent 自己的 shell。
+AIO 镜像默认最多 10 个 shell 会话（`MAX_SHELL_SESSIONS`），超出时会驱逐最旧的空闲会话；被驱逐的子 Agent 下一条命令会收到 `404 Session not found`。BerkshireAgent 需要的会话数是 `subagent_runtime.max_running + 1`，多出的 1 留给 Lead Agent 自己的 shell。
 
 - 没有显式设置 `sandbox.environment.MAX_SHELL_SESSIONS` 时，只要需要的数量超过 10，本地容器启动时会自动注入该值。
 - 显式设置了但小于需要的数量，Gateway 启动时直接报错：`sandbox.environment.MAX_SHELL_SESSIONS must be at least subagent_runtime.max_running + 1`。

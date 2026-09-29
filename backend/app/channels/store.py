@@ -1,4 +1,4 @@
-"""ChannelStore — persists IM chat-to-DeerFlow thread mappings."""
+"""ChannelStore — persists IM chat-to-BerkshireAgent thread mappings."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class ChannelStore:
-    """JSON-file-backed store that maps IM conversations to DeerFlow threads.
+    """JSON-file-backed store that maps IM conversations to BerkshireAgent threads.
 
     Data layout (on disk)::
 
@@ -80,7 +80,7 @@ class ChannelStore:
     # -- public API --------------------------------------------------------
 
     def get_thread_id(self, channel_name: str, chat_id: str, topic_id: str | None = None) -> str | None:
-        """Look up the DeerFlow thread_id for a given IM conversation/topic."""
+        """Look up the BerkshireAgent thread_id for a given IM conversation/topic."""
         with self._lock:
             entry = self._data.get(self._key(channel_name, chat_id, topic_id))
             return entry["thread_id"] if entry else None

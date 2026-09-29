@@ -1,6 +1,6 @@
 ---
 title: Configuration
-description: "DeerFlow's configuration system is designed around one goal: every meaningful behavior should be expressible in a config file, not hardcoded in the application. This makes deployments reproducible, auditable, and easy to customize per environment."
+description: "BerkshireAgent's configuration system is designed around one goal: every meaningful behavior should be expressible in a config file, not hardcoded in the application. This makes deployments reproducible, auditable, and easy to customize per environment."
 ---
 
 import { Callout } from "nextra/components";
@@ -8,16 +8,16 @@ import { Callout } from "nextra/components";
 # Configuration
 
 <Callout type="info" emoji="⚙️">
-  All DeerFlow Harness behaviors are driven by <code>config.yaml</code>. One
+  All BerkshireAgent Harness behaviors are driven by <code>config.yaml</code>. One
   file controls which models are available, how the sandbox runs, what tools are
   loaded, and how each subsystem behaves.
 </Callout>
 
-DeerFlow's configuration system is designed around one goal: every meaningful behavior should be expressible in a config file, not hardcoded in the application. This makes deployments reproducible, auditable, and easy to customize per environment.
+BerkshireAgent's configuration system is designed around one goal: every meaningful behavior should be expressible in a config file, not hardcoded in the application. This makes deployments reproducible, auditable, and easy to customize per environment.
 
 ## Config file location
 
-DeerFlow resolves `config.yaml` using the following priority order:
+BerkshireAgent resolves `config.yaml` using the following priority order:
 
 1. The path passed to `AppConfig.from_file(config_path)` explicitly.
 2. The `DEER_FLOW_CONFIG_PATH` environment variable.
@@ -69,7 +69,7 @@ tools:
     api_key: $TAVILY_API_KEY
 ```
 
-This pattern is how DeerFlow achieves pluggability without hardcoding class references.
+This pattern is how BerkshireAgent achieves pluggability without hardcoding class references.
 
 ## Extra fields are passed through
 

@@ -1,4 +1,4 @@
-"""Compatibility helpers for DeerFlow custom stream events."""
+"""Compatibility helpers for BerkshireAgent custom stream events."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ def emit_custom_event(payload: dict[str, Any], *, writer: StreamWriter) -> None:
 
     The writer remains the primary compatibility path. Callback dispatch is
     best-effort so an optional ``astream_events`` consumer cannot break an
-    existing DeerFlow run.
+    existing BerkshireAgent run.
     """
 
     writer(payload)

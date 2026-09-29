@@ -20,7 +20,7 @@ class ExecutionStepResult:
 
 def run_execution_step(step_label: str = "Step 3/4") -> ExecutionStepResult:
     print_header(f"{step_label} · Execution & Safety")
-    print_info("Choose how much execution power DeerFlow should have in this workspace.")
+    print_info("Choose how much execution power BerkshireAgent should have in this workspace.")
 
     options = [
         "Local sandbox  —  fastest, uses host filesystem paths",

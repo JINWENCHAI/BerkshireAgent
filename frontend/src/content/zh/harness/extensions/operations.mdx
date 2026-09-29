@@ -11,7 +11,7 @@ import { Callout } from "nextra/components";
 
 ## 命令
 
-在 DeerFlow checkout 根目录运行 `make` 包装命令，它们都会在 `backend/` 下调用同一个 CLI：
+在 BerkshireAgent checkout 根目录运行 `make` 包装命令，它们都会在 `backend/` 下调用同一个 CLI：
 
 | `make` 目标                            | CLI（在 `backend/` 下运行）                                                     | 作用                                                    |
 | -------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------- |
@@ -42,11 +42,11 @@ Install this trusted source? [y/N]
 成功时：
 
 ```text
-Installed and enabled hello (deerflow-extension-hello). Restart DeerFlow to load it.
-Upgraded hello (deerflow-extension-hello). Restart DeerFlow to load it.
-Enabled hello. Restart DeerFlow to apply the change.
-Disabled hello. Restart DeerFlow to apply the change.
-Removed hello. Restart DeerFlow to apply the change.
+Installed and enabled hello (deerflow-extension-hello). Restart BerkshireAgent to load it.
+Upgraded hello (deerflow-extension-hello). Restart BerkshireAgent to load it.
+Enabled hello. Restart BerkshireAgent to apply the change.
+Disabled hello. Restart BerkshireAgent to apply the change.
+Removed hello. Restart BerkshireAgent to apply the change.
 ```
 
 `list` 打印一张以制表符分隔的表。没有 `name` 或 `package` 的手写记录，名称显示为 `use` 的值，包显示为 `-`：
@@ -71,7 +71,7 @@ checkout 根目录在设置了 `DEER_FLOW_PROJECT_ROOT` 时就是它，否则是
 
 Gateway 解析配置时同样先看 `DEER_FLOW_CONFIG_PATH`。如果你用非默认的配置路径运行 Gateway，运行管理器时也要设置同一个变量，否则它会编辑一个 Gateway 根本不读的文件。
 
-管理器在运行任何 `uv` 命令之前先校验这个文件。文件不存在（`DeerFlow config not found: <path>`）、不是合法的 YAML、根节点不是映射、`plugins` 不是列表，或者顶层出现两次 `plugins:` 时，它都会拒绝继续。
+管理器在运行任何 `uv` 命令之前先校验这个文件。文件不存在（`BerkshireAgent config not found: <path>`）、不是合法的 YAML、根节点不是映射、`plugins` 不是列表，或者顶层出现两次 `plugins:` 时，它都会拒绝继续。
 
 ## plugins 记录
 
@@ -95,7 +95,7 @@ plugins:
 | `enabled`      | `true`   | 是                     | `false` 时跳过该条目，不导入                                                           |
 | `required`     | `false`  | 是（除非 `--required`，否则为 `false`） | `true` 时该条目加载失败会中止 Gateway 启动                             |
 | `config`       | `{}`     | 是（`{}`）             | 交给 `install()` 的私有配置。管理器从不覆盖它                                           |
-| `table_prefix` | 无       | 否                     | 扩展在 DeerFlow 数据库中拥有的表名前缀。见[数据库表](#数据库表)                          |
+| `table_prefix` | 无       | 否                     | 扩展在 BerkshireAgent 数据库中拥有的表名前缀。见[数据库表](#数据库表)                          |
 
 Gateway 加载配置时会拒绝未知的键，所以字段名拼错会让 Gateway 无法启动，而不是被悄悄忽略。
 
@@ -109,9 +109,9 @@ Gateway 加载配置时会拒绝未知的键，所以字段名拼错会让 Gatew
 
 ### 数据库表
 
-如果扩展用自己的 SQLAlchemy metadata 和迁移链在 DeerFlow 数据库中持久化数据，应当在 `table_prefix` 中声明其表名前缀。DeerFlow 会把这些表排除在 `alembic revision --autogenerate` 之外，否则 autogenerate 会提议删除它们。即使记录被禁用，前缀也会注册，因为这些表可能已经存在。
+如果扩展用自己的 SQLAlchemy metadata 和迁移链在 BerkshireAgent 数据库中持久化数据，应当在 `table_prefix` 中声明其表名前缀。BerkshireAgent 会把这些表排除在 `alembic revision --autogenerate` 之外，否则 autogenerate 会提议删除它们。即使记录被禁用，前缀也会注册，因为这些表可能已经存在。
 
-会遮住 DeerFlow 自己某张表的前缀总会中止启动，无论 `required` 是什么：
+会遮住 BerkshireAgent 自己某张表的前缀总会中止启动，无论 `required` 是什么：
 
 ```text
 extension table_prefix 'runs' would hide host-owned table(s) ['runs'] from alembic autogenerate; choose a prefix that is not a prefix of any host table name
@@ -154,11 +154,11 @@ extension table_prefix 'runs' would hide host-owned table(s) ['runs'] from alemb
 
 这些检查拦的是打包失误，不是恶意软件扫描。
 
-因为快照是一份拷贝，对工作目录的修改只能通过 `make extension-upgrade SOURCE=<同一路径>` 再重启才能到达 DeerFlow。
+因为快照是一份拷贝，对工作目录的修改只能通过 `make extension-upgrade SOURCE=<同一路径>` 再重启才能到达 BerkshireAgent。
 
 ### 带浏览器资源的插件
 
-声明了 `BrowserAssets` 的插件，会在其 Python 包内附带一个 `ui_manifest.json` 以及它列出的静态文件。[书签示例](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-bookmarks)把它们放在 `deerflow_extension_bookmarks/static/dist/` 下。对运维人员来说，这意味着：
+声明了 `BrowserAssets` 的插件，会在其 Python 包内附带一个 `ui_manifest.json` 以及它列出的静态文件。[书签示例](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-bookmarks)把它们放在 `deerflow_extension_bookmarks/static/dist/` 下。对运维人员来说，这意味着：
 
 - **文件必须包含在安装内容里。** 本地目录按原样做快照，所以请在 `install` 或 `upgrade` 之前构建好 JavaScript 产物：管理器运行的是 Python 构建后端，不会执行 JavaScript 构建。对于从索引或 Git 安装的来源，这些文件必须在构建出的 wheel 里。
 - **快照规则同样适用。** 包含符号链接或疑似机密文件的本地目录会先被管理器拒绝，Gateway 根本读不到清单。
@@ -201,7 +201,7 @@ extension table_prefix 'runs' would hide host-owned table(s) ['runs'] from alemb
 
 ### 加锁
 
-同一个 checkout 的所有写操作命令都会持有 checkout 根目录下 `.deer-flow/extension-manager.lock` 的排他锁，所以两个运维人员或两个 CI 任务的安装不会交错。第二条命令会等到第一条结束。`list` 不加锁。
+同一个 checkout 的所有写操作命令都会持有 checkout 根目录下 `.berkshire-agent/extension-manager.lock` 的排他锁，所以两个运维人员或两个 CI 任务的安装不会交错。第二条命令会等到第一条结束。`list` 不加锁。
 
 ### 锁文件审计
 

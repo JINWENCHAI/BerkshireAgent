@@ -6,7 +6,7 @@ description: Ensure async-path backend code that could block the asyncio event l
 # Blocking-IO Guard Skill
 
 Help a contributor ship backend async changes together with the runtime anchor
-that lets DeerFlow's blocking-IO CI gate actually see the new code. The dynamic
+that lets BerkshireAgent's blocking-IO CI gate actually see the new code. The dynamic
 detector only catches blocking IO on paths a test executes — this skill closes
 that gap, either for your own diff or for a repo-wide triage round.
 
@@ -53,7 +53,7 @@ make detect-blocking-io
 ```
 
 Prints a summary and writes the complete structured finding list to
-`.deer-flow/blocking-io-findings.json`. Work HIGH priority first; do not start
+`.berkshire-agent/blocking-io-findings.json`. Work HIGH priority first; do not start
 MEDIUM until every HIGH is dispositioned (fixed, guarded, or recorded
 NO-ACTION).
 

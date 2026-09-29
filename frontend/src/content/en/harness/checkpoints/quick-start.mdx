@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: How to switch DeerFlow checkpoint storage to delta mode — the two config keys and their defaults, why a restart is required, what a fresh install gets, how to confirm the switch took effect, and the supported migration direction.
+description: How to switch BerkshireAgent checkpoint storage to delta mode — the two config keys and their defaults, why a restart is required, what a fresh install gets, how to confirm the switch took effect, and the supported migration direction.
 ---
 
 import { Callout } from "nextra/components";
@@ -32,13 +32,13 @@ Both values are frozen on first use: the process stores them in two module globa
 
 The cadence is frozen alongside the mode because it is not stored in the checkpoint: it is baked into each compiled graph's channel table when the graph is built. A process started with a different cadence would apply that cadence to the same threads, and since the cadence is deliberately not stamped into checkpoint metadata there is nothing at read time to detect the mismatch against. The same reasoning makes the mode a cross-process invariant: every process sharing one checkpoint database must use the same value.
 
-The freeze happens before graph compilation, on every path that builds a graph: the Gateway lifespan, the lead agent assembly, and `DeerFlowClient.__init__`. There is no hot reload for either value.
+The freeze happens before graph compilation, on every path that builds a graph: the Gateway lifespan, the lead agent assembly, and `BerkshireAgentClient.__init__`. There is no hot reload for either value.
 
 ## What a fresh install gets
 
 | Setting | Value on a fresh install |
 | --- | --- |
-| `database.backend` | `sqlite`, with `sqlite_dir: .deer-flow/data`, when the `database:` section or the key is absent |
+| `database.backend` | `sqlite`, with `sqlite_dir: .berkshire-agent/data`, when the `database:` section or the key is absent |
 | `database.checkpoint_channel_mode` | `full` |
 | `database.checkpoint_delta.snapshot_frequency` | `10` |
 | `database.checkpoint_graph_cache.accessor_graph_max` | `64` |

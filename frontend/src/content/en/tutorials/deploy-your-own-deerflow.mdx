@@ -1,13 +1,13 @@
 ---
-title: Deploy Your Own DeerFlow
-description: This tutorial guides you through deploying DeerFlow to a production environment using Docker Compose for multi-user access.
+title: Deploy Your Own BerkshireAgent
+description: This tutorial guides you through deploying BerkshireAgent to a production environment using Docker Compose for multi-user access.
 ---
 
 import { Callout, Steps } from "nextra/components";
 
-# Deploy Your Own DeerFlow
+# Deploy Your Own BerkshireAgent
 
-This tutorial guides you through deploying DeerFlow to a production environment using Docker Compose for multi-user access.
+This tutorial guides you through deploying BerkshireAgent to a production environment using Docker Compose for multi-user access.
 
 ## Prerequisites
 
@@ -22,8 +22,8 @@ This tutorial guides you through deploying DeerFlow to a production environment 
 ### Clone the repository
 
 ```bash
-git clone https://github.com/bytedance/deer-flow.git
-cd deer-flow
+git clone https://github.com/bytedance/berkshire-agent.git
+cd berkshire-agent
 ```
 
 ### Create the configuration file
@@ -70,7 +70,7 @@ Open `http://your-server:2026` in your browser.
 - Configure HTTPS/TLS for nginx
 - Set `BETTER_AUTH_SECRET` to a strong random string (minimum 32 characters)
 - Configure firewall rules to allow only necessary ports
-- Back up `backend/.deer-flow/` directory regularly
+- Back up `backend/.berkshire-agent/` directory regularly
 - Consider using a container-based sandbox (`AioSandboxProvider`) for multi-user isolation
 
 ## Next steps

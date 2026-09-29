@@ -329,7 +329,7 @@ class _RecordingCoreV1:
 
     def list_namespaced_service(self, _namespace: str, *, label_selector: str):
         self._record_k8s_call()
-        assert label_selector == "app=deer-flow-sandbox"
+        assert label_selector == "app=berkshire-agent-sandbox"
         return SimpleNamespace(items=[_node_port_service("sandbox-listed")])
 
 
@@ -472,7 +472,7 @@ def test_create_sandbox_route_threads_custom_skills_root_into_pod(
             skills_container_path="/custom-skills",
             extra_mounts=[
                 provisioner_module.ExtraMount(
-                    host_path=(f"/.deer-flow/users/alice/threads/thread-1/skills_view/{category}"),
+                    host_path=(f"/.berkshire-agent/users/alice/threads/thread-1/skills_view/{category}"),
                     container_path=f"/custom-skills/{category}",
                     read_only=True,
                 )

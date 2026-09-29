@@ -1,13 +1,13 @@
 # OpenViking HTTP Memory Backend 接入实现方案
 
 > 状态：设计稿
-> 范围：通过 HTTP 将 OpenViking 接入为 DeerFlow 的可选 `MemoryManager` 后端
+> 范围：通过 HTTP 将 OpenViking 接入为 BerkshireAgent 的可选 `MemoryManager` 后端
 > 默认行为：DeerMem 继续作为默认后端，OpenViking 需要显式启用
 > 非目标：本文不包含代码实现、DeerMem 存量数据迁移、OpenViking 服务端开发
 
 ## 1. 背景
 
-DeerFlow 已提供可插拔的 `MemoryManager` 接口。内置的 DeerMem 负责从对话中提取事实、持久化事实并向后续对话注入记忆；`noop` 则提供最小空实现。后端发现器会扫描：
+BerkshireAgent 已提供可插拔的 `MemoryManager` 接口。内置的 DeerMem 负责从对话中提取事实、持久化事实并向后续对话注入记忆；`noop` 则提供最小空实现。后端发现器会扫描：
 
 ```text
 backend/packages/harness/deerflow/agents/memory/backends/<backend_name>/
@@ -32,38 +32,38 @@ OpenViking 本身提供 Session、Memory Extraction、语义检索、多租户�
   -> 后续 search/find 检索记忆
 ```
 
-因此，本方案不在 DeerFlow 内重复实现 OpenViking 已具备的抽取、去重、合并和向量索引逻辑，而是在 DeerFlow 的 `MemoryManager` 边界增加一个 HTTP 适配器。
+因此，本方案不在 BerkshireAgent 内重复实现 OpenViking 已具备的抽取、去重、合并和向量索引逻辑，而是在 BerkshireAgent 的 `MemoryManager` 边界增加一个 HTTP 适配器。
 
 ## 2. 目标
 
 首版实现以下闭环：
 
-1. DeerFlow 能通过配置选择 `openviking` 记忆后端。
-2. 每轮对话完成后，DeerFlow 将本轮有效消息提交到对应的 OpenViking Session。
+1. BerkshireAgent 能通过配置选择 `openviking` 记忆后端。
+2. 每轮对话完成后，BerkshireAgent 将本轮有效消息提交到对应的 OpenViking Session。
 3. OpenViking 完成归档及异步长期记忆提取。
-4. 新一轮对话开始时，DeerFlow 按当前用户、Agent 和线程范围检索相关记忆。
+4. 新一轮对话开始时，BerkshireAgent 按当前用户、Agent 和线程范围检索相关记忆。
 5. 检索结果被格式化为有长度上限的纯文本，通过现有 prompt 注入路径提供给 Agent。
-6. OpenViking 短暂不可用时，DeerFlow 主对话链路可以按配置降级，并留下可观测错误。
-7. 不同 DeerFlow 用户之间保持强隔离；不同 Agent 的专属记忆不会互相污染。
+6. OpenViking 短暂不可用时，BerkshireAgent 主对话链路可以按配置降级，并留下可观测错误。
+7. 不同 BerkshireAgent 用户之间保持强隔离；不同 Agent 的专属记忆不会互相污染。
 
 ## 3. 非目标
 
 以下内容不进入首版：
 
-- 不替换 DeerFlow 的 thread、checkpoint、run event 等持久化系统。
-- 不把 OpenViking 嵌入 DeerFlow Gateway 进程。
+- 不替换 BerkshireAgent 的 thread、checkpoint、run event 等持久化系统。
+- 不把 OpenViking 嵌入 BerkshireAgent Gateway 进程。
 - 不修改 OpenViking 服务端。
 - 不迁移现有 DeerMem Markdown/JSON 数据。
-- 不接管 DeerFlow 的资源库、上传文件或 Skill 存储。
+- 不接管 BerkshireAgent 的资源库、上传文件或 Skill 存储。
 - 不保证现有 Memory 页面上的 fact 新增、编辑、删除按钮可用于 OpenViking。
 - 不将 OpenViking 原生多类型记忆强行压平成 DeerMem 的事实模型。
 - 不在首版启用 `memory.mode: tool`。
-- 不在 DeerFlow 内再次调用 LLM 进行事实抽取、去重或合并。
+- 不在 BerkshireAgent 内再次调用 LLM 进行事实抽取、去重或合并。
 
 ## 4. 总体架构
 
 ```text
-┌──────────────────────── DeerFlow Gateway ────────────────────────┐
+┌──────────────────────── BerkshireAgent Gateway ────────────────────────┐
 │                                                                  │
 │  MemoryMiddleware / summarization hook / prompt injection        │
 │                              │                                   │
@@ -85,15 +85,15 @@ OpenViking 本身提供 Session、Memory Extraction、语义检索、多租户�
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-OpenViking 作为独立服务运行。DeerFlow 只依赖其 HTTP API，不依赖 OpenViking 的 Python 嵌入式运行时。
+OpenViking 作为独立服务运行。BerkshireAgent 只依赖其 HTTP API，不依赖 OpenViking 的 Python 嵌入式运行时。
 
 选择 HTTP 模式的原因：
 
 - 避免把 OpenViking 的模型、向量库、Rust/C++ 扩展和后台任务依赖带入 Gateway。
 - OpenViking 可独立升级、扩容、监控和持久化。
-- 一个 OpenViking 服务可以服务多个 DeerFlow Gateway 实例。
+- 一个 OpenViking 服务可以服务多个 BerkshireAgent Gateway 实例。
 - HTTP 边界更容易进行超时、熔断、认证和契约测试。
-- 降低 DeerFlow 与 OpenViking Python SDK 版本的耦合。
+- 降低 BerkshireAgent 与 OpenViking Python SDK 版本的耦合。
 
 ## 5. 代码布局
 
@@ -124,7 +124,7 @@ MANAGER_CLASS = OpenVikingMemoryManager
 
 ### 5.2 `config.py`
 
-定义并验证 OpenViking 私有配置，禁止读取 DeerFlow 全局配置单例。所有值均从 `backend_config` 或明确的环境变量引用取得。
+定义并验证 OpenViking 私有配置，禁止读取 BerkshireAgent 全局配置单例。所有值均从 `backend_config` 或明确的环境变量引用取得。
 
 职责包括：
 
@@ -147,7 +147,7 @@ OpenVikingTaskStatus
 OpenVikingErrorBody
 ```
 
-这些模型不暴露到 DeerFlow 公共 API，也不导入 OpenViking SDK 类型。
+这些模型不暴露到 BerkshireAgent 公共 API，也不导入 OpenViking SDK 类型。
 
 ### 5.4 `client.py`
 
@@ -176,42 +176,42 @@ HTTP URL、请求头、响应 envelope、timeout、重试和错误转换全部�
 
 首版不实现的管理方法继承基类的 `NotImplementedError`。
 
-## 6. DeerFlow 与 OpenViking 的概念映射
+## 6. BerkshireAgent 与 OpenViking 的概念映射
 
 ### 6.1 租户与用户
 
 推荐映射：
 
-| DeerFlow | OpenViking | 说明 |
+| BerkshireAgent | OpenViking | 说明 |
 |---|---|---|
-| 一个 DeerFlow 部署或业务工作区 | `account` | 外层租户边界 |
+| 一个 BerkshireAgent 部署或业务工作区 | `account` | 外层租户边界 |
 | `user_id` | `user` | 用户记忆和 Session 的隔离边界 |
 | `agent_name` | Agent scope/tag/安全 URI 段 | 同一用户下的 Agent 专属范围 |
 | `thread_id` | Session 稳定键的一部分 | 对话来源，不单独作为全局 Session ID |
 
-OpenViking 的 `user` 是强数据边界。每个请求必须显式带上当前 DeerFlow 用户身份，不能依赖 OpenViking 的 `default/default` 开发身份。
+OpenViking 的 `user` 是强数据边界。每个请求必须显式带上当前 BerkshireAgent 用户身份，不能依赖 OpenViking 的 `default/default` 开发身份。
 
-首版推荐使用 OpenViking `trusted` 认证模式，由 DeerFlow Gateway 向内部 OpenViking 服务传递：
+首版推荐使用 OpenViking `trusted` 认证模式，由 BerkshireAgent Gateway 向内部 OpenViking 服务传递：
 
 ```text
 X-OpenViking-Account: <configured account>
-X-OpenViking-User: <current DeerFlow user_id>
+X-OpenViking-User: <current BerkshireAgent user_id>
 X-API-Key: <trusted upstream key, if configured>
 ```
 
 部署必须满足以下安全条件：
 
 - OpenViking 仅暴露在可信内网；
-- 外部客户端不能绕过 DeerFlow 直接伪造 account/user header；
-- DeerFlow 不接受客户端传入的 OpenViking account/user 值；
-- user 值只来自 DeerFlow 已认证的 runtime user context；
+- 外部客户端不能绕过 BerkshireAgent 直接伪造 account/user header；
+- BerkshireAgent 不接受客户端传入的 OpenViking account/user 值；
+- user 值只来自 BerkshireAgent 已认证的 runtime user context；
 - API key 只从服务端环境变量或 secrets provider 读取。
 
 如后续选择 OpenViking `api_key` 模式，需要增加用户注册、用户 key 保存、轮换和吊销机制，不作为首版默认方案。
 
 ### 6.2 Agent 范围
 
-DeerFlow 当前记忆作用域是：
+BerkshireAgent 当前记忆作用域是：
 
 ```text
 (user_id, agent_name)
@@ -226,7 +226,7 @@ default Agent: __default__
 custom Agent:  canonicalize(agent_name)
 ```
 
-`canonicalize` 必须与 DeerFlow Agent 命名规则一致：
+`canonicalize` 必须与 BerkshireAgent Agent 命名规则一致：
 
 - 转为小写；
 - 只允许安全字符；
@@ -239,8 +239,8 @@ custom Agent:  canonicalize(agent_name)
 openviking_user = "df_" + sha256(account + user_id + agent_scope)[:40]
 ```
 
-这样不依赖 OpenViking 的实验性 Agent tag/URI 过滤语义，不同 DeerFlow
-Agent 不可能通过一次普通用户级检索读到彼此的记忆。代价是同一 DeerFlow
+这样不依赖 OpenViking 的实验性 Agent tag/URI 过滤语义，不同 BerkshireAgent
+Agent 不可能通过一次普通用户级检索读到彼此的记忆。代价是同一 BerkshireAgent
 用户的 profile/preferences 不会自动跨 Agent 共享；这是首版为强隔离选择的
 明确权衡。后续只有在 OpenViking 提供稳定、服务端强制的 Agent 过滤后，才
 考虑改为同一 OpenViking user 下的子范围，并且需要数据迁移方案。
@@ -288,7 +288,7 @@ manager.add(
 OpenViking 后端处理流程：
 
 ```text
-接收 DeerFlow messages
+接收 BerkshireAgent messages
   -> 验证 user_id/thread_id
   -> 计算 Agent scope 与 Session ID
   -> 过滤框架内部消息
@@ -320,7 +320,7 @@ OpenViking 后端处理流程：
 - 仅用于流式拼接的中间 assistant chunk；
 - subagent 内部推理和不可见消息。
 
-消息过滤应由适配器自己的纯函数完成并单独测试。后端可以消费 DeerFlow 工厂传入的 `should_keep_hidden_message` hook，但不能直接导入 DeerFlow 的消息过滤内部模块。
+消息过滤应由适配器自己的纯函数完成并单独测试。后端可以消费 BerkshireAgent 工厂传入的 `should_keep_hidden_message` hook，但不能直接导入 BerkshireAgent 的消息过滤内部模块。
 
 ### 7.3 幂等与同步水位
 
@@ -357,21 +357,21 @@ OpenViking 后端处理流程：
 - commit 成功后将 `committed_message_ids` 推进到 submitted 水位并保存
   task/archive 元数据；
 - 网络超时后需要区分“请求未到达”和“服务端可能已处理”；
-- 若 OpenViking API 支持客户端 message ID，应始终发送 DeerFlow 的稳定 message ID。
+- 若 OpenViking API 支持客户端 message ID，应始终发送 BerkshireAgent 的稳定 message ID。
 
 这里的 submitted 水位只解决“批量添加已明确成功、随后 commit 失败”的确定性
 重复路径。如果批量添加在服务端成功、但客户端在收到响应或保存水位前中断，
 没有服务端幂等键仍无法做到 exactly-once；多 Gateway 部署同样需要共享水位或
 OpenViking 原生幂等支持。
 
-如果 DeerFlow 消息缺少稳定 ID，应基于角色、规范化内容和在本轮中的稳定位置生成适配器 ID，但该方案只作为兼容路径。
+如果 BerkshireAgent 消息缺少稳定 ID，应基于角色、规范化内容和在本轮中的稳定位置生成适配器 ID，但该方案只作为兼容路径。
 
 ### 7.4 `add` 与 `add_nowait`
 
 OpenViking 自己在 commit 后异步提取，不需要复制 DeerMem 的 debounce queue。
 
 - `add`：完成消息上传和 commit 接受确认后返回。
-- `add_nowait`：语义为“不要因 DeerFlow 总结丢失消息”，仍应立即完成上传和 commit 接受确认；它不是 fire-and-forget。
+- `add_nowait`：语义为“不要因 BerkshireAgent 总结丢失消息”，仍应立即完成上传和 commit 接受确认；它不是 fire-and-forget。
 
 两者均不默认等待 OpenViking 后台 task 完成。
 
@@ -387,7 +387,7 @@ commit accepted != memory immediately searchable
 
 - 正常轮次不轮询 task；
 - 保存最近一次 task ID 用于日志与诊断；
-- task 失败不回滚 DeerFlow 主回复；
+- task 失败不回滚 BerkshireAgent 主回复；
 - `shutdown_flush` 只保证待上传消息已获得 commit 接受确认，不保证所有 OpenViking 提取任务完成；
 - 集成测试可轮询 task 以验证完整闭环。
 
@@ -421,7 +421,7 @@ context_type    -> memory
 score_threshold -> backend_config.retrieval.score_threshold
 ```
 
-返回值转换为 DeerFlow `memory_search` 可消费的字典：
+返回值转换为 BerkshireAgent `memory_search` 可消费的字典：
 
 ```json
 {
@@ -447,7 +447,7 @@ score_threshold -> backend_config.retrieval.score_threshold
 
 ### 8.3 注入文本
 
-`get_context` 返回纯文本，由 DeerFlow 现有调用点包裹进 `<memory>`。适配器自身不得再添加 `<memory>` 标签。
+`get_context` 返回纯文本，由 BerkshireAgent 现有调用点包裹进 `<memory>`。适配器自身不得再添加 `<memory>` 标签。
 
 建议格式：
 
@@ -488,7 +488,7 @@ score_threshold -> backend_config.retrieval.score_threshold
 | `update_fact` | 暂不支持 | 同上 |
 | `delete_fact` | 暂不支持 | 同上 |
 
-由于 `supports_search=True`，技术上可通过 `MemoryManager` 的 tool-mode invariant，但首版配置校验应明确拒绝 `mode: tool`。原因是 DeerFlow tool 模式不仅需要 `search`，还暴露 `memory_add/update/delete`，而首版不实现 fact CRUD。
+由于 `supports_search=True`，技术上可通过 `MemoryManager` 的 tool-mode invariant，但首版配置校验应明确拒绝 `mode: tool`。原因是 BerkshireAgent tool 模式不仅需要 `search`，还暴露 `memory_add/update/delete`，而首版不实现 fact CRUD。
 
 ## 10. HTTP Client 设计
 
@@ -543,7 +543,7 @@ class OpenVikingHttpClient:
 
 ### 10.2 HTTP 库
 
-优先复用 DeerFlow 已声明的 HTTP 客户端库。若使用 `httpx`：
+优先复用 BerkshireAgent 已声明的 HTTP 客户端库。若使用 `httpx`：
 
 - 同步 `MemoryManager` 路径使用有连接池的 `httpx.Client`；
 - Client 生命周期跟随 `OpenVikingMemoryManager` 单例；
@@ -665,7 +665,7 @@ failure_policy:
 后续如要求“至少一次”交付，应增加独立、持久化的 outbox，而不是简单扩大内存重试：
 
 ```text
-DeerFlow commit outbox
+BerkshireAgent commit outbox
   -> durable enqueue
   -> background delivery
   -> OpenViking idempotency
@@ -736,7 +736,7 @@ memory:
 - Gateway 关闭后拒绝接受新的写入；
 - Client close 与在途请求之间不存在竞态。
 
-如果部署允许多个 Gateway 副本同时处理同一 thread，本地水位文件不足以提供全局一致性。此时必须依赖 OpenViking 稳定 message ID/幂等键，或把水位迁移到 DeerFlow 的共享数据库。首版发布前必须明确支持的部署拓扑。
+如果部署允许多个 Gateway 副本同时处理同一 thread，本地水位文件不足以提供全局一致性。此时必须依赖 OpenViking 稳定 message ID/幂等键，或把水位迁移到 BerkshireAgent 的共享数据库。首版发布前必须明确支持的部署拓扑。
 
 ## 14. 可观测性
 
@@ -763,7 +763,7 @@ openviking.degraded
 - result_count；
 - account 的非敏感别名；
 - user/session 的不可逆 hash；
-- DeerFlow trace ID；
+- BerkshireAgent trace ID；
 - OpenViking request ID/task ID。
 
 禁止记录：
@@ -785,7 +785,7 @@ openviking_degraded_total{reason}
 openviking_pending_writes
 ```
 
-`MemoryCallbacks.on_memory_llm_call` 不适用于远程 OpenViking 内部的 LLM 调用，因为 DeerFlow 看不到该 LLM 边界。DeerFlow 应记录 HTTP 调用 span，并由 OpenViking 自己提供服务端模型调用可观测性。
+`MemoryCallbacks.on_memory_llm_call` 不适用于远程 OpenViking 内部的 LLM 调用，因为 BerkshireAgent 看不到该 LLM 边界。BerkshireAgent 应记录 HTTP 调用 span，并由 OpenViking 自己提供服务端模型调用可观测性。
 
 ## 15. 测试方案
 
@@ -823,7 +823,7 @@ Manager 测试：
 
 - backend 注册发现；
 - `from_config`；
-- DeerFlow 消息过滤与转换；
+- BerkshireAgent 消息过滤与转换；
 - Session ID 稳定性和隔离性；
 - add -> batch messages -> commit；
 - 重复 message ID 不重复发送；
@@ -907,7 +907,7 @@ pytest -m openviking_integration
 -健康检查；
 -支持版本。
 
-后续可增加可选 Compose profile，而不把 OpenViking 变成 DeerFlow 的强制服务。
+后续可增加可选 Compose profile，而不把 OpenViking 变成 BerkshireAgent 的强制服务。
 
 ## 17. 实施阶段
 
@@ -943,7 +943,7 @@ pytest -m openviking_integration
 - `warm`、`shutdown_flush`；
 - Manager 和隔离测试。
 
-退出条件：mock 环境跑通 DeerFlow 写入与检索注入闭环。
+退出条件：mock 环境跑通 BerkshireAgent 写入与检索注入闭环。
 
 ### 阶段 3：真实联调
 
@@ -973,12 +973,12 @@ pytest -m openviking_integration
 - commit 获得接受确认并记录 task ID；
 -后续对话能召回已完成提取的长期记忆；
 -注入文本有明确长度上限；
--搜索结果可被 DeerFlow `memory_search` 兼容消费；
-- OpenViking 内部完成抽取，DeerFlow 不执行第二套抽取。
+-搜索结果可被 BerkshireAgent `memory_search` 兼容消费；
+- OpenViking 内部完成抽取，BerkshireAgent 不执行第二套抽取。
 
 隔离：
 
--不同 DeerFlow user 无法互相读写 Session 或记忆；
+-不同 BerkshireAgent user 无法互相读写 Session 或记忆；
 -同一 user 的不同 Agent 专属记忆按既定策略隔离；
 -默认 Agent 与显式 Agent 不冲突；
 -非法 scope 输入在发送 HTTP 请求前被拒绝。
@@ -996,12 +996,12 @@ pytest -m openviking_integration
 
 - DeerMem 继续为默认 backend；
 -未配置 OpenViking 的部署不引入额外运行时依赖或启动开销；
-- OpenViking backend 目录除 `MemoryManager` 契约外不导入 DeerFlow 内部模块；
+- OpenViking backend 目录除 `MemoryManager` 契约外不导入 BerkshireAgent 内部模块；
 -现有 DeerMem/noop 测试全部通过。
 
 ## 19. 回滚
 
-回滚只修改配置并重启 DeerFlow：
+回滚只修改配置并重启 BerkshireAgent：
 
 ```yaml
 memory:
@@ -1020,7 +1020,7 @@ memory:
 进入实现前必须关闭以下问题：
 
 1. 首个支持的 OpenViking 版本及升级策略是什么？
-2. DeerFlow 的目标部署是否允许多个 Gateway 副本并发处理同一 thread？
+2. BerkshireAgent 的目标部署是否允许多个 Gateway 副本并发处理同一 thread？
 3. 写入失败的首版策略是否长期接受 `log_and_drop`，还是后续必须实现 durable outbox？
 4. 是否需要在后续版本对 `/memory` 管理页面隐藏不支持的 CRUD 操作？
 

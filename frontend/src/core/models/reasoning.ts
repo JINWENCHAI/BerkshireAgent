@@ -1,6 +1,6 @@
 import type { Model, ModelReasoningCapabilities } from "./types";
 
-/** The vocabulary DeerFlow's mode presets and legacy profiles use. */
+/** The vocabulary BerkshireAgent's mode presets and legacy profiles use. */
 export const GENERIC_REASONING_EFFORTS = [
   "minimal",
   "low",

@@ -31,7 +31,7 @@ def main():
     assert distribution.metadata["License-Expression"] == "MIT"
     assert distribution.metadata.get_all("License-File") == ["LICENSE"]
     license_file = next(file for file in distribution.files if str(file).endswith(".dist-info/licenses/LICENSE"))
-    assert "DeerFlow Authors" in distribution.locate_file(license_file).read_text(encoding="utf-8")
+    assert "BerkshireAgent Authors" in distribution.locate_file(license_file).read_text(encoding="utf-8")
 
     for enabled in (False, True):
         loaded, diagnostics = load_extensions([ExtensionSpec(use=entries[0].value, config={"enabled": enabled})])

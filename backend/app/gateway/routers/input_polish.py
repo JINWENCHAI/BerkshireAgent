@@ -38,7 +38,7 @@ def _clean_rewritten_text(text: str) -> str:
 
 def _build_system_instruction() -> str:
     return (
-        "You are DeerFlow's pre-send prompt optimizer.\n"
+        "You are BerkshireAgent's pre-send prompt optimizer.\n"
         "Rewrite the user's rough draft into a clearer instruction for an AI agent before it is sent.\n"
         "Do not answer the task.\n"
         "Preserve the user's language, intent, entities, file paths, URLs, code blocks, and any leading slash command prefix exactly.\n"

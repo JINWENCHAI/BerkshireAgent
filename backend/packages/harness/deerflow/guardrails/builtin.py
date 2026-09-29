@@ -1,4 +1,4 @@
-"""Built-in guardrail providers that ship with DeerFlow."""
+"""Built-in guardrail providers that ship with BerkshireAgent."""
 
 from deerflow.guardrails.provider import GuardrailDecision, GuardrailReason, GuardrailRequest
 

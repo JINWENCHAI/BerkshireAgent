@@ -169,7 +169,7 @@ def build_server(provider: str) -> FastMCP:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="DeerFlow bundled business MCP tools")
+    parser = argparse.ArgumentParser(description="BerkshireAgent bundled business MCP tools")
     parser.add_argument("provider", choices=CREDENTIALS)
     build_server(parser.parse_args().provider).run()
 

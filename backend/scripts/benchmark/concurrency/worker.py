@@ -50,7 +50,7 @@ from deerflow.config.database_config import DatabaseConfig  # noqa: E402
 # workers at different directories whenever this script is invoked from
 # outside backend/ (the seeder ran in-process from the invoker's own CWD;
 # workers are spawned with cwd=BACKEND_DIR, which don't necessarily match).
-SQLITE_BENCH_DIR = str(BACKEND_DIR / ".deer-flow" / "bench_data")
+SQLITE_BENCH_DIR = str(BACKEND_DIR / ".berkshire-agent" / "bench_data")
 
 # The exact per-connection PRAGMAs the app sets on every SQLite connection
 # (deerflow/persistence/engine.py::_enable_sqlite_wal). journal_mode is

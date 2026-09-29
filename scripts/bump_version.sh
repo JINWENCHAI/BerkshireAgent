@@ -8,7 +8,7 @@
 #   backend/pyproject.toml              (version = "...")
 #   backend/uv.lock                     (root package version, via `uv lock`)
 #   frontend/package.json               ("version": "...")
-#   deploy/helm/deer-flow/Chart.yaml    (version: + appVersion:)
+#   deploy/helm/berkshire-agent/Chart.yaml    (version: + appVersion:)
 #
 # Requires `uv` on PATH: backend/uv.lock pins the root package version too, and
 # lint CI runs `uv lock --check`, so the lock has to move with the sources.
@@ -34,7 +34,7 @@ fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PYPROJECT="$ROOT/backend/pyproject.toml"
 PACKAGE="$ROOT/frontend/package.json"
-CHART="$ROOT/deploy/helm/deer-flow/Chart.yaml"
+CHART="$ROOT/deploy/helm/berkshire-agent/Chart.yaml"
 
 for f in "$PYPROJECT" "$PACKAGE" "$CHART"; do
   if [ ! -f "$f" ]; then
@@ -83,7 +83,7 @@ if new == src:
 with open(package, "w") as f:
     f.write(new)
 
-# deploy/helm/deer-flow/Chart.yaml — version: X.Y.Z and appVersion: "X.Y.Z"
+# deploy/helm/berkshire-agent/Chart.yaml — version: X.Y.Z and appVersion: "X.Y.Z"
 with open(chart) as f:
     src = f.read()
 new = re.sub(r'(?m)^version:\s*\S+', f'version: {version}', src, count=1)
@@ -103,7 +103,7 @@ echo "Bumped version to $VERSION in:"
 echo "  backend/pyproject.toml"
 echo "  backend/uv.lock"
 echo "  frontend/package.json"
-echo "  deploy/helm/deer-flow/Chart.yaml (version + appVersion)"
+echo "  deploy/helm/berkshire-agent/Chart.yaml (version + appVersion)"
 echo
 
 if ! bash "$ROOT/scripts/verify_versions.sh" "$VERSION"; then

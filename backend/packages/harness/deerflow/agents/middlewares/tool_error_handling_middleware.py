@@ -580,7 +580,7 @@ def build_subagent_runtime_middlewares(
         )
     )
 
-    # DeerFlowSummarizationMiddleware — subagents inherit none of the lead's
+    # BerkshireAgentSummarizationMiddleware — subagents inherit none of the lead's
     # context compaction today (#3875 Phase 3): a deep-research subagent
     # (``max_turns`` up to 150) can accumulate >1M cumulative input before
     # max_turns/timeout/token_budget engage, even though Phase 2's budget now

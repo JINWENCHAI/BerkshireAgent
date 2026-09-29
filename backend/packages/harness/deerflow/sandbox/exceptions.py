@@ -75,7 +75,7 @@ class SandboxCapacityExceededError(SandboxError):
     """Raised when the sandbox provider has no available capacity.
 
     The reason distinguishes occupied capacity from provider shutdown.
-    The caller controls retry scheduling. DeerFlow does not retry automatically.
+    The caller controls retry scheduling. BerkshireAgent does not retry automatically.
     """
 
     CODE = "SANDBOX_CAPACITY_EXCEEDED"

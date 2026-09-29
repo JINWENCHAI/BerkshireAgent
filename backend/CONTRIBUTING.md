@@ -1,6 +1,6 @@
-# Contributing to DeerFlow Backend
+# Contributing to BerkshireAgent Backend
 
-Thank you for your interest in contributing to DeerFlow! This document provides guidelines and instructions for contributing to the backend codebase.
+Thank you for your interest in contributing to BerkshireAgent! This document provides guidelines and instructions for contributing to the backend codebase.
 
 ## Table of Contents
 
@@ -27,8 +27,8 @@ Thank you for your interest in contributing to DeerFlow! This document provides 
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/deer-flow.git
-   cd deer-flow
+   git clone https://github.com/YOUR_USERNAME/berkshire-agent.git
+   cd berkshire-agent
    ```
 
 ## Development Setup
@@ -321,7 +321,7 @@ followed by the optional safety guard, `DurableContextMiddleware`, optional
 `SummarizationMiddleware`, then `SubagentDateContextMiddleware` and
 `SystemMessageCoalescingMiddleware`. Treat middleware class paths as trusted
 operator configuration because loading one executes Python code.
-Embedded callers can instead use `DeerFlowClient(middlewares=[...])`, which
+Embedded callers can instead use `BerkshireAgentClient(middlewares=[...])`, which
 builds the full lead-agent chain and places middleware before its
 terminal-response, model-length, safety, and clarification tail.
 `create_deerflow_agent(extra_middleware=[...])` instead builds a smaller
@@ -437,4 +437,4 @@ If you have questions about contributing:
 2. Look for similar issues or PRs on GitHub
 3. Open a discussion or issue on GitHub
 
-Thank you for contributing to DeerFlow!
+Thank you for contributing to BerkshireAgent!

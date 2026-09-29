@@ -93,18 +93,18 @@ import { Callout } from "nextra/components";
 
 ### 目前没有生产触发点
 
-保留服务（`backend/app/gateway/checkpoint_retention.py`）**没有生产触发点**：保留动作从哪里调用——run 结束后钩子、调度器还是显式管理操作——是维护者随契约一起决定的。DeerFlow 中没有任何地方调用它；`prune` 与 `aprune` 也没有生产调用方：在锁定环境中只有基类实现定义了它们，而基类实现直接抛 `NotImplementedError`。
+保留服务（`backend/app/gateway/checkpoint_retention.py`）**没有生产触发点**：保留动作从哪里调用——run 结束后钩子、调度器还是显式管理操作——是维护者随契约一起决定的。BerkshireAgent 中没有任何地方调用它；`prune` 与 `aprune` 也没有生产调用方：在锁定环境中只有基类实现定义了它们，而基类实现直接抛 `NotImplementedError`。
 
 请把它当作未完成的工作，而不是安全默认值。可执行契约只在 **full 模式**的状态 schema 上证明了分支祖先、显式恢复目标、待处理写入、叶子耗时、叶子兄弟这几类场景；只有增长基线是增量形态的。增量专属的裁剪安全性既未被测试套件证明，也未被实现。
 
 ## 仅存的一个补丁
 
-只剩一个兼容补丁，它在模块自身导入时应用。该模块位于包根目录，以便从 `deerflow.agents.thread_state` 导入时不必拉进更重的 `deerflow.runtime` 包；补丁锚定在那里，因此所有会构建 DeerFlow 图的进程——网关、worker、进程内 LangGraph 运行时、测试——都带着该修复运行。
+只剩一个兼容补丁，它在模块自身导入时应用。该模块位于包根目录，以便从 `deerflow.agents.thread_state` 导入时不必拉进更重的 `deerflow.runtime` 包；补丁锚定在那里，因此所有会构建 BerkshireAgent 图的进程——网关、worker、进程内 LangGraph 运行时、测试——都带着该修复运行。
 
 | 方面 | 细节 |
 | --- | --- |
 | 对象 | `BinaryOperatorAggregate` 把写入空（MISSING）通道的首个 `Overwrite` 解开 |
-| 跟踪 issue | DeerFlow **#4380** |
+| 跟踪 issue | BerkshireAgent **#4380** |
 | 它避免的症状 | 类型为 Union 的通道（`SandboxState \| None`、`GoalState \| None` 等）没有可构造默认值，因此以 MISSING 起始。此时对全新线程做替换式写入（线程分叉）或对从未写过的通道做状态更新，会把 `Overwrite` 包装本身持久化进检查点，下一个消费者就读到崩溃：`TypeError: 'Overwrite' object is not subscriptable` |
 | 作用范围 | 只拦截「空通道 + 首个 `Overwrite`」这一种情况。后续的普通值被忽略；同一个 super-step 里的第二个 `Overwrite` 抛出 `InvalidUpdateError`，消息为 `Can receive only one Overwrite value per super-step.`。其余情况全部委托给上游实现 |
 | 一致性副作用 | `DeltaChannel.update` 在同样情况下本来就会解开，因此该补丁同时消除了两类归并器通道之间的行为差异 |
@@ -194,7 +194,7 @@ PYTHONPATH=. uv run python scripts/benchmark/checkpoint/summarize_production.py 
 | 历史缓存后端 | `memory` 与 `redis` | 仅 `memory` |
 | Agent 构建失败 | `full` 模式降级为原始 checkpointer 读取；`delta` 原样抛出 | 完全没有降级路径 |
 | 跨模式不一致 | 状态与历史路由返回 HTTP 409；run 以 SSE `error` 帧或 error 运行记录失败 | 在构建 Agent 或开始流的图之前就在进程内抛出 |
-| 冻结 | 在网关启动时按启动配置快照冻结 | `DeerFlowClient.__init__` 按自己的 `AppConfig` 冻结模式与节奏，重启要求语义相同 |
+| 冻结 | 在网关启动时按启动配置快照冻结 | `BerkshireAgentClient.__init__` 按自己的 `AppConfig` 冻结模式与节奏，重启要求语义相同 |
 
 有三点后果值得直说：
 
@@ -202,7 +202,7 @@ PYTHONPATH=. uv run python scripts/benchmark/checkpoint/summarize_production.py 
 - **没有降级读取路径。** 增量物化需要图的通道表，TUI 没有网关那种退回原始 checkpointer 读取的等价物。
 - **模式不一致在所有入口上都会作为错误上报。** 内嵌客户端在进程内抛出 `CheckpointModeMismatchError`——没有 HTTP 状态码、没有运行记录、没有 SSE 帧。CLI 的无头入口会捕获它：`--print` 在 stderr 上打印一行简洁的 `Error: ...` 并以非零码退出，`--json` 向 NDJSON 流追加一条终止性的 `{"type": "error"}` 记录（诊断文字留在 stderr）并以非零码退出。Textual TUI 的 `stream_actions()` 会捕获同一个异常并发出 `AssistantError` 与 `RunEnded`，交互用户在界面里看到这次失败。
 
-第三方嵌入者还会撞上相关守卫：`create_deerflow_agent` 在 `checkpoint_channel_mode="delta"` **且**传入 checkpointer 时抛出 `ValueError`，因为在那里构建的图绕过了检查点模式标记注入与失败关闭的兼容门，混合模式的存储会静默损坏线程状态。不带 checkpointer 的 delta 是临时的，允许使用；需要持久化的增量图必须走受守卫的应用路径（`make_lead_agent` 或 `DeerFlowClient`）。
+第三方嵌入者还会撞上相关守卫：`create_deerflow_agent` 在 `checkpoint_channel_mode="delta"` **且**传入 checkpointer 时抛出 `ValueError`，因为在那里构建的图绕过了检查点模式标记注入与失败关闭的兼容门，混合模式的存储会静默损坏线程状态。不带 checkpointer 的 delta 是临时的，允许使用；需要持久化的增量图必须走受守卫的应用路径（`make_lead_agent` 或 `BerkshireAgentClient`）。
 
 ## 相关章节
 

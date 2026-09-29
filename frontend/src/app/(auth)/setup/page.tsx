@@ -220,7 +220,7 @@ export default function SetupPage() {
         />
         <div className="border-border/20 bg-background/5 w-full max-w-md space-y-6 rounded-3xl border p-8 backdrop-blur-sm">
           <div className="text-center">
-            <h1 className="font-serif text-3xl">DeerFlow</h1>
+            <h1 className="font-serif text-3xl">BerkshireAgent</h1>
             <p className="text-muted-foreground mt-2">Create admin account</p>
             <p className="text-muted-foreground mt-1 text-xs">
               Set up the administrator account to get started.
@@ -295,7 +295,7 @@ export default function SetupPage() {
       />
       <div className="border-border/20 bg-background/5 w-full max-w-md space-y-6 rounded-3xl border p-8 backdrop-blur-sm">
         <div className="text-center">
-          <h1 className="font-serif text-3xl">DeerFlow</h1>
+          <h1 className="font-serif text-3xl">BerkshireAgent</h1>
           <p className="text-muted-foreground mt-2">
             Complete admin account setup
           </p>

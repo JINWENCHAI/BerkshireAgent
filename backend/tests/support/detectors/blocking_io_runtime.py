@@ -1,4 +1,4 @@
-"""Strict Blockbuster runtime context scoped to DeerFlow business code.
+"""Strict Blockbuster runtime context scoped to BerkshireAgent business code.
 
 Creates a `BlockBuster` instance with `scanned_modules=("app", "deerflow")`
 so that test infrastructure (pytest, langchain, importlib, third-party libs)
@@ -18,7 +18,7 @@ from blockbuster import BlockBuster, BlockBusterFunction, BlockingError
 
 _SCANNED_MODULES: tuple[str, ...] = ("app", "deerflow")
 
-# Add DeerFlow-local rules here only when Blockbuster's default rule set misses
+# Add BerkshireAgent-local rules here only when Blockbuster's default rule set misses
 # a generic blocking primitive used by production code. If a path is invisible
 # because no test exercises it, add a production-path runtime anchor instead.
 _PROJECT_BLOCKING_RULES: tuple[tuple[str, BlockBusterFunction], ...] = ()

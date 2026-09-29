@@ -2,7 +2,7 @@
 
 ## 概述
 
-DeerFlow 后端提供了完整的文件上传功能，支持多文件上传，并可选地将 Office 文档和 PDF 转换为 Markdown 格式。
+BerkshireAgent 后端提供了完整的文件上传功能，支持多文件上传，并可选地将 Office 文档和 PDF 转换为 Markdown 格式。
 
 ## 功能特性
 
@@ -32,11 +32,11 @@ POST /api/threads/{thread_id}/uploads
     {
       "filename": "document.pdf",
       "size": 1234567,
-      "path": ".deer-flow/threads/{thread_id}/user-data/uploads/document.pdf",
+      "path": ".berkshire-agent/threads/{thread_id}/user-data/uploads/document.pdf",
       "virtual_path": "/mnt/user-data/uploads/document.pdf",
       "artifact_url": "/api/threads/{thread_id}/artifacts/mnt/user-data/uploads/document.pdf",
       "markdown_file": "document.md",
-      "markdown_path": ".deer-flow/threads/{thread_id}/user-data/uploads/document.md",
+      "markdown_path": ".berkshire-agent/threads/{thread_id}/user-data/uploads/document.md",
       "markdown_virtual_path": "/mnt/user-data/uploads/document.md",
       "markdown_artifact_url": "/api/threads/{thread_id}/artifacts/mnt/user-data/uploads/document.md"
     }
@@ -78,7 +78,7 @@ GET /api/threads/{thread_id}/uploads/list
     {
       "filename": "document.pdf",
       "size": 1234567,
-      "path": ".deer-flow/threads/{thread_id}/user-data/uploads/document.pdf",
+      "path": ".berkshire-agent/threads/{thread_id}/user-data/uploads/document.pdf",
       "virtual_path": "/mnt/user-data/uploads/document.pdf",
       "artifact_url": "/api/threads/{thread_id}/artifacts/mnt/user-data/uploads/document.pdf",
       "extension": ".pdf",
@@ -172,11 +172,11 @@ read_file(path="/mnt/user-data/uploads/document.md")
 
 **路径映射关系：**
 - Agent 使用：`/mnt/user-data/uploads/document.pdf`（虚拟路径）
-- 实际存储：`backend/.deer-flow/threads/{thread_id}/user-data/uploads/document.pdf`
+- 实际存储：`backend/.berkshire-agent/threads/{thread_id}/user-data/uploads/document.pdf`
 - 前端访问：`/api/threads/{thread_id}/artifacts/mnt/user-data/uploads/document.pdf`（HTTP URL）
 
 上传流程采用“线程目录优先”策略：
-- 先写入 `backend/.deer-flow/threads/{thread_id}/user-data/uploads/` 作为权威存储
+- 先写入 `backend/.berkshire-agent/threads/{thread_id}/user-data/uploads/` 作为权威存储
 - 本地沙箱（`sandbox_id=local`）直接使用线程目录内容
 - 默认情况下，非本地沙箱通过 `acquire_async` 获取后，再额外同步到 `/mnt/user-data/uploads/*`，确保运行时可见
 - 如果 Gateway 与远端沙箱保证挂载同一份线程 user-data（例如正确对齐的共享 PVC、NFS 或 hostPath），可设置 `sandbox.thread_data_mounts: true`；上传路由会跳过 sandbox acquire 和逐文件同步
@@ -237,7 +237,7 @@ print(response.json())
 ## 文件存储结构
 
 ```
-backend/.deer-flow/threads/
+backend/.berkshire-agent/threads/
 └── {thread_id}/
     └── user-data/
         └── uploads/
@@ -254,7 +254,7 @@ backend/.deer-flow/threads/
 - 文件名安全性：系统会自动验证文件路径，防止目录遍历攻击
 - 删除只作用于普通文件：上传目录中的符号链接不会被跟随，删除请求按文件不存在（404）处理
 - 删除文档不会一并删除其转换生成的 Markdown：该 `.md` 的归属无法从文件名确定（同主干名的另一个文档或用户自己上传的文件都可能占用该名称），因此不再依据推测删除。它仍会出现在上传列表中，可单独删除（见 issue #5672）
-- 上传（HTTP 与嵌入式 `DeerFlowClient`）不会写穿符号链接：目标名已是符号链接的文件会被跳过并列入 `skipped_files`，转换生成的 Markdown 也不会写入同名符号链接
+- 上传（HTTP 与嵌入式 `BerkshireAgentClient`）不会写穿符号链接：目标名已是符号链接的文件会被跳过并列入 `skipped_files`，转换生成的 Markdown 也不会写入同名符号链接
 - 转换读取的是本次上传写入的字节，而非落盘后的文件名：HTTP 上传在 uploads 之外的私有副本上转换，嵌入式客户端转换调用方提供的源文件，因此沙箱替换该文件名无法让宿主文件内容被转换进 uploads
 - 线程隔离：每个线程的上传文件相互隔离，无法跨线程访问
 - 自动文档转换默认关闭；如需启用，需在 `config.yaml` 中显式设置 `uploads.auto_convert_documents: true`
@@ -300,7 +300,7 @@ backend/.deer-flow/threads/
 
 1. 确认 UploadsMiddleware 已在 agent.py 中注册
 2. 检查 thread_id 是否正确
-3. 确认文件确实已上传到 `backend/.deer-flow/threads/{thread_id}/user-data/uploads/`
+3. 确认文件确实已上传到 `backend/.berkshire-agent/threads/{thread_id}/user-data/uploads/`
 4. 非本地沙箱场景下，确认上传接口没有报错（需要成功完成 sandbox 同步）
 
 ## 开发建议

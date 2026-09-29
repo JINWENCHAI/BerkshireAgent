@@ -1,6 +1,6 @@
 ---
 title: Tool-Using Agents Must Handle Provider Safety Termination Signals Correctly
-description: Why tool calls left in a safety-terminated model response must not be executed, and how to configure provider detectors in DeerFlow.
+description: Why tool calls left in a safety-terminated model response must not be executed, and how to configure provider detectors in BerkshireAgent.
 date: 2026-05-22
 tags:
   - Safety
@@ -14,7 +14,7 @@ When a large model provider decides that an input or output has triggered a safe
 
 These partial tool calls must not be executed as normal intent. A truncated `write_file` call may write an incomplete report. A truncated `bash` call may enter the sandbox with incomplete arguments. After seeing the failed result, the Agent may retry and trigger the same safety rule repeatedly.
 
-[the implementation commit](https://github.com/bytedance/deer-flow/commit/be0eae9825619b63ca0c67b253d40b5eee76a2d6) addresses this boundary: when a provider stops generation with a safety signal while the response still contains tool calls, DeerFlow should suppress those tool calls first and record the turn as a safety termination event.
+[the implementation commit](https://github.com/bytedance/berkshire-agent/commit/be0eae9825619b63ca0c67b253d40b5eee76a2d6) addresses this boundary: when a provider stops generation with a safety signal while the response still contains tool calls, BerkshireAgent should suppress those tool calls first and record the turn as a safety termination event.
 
 ## Why Safety Termination Needs Dedicated Handling
 
@@ -58,7 +58,7 @@ DeepSeek lists `content_filter` as a chat completion finish reason and describes
 
 Some providers intervene earlier or at a layer outside the model message. For example, Azure OpenAI tells applications to inspect `finish_reason` because `content_filter` may leave a completion incomplete. Amazon Bedrock Guardrails can return `stopReason="guardrail_intervened"` in a response. In Alibaba Cloud Model Studio guardrail examples, output-side blocking may also appear directly as a `DataInspectionFailed` error. Together, these examples show that a safety intervention may be a stop signal in a model message or an API-level error. Applications need more than one handling path. [Azure OpenAI content filtering](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/content-filter) [Amazon Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-use-converse-api.html)
 
-## What DeerFlow Does at This Boundary
+## What BerkshireAgent Does at This Boundary
 
 `SafetyFinishReasonMiddleware` has a narrow responsibility. It does not replace provider content review, and it does not rewrite every refusal into the same error. It only intervenes when both conditions below are true:
 
@@ -84,7 +84,7 @@ safety_finish_reason:
   enabled: true
 ```
 
-When `detectors` is not configured explicitly, DeerFlow uses the built-in detector set:
+When `detectors` is not configured explicitly, BerkshireAgent uses the built-in detector set:
 
 | Detector | Default match |
 | --- | --- |
@@ -92,7 +92,7 @@ When `detectors` is not configured explicitly, DeerFlow uses the built-in detect
 | `AnthropicRefusalDetector` | `stop_reason="refusal"` |
 | `GeminiSafetyDetector` | Gemini safety-related `finish_reason` values such as `SAFETY`, `BLOCKLIST`, `PROHIBITED_CONTENT`, `SPII`, and `RECITATION` |
 
-This default set covers common DeerFlow paths for OpenAI-compatible providers, Anthropic, and Gemini. It does not treat a normal `finish_reason="tool_calls"` as a safety termination, and it does not fold length truncation such as `length` or `max_tokens` into the safety category.
+This default set covers common BerkshireAgent paths for OpenAI-compatible providers, Anthropic, and Gemini. It does not treat a normal `finish_reason="tool_calls"` as a safety termination, and it does not fold length truncation such as `length` or `max_tokens` into the safety category.
 
 ## Example: Extend the Streaming Safety Finish Signal for GLM
 

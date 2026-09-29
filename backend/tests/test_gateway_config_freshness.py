@@ -1,6 +1,6 @@
 """Regression tests for gateway config freshness on the request hot path.
 
-Bytedance/deer-flow issue #3107 BUG-001: the worker and lead-agent path
+Bytedance/berkshire-agent issue #3107 BUG-001: the worker and lead-agent path
 captured ``app.state.config`` at gateway startup. ``config.yaml`` edits during
 runtime were therefore ignored — ``get_app_config()``'s mtime-based reload
 existed but was bypassed because the snapshot object was passed through
@@ -301,7 +301,7 @@ def test_run_context_freezes_checkpoint_channel_mode_at_startup(tmp_path, monkey
 def test_get_config_returns_503_on_any_load_failure(monkeypatch, exception):
     """Any failure to materialise the config must surface as 503, not 500.
 
-    Bytedance/deer-flow issue #3107 BUG-001 review: the original snapshot
+    Bytedance/berkshire-agent issue #3107 BUG-001 review: the original snapshot
     contract returned 503 when ``app.state.config is None``. The first cut of
     this fix only mapped ``FileNotFoundError`` to 503, which left
     ``PermissionError`` / ``yaml.YAMLError`` / ``ValidationError`` etc. bubbling

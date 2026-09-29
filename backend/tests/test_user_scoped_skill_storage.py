@@ -33,7 +33,7 @@ def _reset_storages():
 
 @pytest.fixture
 def base_dir(tmp_path: Path) -> Path:
-    """Provide a temp directory as the DeerFlow base_dir."""
+    """Provide a temp directory as the BerkshireAgent base_dir."""
     return tmp_path
 
 
@@ -781,7 +781,7 @@ class TestInstallScanConfigParity:
     inherits already reads — not from the process-global ``get_app_config()``.
 
     The divergence is reachable whenever the storage outlives a config edit:
-    ``DeerFlowClient`` snapshots ``get_app_config()`` at construction, and the
+    ``BerkshireAgentClient`` snapshots ``get_app_config()`` at construction, and the
     Gateway hands its per-request ``get_config()`` to
     ``get_or_new_user_skill_storage``, while ``get_app_config`` hot-reloads a
     later edit of ``config.yaml``. Resolving the content scan from the process

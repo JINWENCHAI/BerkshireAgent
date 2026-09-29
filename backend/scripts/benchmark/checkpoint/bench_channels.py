@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Benchmark DeerFlow's full and DeltaChannel checkpoint message storage.
+"""Benchmark BerkshireAgent's full and DeltaChannel checkpoint message storage.
 
 The public CLI is a controller. Every benchmark case runs in a fresh child
 process and, for SQLite, a fresh database. This mirrors the restart-required

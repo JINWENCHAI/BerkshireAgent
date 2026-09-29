@@ -12,7 +12,7 @@ produces, so an identity-keyed field would ship permanently empty in every event
 Every message has content, so hashing it is always available.
 
 The exact recipe both sides must use: ``canonical_hash(message.content)`` — the
-message's ``content`` attribute passed directly, never pre-stringified. DeerFlow
+message's ``content`` attribute passed directly, never pre-stringified. BerkshireAgent
 messages are routinely multimodal (``list[dict]`` content), and ``str()`` on a
 dict renders insertion order, so two logically identical messages would hash
 differently if stringified first. ``canonical_hash`` already normalizes through

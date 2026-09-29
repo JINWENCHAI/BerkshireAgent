@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# deploy.sh - Build, start, or stop DeerFlow production services
+# deploy.sh - Build, start, or stop BerkshireAgent production services
 #
 # Commands:
 #   deploy.sh                    — build + start
@@ -48,7 +48,7 @@ COMPOSE_ENV_FILE_ARGS=()
 if [ -f "$ENV_FILE" ]; then
     COMPOSE_ENV_FILE_ARGS=(--env-file "$ENV_FILE")
 fi
-COMPOSE_CMD=(docker compose "${COMPOSE_ENV_FILE_ARGS[@]}" -p deer-flow -f "$DOCKER_DIR/docker-compose.yaml")
+COMPOSE_CMD=(docker compose "${COMPOSE_ENV_FILE_ARGS[@]}" -p berkshire-agent -f "$DOCKER_DIR/docker-compose.yaml")
 
 load_uv_extras_from_dotenv() {
     local line=""
@@ -115,7 +115,7 @@ NC='\033[0m'
 # ── DEER_FLOW_HOME ────────────────────────────────────────────────────────────
 
 if [ -z "$DEER_FLOW_HOME" ]; then
-    export DEER_FLOW_HOME="$REPO_ROOT/backend/.deer-flow"
+    export DEER_FLOW_HOME="$REPO_ROOT/backend/.berkshire-agent"
 fi
 echo -e "${BLUE}DEER_FLOW_HOME=$DEER_FLOW_HOME${NC}"
 mkdir -p "$DEER_FLOW_HOME"
@@ -349,7 +349,7 @@ detect_sandbox_mode() {
 if [ "$CMD" = "down" ]; then
     # Set minimal env var defaults so docker compose can parse the file without
     # warning about unset variables that appear in volume specs.
-    export DEER_FLOW_HOME="${DEER_FLOW_HOME:-$REPO_ROOT/backend/.deer-flow}"
+    export DEER_FLOW_HOME="${DEER_FLOW_HOME:-$REPO_ROOT/backend/.berkshire-agent}"
     export DEER_FLOW_CONFIG_PATH="${DEER_FLOW_CONFIG_PATH:-$DEER_FLOW_HOME/config.yaml}"
     export DEER_FLOW_EXTENSIONS_CONFIG_PATH="${DEER_FLOW_EXTENSIONS_CONFIG_PATH:-$DEER_FLOW_HOME/extensions_config.json}"
     export DEER_FLOW_REPO_ROOT="${DEER_FLOW_REPO_ROOT:-$REPO_ROOT}"
@@ -364,7 +364,7 @@ fi
 
 if [ "$CMD" = "build" ]; then
     echo "=========================================="
-    echo "  DeerFlow — Building Images"
+    echo "  BerkshireAgent — Building Images"
     echo "=========================================="
     echo ""
 
@@ -383,7 +383,7 @@ fi
 # ── Banner ────────────────────────────────────────────────────────────────────
 
 echo "=========================================="
-echo "  DeerFlow Production Deployment"
+echo "  BerkshireAgent Production Deployment"
 echo "=========================================="
 echo ""
 
@@ -439,7 +439,7 @@ echo ""
 # ── Start / Up ───────────────────────────────────────────────────────────────
 
 report_startup_failure() {
-    echo -e "${RED}✗ DeerFlow services failed to become ready.${NC}" >&2
+    echo -e "${RED}✗ BerkshireAgent services failed to become ready.${NC}" >&2
     echo '  If Docker Compose reports "unknown flag: --wait", upgrade to a version that' >&2
     echo '  supports `docker compose up --wait`.' >&2
     echo "  Container status:" >&2
@@ -470,7 +470,7 @@ fi
 
 echo ""
 echo "=========================================="
-echo "  DeerFlow is running!"
+echo "  BerkshireAgent is running!"
 echo "=========================================="
 echo ""
 RESOLVED_PORT="$(read_dotenv_value PORT)"

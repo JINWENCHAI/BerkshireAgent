@@ -57,7 +57,7 @@ def test_run_request_rejects_each_unsupported_option_with_exact_422(
             {
                 "type": "unsupported_run_option",
                 "loc": ["body", field],
-                "msg": f"Run option '{field}' is not supported by DeerFlow",
+                "msg": f"Run option '{field}' is not supported by BerkshireAgent",
                 "input": value,
                 "ctx": {"option": field},
             }

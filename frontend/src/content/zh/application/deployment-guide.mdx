@@ -1,17 +1,17 @@
 ---
 title: 部署指南
-description: 本指南涵盖 DeerFlow 应用所有支持的部署方式：本地开发、Docker Compose 以及使用 Kubernetes 管理沙箱的生产环境。
+description: 本指南涵盖 BerkshireAgent 应用所有支持的部署方式：本地开发、Docker Compose 以及使用 Kubernetes 管理沙箱的生产环境。
 ---
 
 import { Callout, Steps, Tabs } from "nextra/components";
 
 # 部署指南
 
-本指南涵盖 DeerFlow 应用所有支持的部署方式：本地开发、Docker Compose 以及使用 Kubernetes 管理沙箱的生产环境。
+本指南涵盖 BerkshireAgent 应用所有支持的部署方式：本地开发、Docker Compose 以及使用 Kubernetes 管理沙箱的生产环境。
 
 ## 本地开发部署
 
-本地工作流是运行 DeerFlow 最快的方式，所有服务作为原生进程在你的机器上运行。
+本地工作流是运行 BerkshireAgent 最快的方式，所有服务作为原生进程在你的机器上运行。
 
 <Tabs items={["启动", "停止", "日志"]}>
   <Tabs.Tab>
@@ -66,8 +66,8 @@ Docker Compose 在容器中运行所有服务。适用于更接近生产的本�
 ### 开发 Compose
 
 ```bash
-# 设置 deer-flow 仓库根目录的绝对路径
-export DEER_FLOW_ROOT=/path/to/deer-flow
+# 设置 berkshire-agent 仓库根目录的绝对路径
+export DEER_FLOW_ROOT=/path/to/berkshire-agent
 
 docker compose -f docker/docker-compose-dev.yaml up --build
 ```
@@ -81,7 +81,7 @@ docker compose -f docker/docker-compose-dev.yaml up --build
 ```bash
 # .env
 OPENAI_API_KEY=sk-...
-DEER_FLOW_ROOT=/absolute/path/to/deer-flow
+DEER_FLOW_ROOT=/absolute/path/to/berkshire-agent
 BETTER_AUTH_SECRET=your-secret-here-min-32-chars
 ```
 
@@ -94,7 +94,7 @@ BETTER_AUTH_SECRET=your-secret-here-min-32-chars
 
 ### 数据持久化
 
-线程数据存储在 `backend/.deer-flow/threads/`。在 Docker 部署中，此目录会绑定挂载到 gateway 容器中。
+线程数据存储在 `backend/.berkshire-agent/threads/`。在 Docker 部署中，此目录会绑定挂载到 gateway 容器中。
 
 为避免容器重建时数据丢失：
 
@@ -120,7 +120,7 @@ BETTER_AUTH_SECRET=your-secret-here-min-32-chars
 
 SQLite 适合本地开发和单用户部署，但不适合作为多用户生产环境的数据库后端。
 
-在 SQLite 模式下，DeerFlow 会把 LangGraph 检查点数据和应用数据写入同一个 `deerflow.db` 文件。WAL 模式可以支持并发读取，但 SQLite 同一时间仍然只有一个写入者。多个用户同时运行 Agent 时，检查点写入和应用写入会竞争同一个文件锁，可能触发 `sqlite3.OperationalError: database is locked`。
+在 SQLite 模式下，BerkshireAgent 会把 LangGraph 检查点数据和应用数据写入同一个 `deerflow.db` 文件。WAL 模式可以支持并发读取，但 SQLite 同一时间仍然只有一个写入者。多个用户同时运行 Agent 时，检查点写入和应用写入会竞争同一个文件锁，可能触发 `sqlite3.OperationalError: database is locked`。
 
 生产环境或任何多用户部署请使用 Postgres：
 
@@ -151,9 +151,9 @@ SQLite 部署应限制在本地、单节点或短期评估场景。
 在你的 `.env` 或 compose 覆盖文件中设置必需的环境变量：
 
 ```bash
-K8S_NAMESPACE=deer-flow
+K8S_NAMESPACE=berkshire-agent
 SANDBOX_IMAGE=enterprise-public-cn-beijing.cr.volces.com/vefaas-public/all-in-one-sandbox:latest
-DEER_FLOW_ROOT=/absolute/path/to/deer-flow
+DEER_FLOW_ROOT=/absolute/path/to/berkshire-agent
 ```
 
 #### 配置沙箱提供者
@@ -171,11 +171,11 @@ sandbox:
 
 ```bash
 # 在 .env 或 compose 环境中
-USERDATA_PVC_NAME=deer-flow-userdata-pvc
-SKILLS_PVC_NAME=deer-flow-skills-pvc
+USERDATA_PVC_NAME=berkshire-agent-userdata-pvc
+SKILLS_PVC_NAME=berkshire-agent-skills-pvc
 ```
 
-当设置 `USERDATA_PVC_NAME` 时，Provisioner 自动使用子路径（`deer-flow/users/{user_id}/threads/{thread_id}/user-data`），每个用户的每个线程在 PVC 中获得自己的目录。
+当设置 `USERDATA_PVC_NAME` 时，Provisioner 自动使用子路径（`berkshire-agent/users/{user_id}/threads/{thread_id}/user-data`），每个用户的每个线程在 PVC 中获得自己的目录。
 
 </Steps>
 
@@ -185,7 +185,7 @@ nginx 将流量路由到前端或 Gateway。`/api/langgraph/*` 会被重写到 G
 
 ### 认证配置
 
-DeerFlow 应用使用 [Better Auth](https://www.better-auth.com/) 进行会话管理。在生产环境中：
+BerkshireAgent 应用使用 [Better Auth](https://www.better-auth.com/) 进行会话管理。在生产环境中：
 
 1. 将 `BETTER_AUTH_SECRET` 设置为强随机字符串（最少 32 个字符）。
 2. 将 `BETTER_AUTH_URL` 设置为你的公开 URL（例如 `https://your-domain.com`）。

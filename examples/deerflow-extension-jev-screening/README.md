@@ -1,6 +1,6 @@
 # Advisory screening of fetched content — extension example
 
-An opt-in packaged extension for [RFC #5737](https://github.com/bytedance/deer-flow/issues/5737).
+An opt-in packaged extension for [RFC #5737](https://github.com/bytedance/berkshire-agent/issues/5737).
 It contributes one `AgentMiddleware` through the extension API, placed at
 `TOOL_VISIBLE` for lead agents and subagents. The middleware screens a bounded
 excerpt of `web_fetch`, `web_search`, `image_search`, `web_capture` and MCP tool
@@ -9,12 +9,12 @@ threshold adds a fixed advisory warning to that tool result before the next mode
 call. It does not block tools, authorize actions or establish that the model will
 ignore an injected instruction.
 
-The package imports only `deerflow_extension_api` from DeerFlow, so it can move
+The package imports only `deerflow_extension_api` from BerkshireAgent, so it can move
 out of this repository unchanged.
 
 ## Install and configure
 
-From `backend/` in a compatible DeerFlow deployment:
+From `backend/` in a compatible BerkshireAgent deployment:
 
 ```sh
 uv run deerflow extensions install ../examples/deerflow-extension-jev-screening --yes
@@ -80,7 +80,7 @@ from settings, tool results or logs.
   event-loop thread, it passes the result through. Its per-request deadline does
   not cover shutting down that temporary event loop, which waits for a pending
   name lookup, so a stalled DNS resolver can hold a synchronous tool call longer.
-- The embedded `DeerFlowClient` does not load `plugins:` extensions and binds no
+- The embedded `BerkshireAgentClient` does not load `plugins:` extensions and binds no
   extension task store. Without a task store the middleware sends nothing.
 - One classifier request is made per text message of an eligible result,
   including each message of a `Command`, for at most eight messages per tool call.

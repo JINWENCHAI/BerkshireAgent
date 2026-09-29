@@ -16,7 +16,7 @@ export function legacyMemoryWithoutCognitiveStyle(): Omit<
     lastUpdated: "2026-01-01T00:00:00Z",
     user: {
       workContext: {
-        summary: "Works on DeerFlow",
+        summary: "Works on BerkshireAgent",
         updatedAt: "2026-01-01T00:00:00Z",
       },
       personalContext: { summary: "", updatedAt: "" },

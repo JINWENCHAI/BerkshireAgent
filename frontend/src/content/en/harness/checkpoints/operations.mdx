@@ -94,18 +94,18 @@ There is also a history fast-path interaction to sequence around: the trailing d
 
 ### There is no production trigger yet
 
-The retention service (`backend/app/gateway/checkpoint_retention.py`) ships **without a production trigger**: where retention is invoked from — post-run hook, scheduler, or explicit admin action — is a maintainer decision that lands with the contract itself. Nothing in DeerFlow calls it, and there is no production caller of `prune` or `aprune` either: in the pinned environment only the base implementation defines them, and it raises `NotImplementedError`.
+The retention service (`backend/app/gateway/checkpoint_retention.py`) ships **without a production trigger**: where retention is invoked from — post-run hook, scheduler, or explicit admin action — is a maintainer decision that lands with the contract itself. Nothing in BerkshireAgent calls it, and there is no production caller of `prune` or `aprune` either: in the pinned environment only the base implementation defines them, and it raises `NotImplementedError`.
 
 Treat this as unfinished work rather than a safe default. The executable contract proves the branch-ancestor, explicit-resume-target, pending-writes, leaf-duration, and leaf-sibling scenarios against the **full-mode** state schema; only the growth baseline is delta-shaped. Delta-specific prune safety is neither proved by the suite nor implemented.
 
 ## The one remaining patch
 
-One compatibility patch remains, and it is applied at import time of the module itself. The module lives at the package root so it can be imported from `deerflow.agents.thread_state` without pulling in the heavier `deerflow.runtime` package, and it is anchored there so every process that builds a DeerFlow graph — Gateway, workers, in-process LangGraph runtime, tests — runs with it in place.
+One compatibility patch remains, and it is applied at import time of the module itself. The module lives at the package root so it can be imported from `deerflow.agents.thread_state` without pulling in the heavier `deerflow.runtime` package, and it is anchored there so every process that builds a BerkshireAgent graph — Gateway, workers, in-process LangGraph runtime, tests — runs with it in place.
 
 | Aspect | Detail |
 | --- | --- |
 | Subject | `BinaryOperatorAggregate` unwrapping an `Overwrite` first write into an empty (MISSING) channel |
-| Tracking issue | DeerFlow **#4380** |
+| Tracking issue | BerkshireAgent **#4380** |
 | Symptom it prevents | Channels whose type is a Union (`SandboxState \| None`, `GoalState \| None`, and similar) have no constructible default, so they start MISSING. A replace-style write into a fresh thread (thread branching) or a never-written channel (state update) then persists the `Overwrite` wrapper itself into the checkpoint, and the next consumer crashes with `TypeError: 'Overwrite' object is not subscriptable` |
 | Scope | Intercepts only the empty-channel plus leading-`Overwrite` case. Later plain values are ignored, and a second `Overwrite` in the same super-step raises `InvalidUpdateError` with `Can receive only one Overwrite value per super-step.`. Everything else delegates to the upstream implementation |
 | Consistency side effect | `DeltaChannel.update` already unwraps in the same situation, so the patch also removes a behavioural inconsistency between the two reducer channel types |
@@ -200,7 +200,7 @@ The `deerflow` console script is `deerflow.tui.cli:main`; `--print` and `--json`
 | History cache backend | `memory` and `redis` | `memory` only |
 | Failed agent build | `full` mode degrades to raw checkpointer reads; `delta` re-raises | No degraded path at all |
 | Cross-mode mismatch | HTTP 409 on state and history routes; a run fails with an SSE `error` frame or an error run record | Raised in-process before the agent is built or the graph streams |
-| Freeze | Frozen at Gateway startup from the startup config snapshot | `DeerFlowClient.__init__` freezes mode and cadence from its own `AppConfig`, with the same restart-required semantics |
+| Freeze | Frozen at Gateway startup from the startup config snapshot | `BerkshireAgentClient.__init__` freezes mode and cadence from its own `AppConfig`, with the same restart-required semantics |
 
 Three consequences are worth stating plainly:
 
@@ -208,7 +208,7 @@ Three consequences are worth stating plainly:
 - **There is no degraded read path.** Delta materialization needs the graph's channel table, and the TUI has no equivalent to the Gateway's raw-checkpoint fallback.
 - **A mismatch is a reported error on every surface.** The embedded client raises `CheckpointModeMismatchError` in-process — no HTTP status, no run record, no SSE frame. The CLI's headless runners catch it: `--print` prints a concise `Error: ...` line on stderr and exits non-zero, and `--json` appends a terminal `{"type": "error"}` record to the NDJSON stream (diagnostics stay on stderr) and exits non-zero. The Textual TUI's `stream_actions()` helper catches the same exception and emits `AssistantError` plus `RunEnded`, so an interactive user sees the failure in the UI.
 
-Third-party embedders hit a related guard: `create_deerflow_agent` with `checkpoint_channel_mode="delta"` **and** a checkpointer is rejected with `ValueError`, because graphs built there bypass checkpoint-mode marker injection and the fail-closed compatibility gate, so a mixed-mode store would silently corrupt thread state. Delta without a checkpointer is ephemeral and allowed; persisted delta graphs must go through the guarded application paths (`make_lead_agent` or `DeerFlowClient`).
+Third-party embedders hit a related guard: `create_deerflow_agent` with `checkpoint_channel_mode="delta"` **and** a checkpointer is rejected with `ValueError`, because graphs built there bypass checkpoint-mode marker injection and the fail-closed compatibility gate, so a mixed-mode store would silently corrupt thread state. Delta without a checkpointer is ephemeral and allowed; persisted delta graphs must go through the guarded application paths (`make_lead_agent` or `BerkshireAgentClient`).
 
 ## See also
 

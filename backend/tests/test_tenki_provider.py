@@ -733,7 +733,7 @@ def test_create_passes_prefixed_name_and_scope(monkeypatch):
     sid = provider.acquire("thread-1", user_id="u1")
     assert sid in provider._sandboxes
     kwargs = client.create_kwargs[0]
-    assert kwargs["name"].startswith("deer-flow-tenki-")
+    assert kwargs["name"].startswith("berkshire-agent-tenki-")
     assert kwargs["workspace_id"] == "ws1"
     # Tenki 1.x has no project layer; passing one is a TypeError against the SDK.
     assert "project_id" not in kwargs

@@ -1,10 +1,10 @@
 # API Reference
 
-This document provides a complete reference for the DeerFlow backend APIs.
+This document provides a complete reference for the BerkshireAgent backend APIs.
 
 ## Overview
 
-DeerFlow backend exposes two sets of APIs:
+BerkshireAgent backend exposes two sets of APIs:
 
 1. **LangGraph-compatible API** - Agent interactions, threads, and streaming (`/api/langgraph/*`)
 2. **Gateway API** - Models, MCP, skills, uploads, and artifacts (`/api/*`)
@@ -272,14 +272,14 @@ does not accept this header and keeps the existing missing-stream close of
 
 **Stream Mode Compatibility:**
 - Use: `values`, `messages-tuple`, `custom`, `updates`, `debug`, `tasks`, `checkpoints`
-- Unsupported modes, including `messages`, `events`, and `tools`, return `422` before a run is created. DeerFlow never substitutes `values` for an unsupported mode.
+- Unsupported modes, including `messages`, `events`, and `tools`, return `422` before a run is created. BerkshireAgent never substitutes `values` for an unsupported mode.
 
 **Run Option Compatibility:**
 - Supported concurrency strategies: `reject`, `rollback`, and `interrupt`
-- Compatibility default: `if_not_exists="create"`; this matches DeerFlow's current behavior
+- Compatibility default: `if_not_exists="create"`; this matches BerkshireAgent's current behavior
 - Artifact delivery is enforced automatically when a run creates or modifies regular files under `/mnt/user-data/outputs`. `present_files` must present at least one path produced by the current run (or a directory containing it), and the terminal receipt must be persisted; presenting only an unrelated file does not satisfy delivery. Runs without changed outputs retain ordinary conversational behavior. `artifact_delivery` is not a client-settable run option.
 - Unsupported options return `422`: `webhook`, `stream_resumable=true`, `after_seconds`, `feedback_keys`, any non-null `on_completion` value (including the SDK values `"complete"` and `"continue"`), `if_not_exists="reject"`, and `multitask_strategy="enqueue"`
-- `stream_resumable=false` is accepted: it is the LangGraph SDK's default and requests the non-resumable stream DeerFlow already serves
+- `stream_resumable=false` is accepted: it is the LangGraph SDK's default and requests the non-resumable stream BerkshireAgent already serves
 - Undeclared SDK options, including `checkpoint_during` and `durability`, also return `422` instead of being silently discarded
 
 When outputs changed during the run, `run.delivery` events retain the Slice 1
@@ -302,7 +302,7 @@ default `1000`) so a single run cannot execute unbounded graph steps (runaway
 LLM cost / DoS); invalid or non-positive request values fall back to the
 configured default. Both top-level fields are read per run, so edits apply to
 the next request without restarting the Gateway. This top-level setting applies
-to Gateway API runs only; IM channel and embedded `DeerFlowClient` runs retain
+to Gateway API runs only; IM channel and embedded `BerkshireAgentClient` runs retain
 their own defaults and override paths.
 
 **Configurable Options:**
@@ -698,7 +698,7 @@ endpoint. Disabling a server does not require its command to be allowlisted, and
 invalid commands on other servers do not block the update. The endpoint
 preserves secrets, environment-variable placeholders, skills, custom server
 fields, and other top-level extensions config. SSE/HTTP targets may use either
-DeerFlow's `type` field or the MCP-spec `transport` field.
+BerkshireAgent's `type` field or the MCP-spec `transport` field.
 
 **Request Body:**
 ```json
@@ -974,11 +974,11 @@ Content-Type: multipart/form-data
     {
       "filename": "document.pdf",
       "size": 1234567,
-      "path": ".deer-flow/threads/abc123/user-data/uploads/document.pdf",
+      "path": ".berkshire-agent/threads/abc123/user-data/uploads/document.pdf",
       "virtual_path": "/mnt/user-data/uploads/document.pdf",
       "artifact_url": "/api/threads/abc123/artifacts/mnt/user-data/uploads/document.pdf",
       "markdown_file": "document.md",
-      "markdown_path": ".deer-flow/threads/abc123/user-data/uploads/document.md",
+      "markdown_path": ".berkshire-agent/threads/abc123/user-data/uploads/document.md",
       "markdown_virtual_path": "/mnt/user-data/uploads/document.md",
       "markdown_artifact_url": "/api/threads/abc123/artifacts/mnt/user-data/uploads/document.md"
     }
@@ -1009,7 +1009,7 @@ GET /api/threads/{thread_id}/uploads/list
     {
       "filename": "document.pdf",
       "size": 1234567,
-      "path": ".deer-flow/threads/abc123/user-data/uploads/document.pdf",
+      "path": ".berkshire-agent/threads/abc123/user-data/uploads/document.pdf",
       "virtual_path": "/mnt/user-data/uploads/document.pdf",
       "artifact_url": "/api/threads/abc123/artifacts/mnt/user-data/uploads/document.pdf",
       "extension": ".pdf",
@@ -1036,7 +1036,7 @@ DELETE /api/threads/{thread_id}/uploads/{filename}
 
 ### Thread Cleanup
 
-Remove DeerFlow-managed local thread files under `.deer-flow/threads/{thread_id}` after the LangGraph thread itself has been deleted.
+Remove BerkshireAgent-managed local thread files under `.berkshire-agent/threads/{thread_id}` after the LangGraph thread itself has been deleted.
 
 ```http
 DELETE /api/threads/{thread_id}
@@ -1238,20 +1238,20 @@ All APIs return errors in a consistent format:
 
 ## Authentication
 
-DeerFlow supports four HTTP identity sources. They share the same thread/run isolation rules but differ in whether a row is created in `users` and how external identities are mapped. See [AUTH_DESIGN.md](AUTH_DESIGN.md) for the full design.
+BerkshireAgent supports four HTTP identity sources. They share the same thread/run isolation rules but differ in whether a row is created in `users` and how external identities are mapped. See [AUTH_DESIGN.md](AUTH_DESIGN.md) for the full design.
 
 | Model | Entry | `users` table | Isolation key |
 |---|---|---|---|
 | Browser session | `access_token` cookie after login/register | Yes | `users.id` |
 | OIDC / SSO | OAuth callback → cookie | Yes | `users.id` (see [SSO.md](SSO.md)) |
 | IM channel binding | Connect code + `channel_connections` | Bound to registered user | `channel_connections.owner_user_id` |
-| **Internal Auth** | `X-DeerFlow-Internal-Token` + `X-DeerFlow-Owner-User-Id` | **No** | Owner string on `threads_meta.user_id` |
+| **Internal Auth** | `X-BerkshireAgent-Internal-Token` + `X-BerkshireAgent-Owner-User-Id` | **No** | Owner string on `threads_meta.user_id` |
 
-**IM channel binding** and **Internal Auth** are both *platform-trust* integrations: DeerFlow trusts the channel/platform to authenticate end users. IM bindings persist the mapping in `channel_connections` / `channel_conversations` and require a DeerFlow `users` row. Internal Auth lets a platform call the Gateway API directly with a deployment-shared token and a per-request owner header—no `users` row, but thread/run/checkpoint isolation works the same way.
+**IM channel binding** and **Internal Auth** are both *platform-trust* integrations: BerkshireAgent trusts the channel/platform to authenticate end users. IM bindings persist the mapping in `channel_connections` / `channel_conversations` and require a BerkshireAgent `users` row. Internal Auth lets a platform call the Gateway API directly with a deployment-shared token and a per-request owner header—no `users` row, but thread/run/checkpoint isolation works the same way.
 
 ### Browser session (default)
 
-DeerFlow enforces authentication for all non-public HTTP routes. Public routes are limited to health/docs metadata and these public auth endpoints:
+BerkshireAgent enforces authentication for all non-public HTTP routes. Public routes are limited to health/docs metadata and these public auth endpoints:
 
 - `POST /api/v1/auth/initialize` creates the first admin account when no admin exists.
 - `POST /api/v1/auth/login/local` logs in with email/password and sets an HttpOnly `access_token` cookie.
@@ -1272,7 +1272,7 @@ User isolation is enforced from the authenticated user context:
 - Thread files live under `{base_dir}/users/{user_id}/threads/{thread_id}/user-data/` and are exposed inside the sandbox as `/mnt/user-data/`.
 - Memory and custom agents are stored under `{base_dir}/users/{user_id}/...`.
 
-Note: MCP outbound connections can still use OAuth for configured HTTP/SSE MCP servers; that is separate from DeerFlow API authentication.
+Note: MCP outbound connections can still use OAuth for configured HTTP/SSE MCP servers; that is separate from BerkshireAgent API authentication.
 
 ### Internal Auth (platform HTTP integration)
 
@@ -1284,10 +1284,10 @@ export DEER_FLOW_INTERNAL_AUTH_TOKEN="<long-random-secret>"
 
 | Header | Required | Description |
 |---|---|---|
-| `X-DeerFlow-Internal-Token` | Yes | Must match `DEER_FLOW_INTERNAL_AUTH_TOKEN`; missing/invalid → `401` |
-| `X-DeerFlow-Owner-User-Id` | Yes for per-user isolation | Platform user id (e.g. `feishu_ou_alice`, `wecom_user_bob`); omit → `default` bucket |
+| `X-BerkshireAgent-Internal-Token` | Yes | Must match `DEER_FLOW_INTERNAL_AUTH_TOKEN`; missing/invalid → `401` |
+| `X-BerkshireAgent-Owner-User-Id` | Yes for per-user isolation | Platform user id (e.g. `feishu_ou_alice`, `wecom_user_bob`); omit → `default` bucket |
 
-Does **not** use browser cookies or CSRF tokens. Does **not** insert into `users`; sets `threads_meta.user_id` / `runs.user_id` from the owner header. DeerFlow validates only the platform token—not whether the owner id represents a real end user; user validity is entirely the platform's responsibility. See [AUTH_DESIGN.md — Internal Auth](AUTH_DESIGN.md#internal-auth-direct-http) for trust boundaries, persistence, and security notes.
+Does **not** use browser cookies or CSRF tokens. Does **not** insert into `users`; sets `threads_meta.user_id` / `runs.user_id` from the owner header. BerkshireAgent validates only the platform token—not whether the owner id represents a real end user; user validity is entirely the platform's responsibility. See [AUTH_DESIGN.md — Internal Auth](AUTH_DESIGN.md#internal-auth-direct-http) for trust boundaries, persistence, and security notes.
 
 Use the standard Gateway thread/run endpoints (`POST /api/threads`, `POST /api/threads/{thread_id}/runs/stream`, etc.) with the headers above on every request.
 
@@ -1327,7 +1327,7 @@ Accept: text/event-stream
 ```
 
 Both endpoints return `Content-Location: /api/threads/{thread_id}/runs/{run_id}`.
-The DeerFlow web UI and LangGraph SDK clients rely on this header to discover the
+The BerkshireAgent web UI and LangGraph SDK clients rely on this header to discover the
 assigned `thread_id` and `run_id` on the first message of a new chat.
 
 ### SSE replay retention and gaps

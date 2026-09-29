@@ -14,7 +14,7 @@ delivers, the compatibility boundary, and the validation rules.
 
 ## Problem
 
-DeerFlow modeled reasoning support with two independent booleans and then
+BerkshireAgent modeled reasoning support with two independent booleans and then
 applied generic runtime values (`thinking_enabled`, `reasoning_effort`)
 uniformly across providers. Three things could not be expressed:
 
@@ -51,7 +51,7 @@ models:
       effort:
         values: [low, high, max]    # provider vocabulary, in display order
         default: high               # used when the caller does not choose (also background calls)
-        aliases:                    # DeerFlow generic value -> provider value
+        aliases:                    # BerkshireAgent generic value -> provider value
           minimal: low
           medium: high
         path: reasoning_effort      # where the value is serialized (dotted identifier path)
@@ -159,7 +159,7 @@ for every reader that has not migrated yet.
 
 ### API projection
 
-`GET /api/models` and `DeerFlowClient.list_models()` / `get_model()` keep the
+`GET /api/models` and `BerkshireAgentClient.list_models()` / `get_model()` keep the
 legacy booleans and add a `reasoning` object for every model:
 
 ```json

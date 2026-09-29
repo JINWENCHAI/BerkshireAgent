@@ -1,19 +1,19 @@
 ---
-title: DeerFlow 应用
-description: DeerFlow 应用是 DeerFlow 生产体验的参考实现。它将 Harness 运行时、基于 Web 的对话工作区、API Gateway 和反向代理组合成一个可部署的完整系统。
+title: BerkshireAgent 应用
+description: BerkshireAgent 应用是 BerkshireAgent 生产体验的参考实现。它将 Harness 运行时、基于 Web 的对话工作区、API Gateway 和反向代理组合成一个可部署的完整系统。
 ---
 
 import { Callout } from "nextra/components";
 
-# DeerFlow 应用
+# BerkshireAgent 应用
 
 <Callout type="info" emoji="🚀">
-  DeerFlow 应用是构建在 DeerFlow Harness 之上的完整 Super Agent
+  BerkshireAgent 应用是构建在 BerkshireAgent Harness 之上的完整 Super Agent
   应用。它将运行时能力打包成一个可部署的产品，包含 Web 界面、API Gateway
   和运维工具。
 </Callout>
 
-DeerFlow 应用是 DeerFlow 生产体验的参考实现。它将 Harness 运行时、基于 Web 的对话工作区、API Gateway 和反向代理组合成一个可部署的完整系统。
+BerkshireAgent 应用是 BerkshireAgent 生产体验的参考实现。它将 Harness 运行时、基于 Web 的对话工作区、API Gateway 和反向代理组合成一个可部署的完整系统。
 
 ## 应用提供什么
 
@@ -29,7 +29,7 @@ DeerFlow 应用是 DeerFlow 生产体验的参考实现。它将 Harness 运行�
 
 ## 架构
 
-DeerFlow 应用通过单个 nginx 反向代理提供：
+BerkshireAgent 应用通过单个 nginx 反向代理提供：
 
 ```
                 ┌──────────────────┐
@@ -54,7 +54,7 @@ DeerFlow 应用通过单个 nginx 反向代理提供：
 | ------------ | ------------------------------------------------------- |
 | 前端         | Next.js 16、React 19、TypeScript、pnpm                  |
 | Gateway      | FastAPI、Python 3.12、uvicorn                           |
-| Agent 运行时 | LangGraph、LangChain、DeerFlow Harness                  |
+| Agent 运行时 | LangGraph、LangChain、BerkshireAgent Harness                  |
 | 反向代理     | nginx                                                   |
 | 状态持久化   | Gateway 运行时 + 可选 SQLite/PostgreSQL 检查点 |
 

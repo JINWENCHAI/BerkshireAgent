@@ -1,7 +1,7 @@
 [project]
 name = "deerflow-extension-jev-context"
 version = "0.1.0"
-description = "Opt-in Jev pruning of old read-only tool results for DeerFlow"
+description = "Opt-in Jev pruning of old read-only tool results for BerkshireAgent"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"

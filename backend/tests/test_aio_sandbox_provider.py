@@ -812,17 +812,17 @@ async def test_remote_create_async_forwards_configured_skills_container_path(
 
 
 def test_join_host_path_preserves_windows_drive_letter_style():
-    base = r"C:\Users\demo\deer-flow\backend\.deer-flow"
+    base = r"C:\Users\demo\berkshire-agent\backend\.berkshire-agent"
 
     joined = join_host_path(base, "threads", "thread-9", "user-data", "outputs")
 
-    assert joined == r"C:\Users\demo\deer-flow\backend\.deer-flow\threads\thread-9\user-data\outputs"
+    assert joined == r"C:\Users\demo\berkshire-agent\backend\.berkshire-agent\threads\thread-9\user-data\outputs"
 
 
 def test_get_thread_mounts_preserves_windows_host_path_style(tmp_path, monkeypatch):
     """Docker bind mount sources must keep Windows-style paths intact."""
     aio_mod = importlib.import_module("deerflow.community.aio_sandbox.aio_sandbox_provider")
-    monkeypatch.setenv("DEER_FLOW_HOST_BASE_DIR", r"C:\Users\demo\deer-flow\backend\.deer-flow")
+    monkeypatch.setenv("DEER_FLOW_HOST_BASE_DIR", r"C:\Users\demo\berkshire-agent\backend\.berkshire-agent")
     monkeypatch.setattr(aio_mod, "get_paths", lambda: Paths(base_dir=tmp_path))
     monkeypatch.setattr(aio_mod, "get_effective_user_id", lambda: None)
 
@@ -830,10 +830,10 @@ def test_get_thread_mounts_preserves_windows_host_path_style(tmp_path, monkeypat
 
     container_paths = {container_path: host_path for host_path, container_path, _ in mounts}
 
-    assert container_paths["/mnt/user-data/workspace"] == r"C:\Users\demo\deer-flow\backend\.deer-flow\threads\thread-10\user-data\workspace"
-    assert container_paths["/mnt/user-data/uploads"] == r"C:\Users\demo\deer-flow\backend\.deer-flow\threads\thread-10\user-data\uploads"
-    assert container_paths["/mnt/user-data/outputs"] == r"C:\Users\demo\deer-flow\backend\.deer-flow\threads\thread-10\user-data\outputs"
-    assert container_paths["/mnt/acp-workspace"] == r"C:\Users\demo\deer-flow\backend\.deer-flow\threads\thread-10\acp-workspace"
+    assert container_paths["/mnt/user-data/workspace"] == r"C:\Users\demo\berkshire-agent\backend\.berkshire-agent\threads\thread-10\user-data\workspace"
+    assert container_paths["/mnt/user-data/uploads"] == r"C:\Users\demo\berkshire-agent\backend\.berkshire-agent\threads\thread-10\user-data\uploads"
+    assert container_paths["/mnt/user-data/outputs"] == r"C:\Users\demo\berkshire-agent\backend\.berkshire-agent\threads\thread-10\user-data\outputs"
+    assert container_paths["/mnt/acp-workspace"] == r"C:\Users\demo\berkshire-agent\backend\.berkshire-agent\threads\thread-10\acp-workspace"
 
 
 def test_discover_or_create_only_unlocks_when_lock_succeeds(tmp_path, monkeypatch):
@@ -2032,7 +2032,7 @@ def test_acquire_drops_dead_cached_sandbox(tmp_path, monkeypatch):
         return_value=aio_mod.SandboxInfo(
             sandbox_id="sandbox-dead",
             sandbox_url="http://fresh-sandbox",
-            container_name="deer-flow-sandbox-sandbox-dead",
+            container_name="berkshire-agent-sandbox-sandbox-dead",
         )
     )
 
@@ -2104,7 +2104,7 @@ def test_acquire_skips_dead_warm_pool_sandbox(tmp_path, monkeypatch):
             aio_mod.SandboxInfo(
                 sandbox_id="sandbox-warm-dead",
                 sandbox_url="http://stale-sandbox",
-                container_name="deer-flow-sandbox-sandbox-warm-dead",
+                container_name="berkshire-agent-sandbox-sandbox-warm-dead",
             ),
             0.0,
         )
@@ -2118,7 +2118,7 @@ def test_acquire_skips_dead_warm_pool_sandbox(tmp_path, monkeypatch):
             return_value=aio_mod.SandboxInfo(
                 sandbox_id="sandbox-warm-dead",
                 sandbox_url="http://fresh-sandbox",
-                container_name="deer-flow-sandbox-sandbox-warm-dead",
+                container_name="berkshire-agent-sandbox-sandbox-warm-dead",
             )
         ),
     )
@@ -2242,7 +2242,7 @@ def _make_tenant_isolation_provider(tmp_path, monkeypatch):
         return aio_mod.SandboxInfo(
             sandbox_id=sandbox_id,
             sandbox_url=f"http://sandbox-{len(create_calls)}.local",
-            container_name=f"deer-flow-sandbox-{sandbox_id}",
+            container_name=f"berkshire-agent-sandbox-{sandbox_id}",
         )
 
     provider._backend = SimpleNamespace(

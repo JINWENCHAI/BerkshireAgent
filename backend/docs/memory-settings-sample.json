@@ -3,7 +3,7 @@
   "lastUpdated": "2026-03-28T10:30:00Z",
   "user": {
     "workContext": {
-      "summary": "Working on DeerFlow memory management UX, including local search, local filters, clear-all, and single-fact deletion in Settings > Memory.",
+      "summary": "Working on BerkshireAgent memory management UX, including local search, local filters, clear-all, and single-fact deletion in Settings > Memory.",
       "updatedAt": "2026-03-28T10:30:00Z"
     },
     "personalContext": {
@@ -17,7 +17,7 @@
   },
   "history": {
     "recentMonths": {
-      "summary": "Recently contributed multiple DeerFlow pull requests covering memory, uploads, and compatibility fixes.",
+      "summary": "Recently contributed multiple BerkshireAgent pull requests covering memory, uploads, and compatibility fixes.",
       "updatedAt": "2026-03-28T10:24:00Z"
     },
     "earlierContext": {
@@ -48,7 +48,7 @@
     },
     {
       "id": "fact_review_003",
-      "content": "User implemented memory search and filter improvements in the DeerFlow settings page.",
+      "content": "User implemented memory search and filter improvements in the BerkshireAgent settings page.",
       "category": "project",
       "confidence": 0.91,
       "createdAt": "2026-03-28T09:54:00Z",

@@ -169,14 +169,14 @@ Read paths no longer have `mkdir` side effects — non-existent directories retu
 
 | Alternative | Why Not |
 |-------------|---------|
-| Keep logic in Gateway, Client calls Gateway via HTTP | Adds network dependency to embedded Client; defeats the purpose of `DeerFlowClient` as an in-process API |
+| Keep logic in Gateway, Client calls Gateway via HTTP | Adds network dependency to embedded Client; defeats the purpose of `BerkshireAgentClient` as an in-process API |
 | Abstract base class with Gateway/Client subclasses | Over-engineered for what are pure functions; no polymorphism needed |
 | Move everything into `client.py` and have Gateway import it | Violates harness/app boundary — Client is in harness, but Gateway-specific models (Pydantic response types) should stay in app layer |
 | Merge Gateway and Client into one module | They serve different consumers (HTTP vs in-process) with different adaptation needs |
 
 ## 7. Breaking Changes
 
-**None.** All public APIs (Gateway HTTP endpoints, `DeerFlowClient` methods) retain their existing signatures and return formats. The `SkillAlreadyExistsError` is a subclass of `ValueError`, so existing `except ValueError` handlers still catch it.
+**None.** All public APIs (Gateway HTTP endpoints, `BerkshireAgentClient` methods) retain their existing signatures and return formats. The `SkillAlreadyExistsError` is a subclass of `ValueError`, so existing `except ValueError` handlers still catch it.
 
 ## 8. Tests
 

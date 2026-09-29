@@ -1,6 +1,6 @@
 ---
 title: 自定义与扩展
-description: DeerFlow 的可插拔架构意味着系统的大多数部分都可以在不 fork 核心的情况下被替换或扩展。本页面列举了扩展点，并解释如何使用每一个。
+description: BerkshireAgent 的可插拔架构意味着系统的大多数部分都可以在不 fork 核心的情况下被替换或扩展。本页面列举了扩展点，并解释如何使用每一个。
 ---
 
 import { Callout } from "nextra/components";
@@ -8,12 +8,12 @@ import { Callout } from "nextra/components";
 # 自定义与扩展
 
 <Callout type="info" emoji="🔧">
-  DeerFlow
+  BerkshireAgent
   设计为可适配的。你可以通过编写自定义中间件、添加新工具、构建技能包以及通过
   config.yaml 的 <code>use:</code> 字段替换任何内置组件来扩展 Agent 行为。
 </Callout>
 
-DeerFlow 的可插拔架构意味着系统的大多数部分都可以在不 fork 核心的情况下被替换或扩展。本页面列举了扩展点，并解释如何使用每一个。
+BerkshireAgent 的可插拔架构意味着系统的大多数部分都可以在不 fork 核心的情况下被替换或扩展。本页面列举了扩展点，并解释如何使用每一个。
 
 ## 自定义中间件
 
@@ -54,7 +54,7 @@ extensions:
         max_tool_calls: 5
 ```
 
-配置的中间件会在内置中间件及可选的循环/token 保护之后加载。对于主 Agent 链，它位于终态响应、模型长度、安全和澄清尾部之前；子 Agent 链没有终态响应、模型长度或澄清阶段，因此配置中间件之后会继续执行可选的安全防护、`DurableContextMiddleware`、可选的 `SummarizationMiddleware`，随后是 `SubagentDateContextMiddleware` 和 `SystemMessageCoalescingMiddleware`。中间件路径会执行 Python 代码，因此应视为可信配置。嵌入式调用方也可以使用 `DeerFlowClient(middlewares=[AuditMiddleware()])`；它构建完整的主 Agent 链，并将中间件放在其终态响应、模型长度、安全和澄清尾部之前。`create_deerflow_agent(extra_middleware=[AuditMiddleware()])` 则构建较小的按功能组装的主 Agent 链；未锚定的额外中间件会紧接在 `ClarificationMiddleware` 之前放置（锚定中间件遵循其 `@Next`/`@Prev` 位置）。两个 API 均不会将中间件转发给子 Agent。
+配置的中间件会在内置中间件及可选的循环/token 保护之后加载。对于主 Agent 链，它位于终态响应、模型长度、安全和澄清尾部之前；子 Agent 链没有终态响应、模型长度或澄清阶段，因此配置中间件之后会继续执行可选的安全防护、`DurableContextMiddleware`、可选的 `SummarizationMiddleware`，随后是 `SubagentDateContextMiddleware` 和 `SystemMessageCoalescingMiddleware`。中间件路径会执行 Python 代码，因此应视为可信配置。嵌入式调用方也可以使用 `BerkshireAgentClient(middlewares=[AuditMiddleware()])`；它构建完整的主 Agent 链，并将中间件放在其终态响应、模型长度、安全和澄清尾部之前。`create_deerflow_agent(extra_middleware=[AuditMiddleware()])` 则构建较小的按功能组装的主 Agent 链；未锚定的额外中间件会紧接在 `ClarificationMiddleware` 之前放置（锚定中间件遵循其 `@Next`/`@Prev` 位置）。两个 API 均不会将中间件转发给子 Agent。
 
 应根据配置的所有者和插入位置选择注册方式。固定槽位（并未弃用）`extensions.middlewares` 可写在 `config.yaml` 或 `extensions_config.json` 中（前者优先），并同时作用于主 Agent 和子 Agent。通过顶层 `plugins:` 注册的打包扩展可在语义化扩展点贡献中间件。若贡献代码需要可提交、可编程且仅作用于主 Agent 的接线，请使用 `build_middlewares(..., custom_middlewares=[AuditMiddleware()])`。
 
@@ -178,7 +178,7 @@ checkpointer:
   connection_string: ./my-checkpoints.db
 ```
 
-对于自定义后端，实现 LangGraph 的 `BaseCheckpointSaver` 接口，并在初始化 `DeerFlowClient` 时以编程方式配置它。
+对于自定义后端，实现 LangGraph 的 `BaseCheckpointSaver` 接口，并在初始化 `BerkshireAgentClient` 时以编程方式配置它。
 
 <Cards num={2}>
   <Cards.Card title="集成指南" href="/docs/harness/integration-guide" />

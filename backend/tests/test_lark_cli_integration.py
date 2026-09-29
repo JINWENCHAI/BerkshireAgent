@@ -2978,7 +2978,7 @@ def _status_with_host_paths() -> lark_cli.LarkIntegrationStatus:
         skills_installed=27,
         installed_skills=("lark-doc",),
         enabled_skills=("lark-doc",),
-        install_path="/home/deer-flow/.deer-flow/integrations/skills/lark-cli",
+        install_path="/home/berkshire-agent/.berkshire-agent/integrations/skills/lark-cli",
         cli=lark_cli.LarkCliProbe(available=True, path="/usr/bin/lark-cli", version="1.0.65"),
         auth=lark_cli.LarkAuthProbe(status="authenticated", user="alice"),
     )
@@ -3007,7 +3007,7 @@ def test_lark_status_exposes_host_paths_for_admin(monkeypatch, tmp_path):
     with TestClient(app) as client:
         body = client.get("/api/integrations/lark/status").json()
 
-    assert body["install_path"] == "/home/deer-flow/.deer-flow/integrations/skills/lark-cli"
+    assert body["install_path"] == "/home/berkshire-agent/.berkshire-agent/integrations/skills/lark-cli"
     assert body["cli"]["path"] == "/usr/bin/lark-cli"
 
 

@@ -105,7 +105,7 @@ Extension <use>: placement TOOL_RAW fell back to a secondary anchor (primary anc
 
 `AgentScope` 是一个标志位：`LEAD`、`SUBAGENT` 或 `BOTH`（默认）。宿主分别构建每条链，只有作用域与正在构建的链有交集时才纳入该贡献。要按链区分，可以返回两个作用域不同的放置，或者根据 `ctx.scope` 分支。
 
-通过 `create_deerflow_agent(extra_middleware=...)` 或 `DeerFlowClient(middlewares=...)` 配置的中间件不会进入子 Agent；作用域包含 `SUBAGENT` 的扩展中间件会。
+通过 `create_deerflow_agent(extra_middleware=...)` 或 `BerkshireAgentClient(middlewares=...)` 配置的中间件不会进入子 Agent；作用域包含 `SUBAGENT` 的扩展中间件会。
 
 ## 排序
 

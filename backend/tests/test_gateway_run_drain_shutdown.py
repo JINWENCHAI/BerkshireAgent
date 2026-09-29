@@ -1,6 +1,6 @@
 """Regression tests for graceful run-task drain on Gateway shutdown.
 
-Guards bytedance/deer-flow issue #3373:
+Guards bytedance/berkshire-agent issue #3373:
 
     psycopg_pool.PoolClosed: the pool 'pool-1' is already closed
 

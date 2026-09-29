@@ -57,7 +57,7 @@ class ReasoningEffortCapabilities(BaseModel):
     """Effort vocabulary one model accepts (issue #5073).
 
     ``values`` is the provider's own vocabulary in display order. ``aliases``
-    map DeerFlow's generic values (``minimal``/``low``/``medium``/``high``) onto
+    map BerkshireAgent's generic values (``minimal``/``low``/``medium``/``high``) onto
     that vocabulary so a UI preset or a per-agent default never reaches the
     provider unmapped. ``path`` is where the value is serialized: the default
     ``reasoning_effort`` constructor keyword, or a dotted path such as
@@ -67,7 +67,7 @@ class ReasoningEffortCapabilities(BaseModel):
     model_config = ConfigDict(extra="forbid")
     values: list[str] = Field(..., min_length=1, description="Accepted effort values, in display order")
     default: str | None = Field(default=None, description="Effort used when the caller does not choose one")
-    aliases: dict[str, str] = Field(default_factory=dict, description="Generic DeerFlow value -> provider value")
+    aliases: dict[str, str] = Field(default_factory=dict, description="Generic BerkshireAgent value -> provider value")
     path: str = Field(default="reasoning_effort", pattern=_EFFORT_PATH_PATTERN, description="Dotted model-settings path the value is written to")
 
     @field_validator("path")

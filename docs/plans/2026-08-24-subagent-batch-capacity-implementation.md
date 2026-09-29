@@ -8,7 +8,7 @@ This is an implementation document, not an RFC. It describes the behavior and op
 
 ## Problem
 
-DeerFlow previously exposed three different concepts as if they were one limit:
+BerkshireAgent previously exposed three different concepts as if they were one limit:
 
 - `max_concurrent_subagents` controlled how many `task` calls the lead agent could emit in one model response.
 - `subagents.max_total_per_run` limited cumulative ordinary delegations in one lead-agent run (default `6`, hard range `1`–`50`).
@@ -70,11 +70,11 @@ The previous scheduler thread pool was removed. Background execution submits a c
 
 ### Direct factory ownership
 
-Gateway and `DeerFlowClient` install their startup dependencies for callers. A direct `create_deerflow_agent(...)` integration instead passes one explicit `SubagentRuntime` to every graph that must share a capacity boundary. The runtime snapshots `SubagentRuntimeConfig`, the ordinary `max_total_per_run`, one `SubagentExecutionCapacity`, an optional caller-owned `AppConfig` used for subagent registry/model/tool resolution, and an optional batch submitter or owned durable worker. This keeps the factory pure-argument: it does not load `config.yaml`, create a SQL repository, or silently start background work.
+Gateway and `BerkshireAgentClient` install their startup dependencies for callers. A direct `create_deerflow_agent(...)` integration instead passes one explicit `SubagentRuntime` to every graph that must share a capacity boundary. The runtime snapshots `SubagentRuntimeConfig`, the ordinary `max_total_per_run`, one `SubagentExecutionCapacity`, an optional caller-owned `AppConfig` used for subagent registry/model/tool resolution, and an optional batch submitter or owned durable worker. This keeps the factory pure-argument: it does not load `config.yaml`, create a SQL repository, or silently start background work.
 
 If the runtime owns a batch repository, the caller must start it before graph construction and stop it at application shutdown; `async with runtime` provides that lifecycle. Graph construction fails closed while the configured worker is stopped, so a graph cannot advertise batch tools backed by no worker. The bound ordinary and batch tools use that runtime's exact capacity/submitter even if another Gateway runtime exists in the same Python process.
 
-The direct factory accepts a caller-provided `system_prompt` and does not render DeerFlow's lead prompt. Such callers own any model-visible wording about delegation capacity; the default middleware still enforces the runtime's real limit regardless of that wording. The direct factory path also does not mount Gateway HTTP routes or the Web UI panel. Callers that need owner-scoped item browsing or export must expose those application surfaces themselves. Repository-free runtimes support ordinary delegation without an asynchronous lifecycle.
+The direct factory accepts a caller-provided `system_prompt` and does not render BerkshireAgent's lead prompt. Such callers own any model-visible wording about delegation capacity; the default middleware still enforces the runtime's real limit regardless of that wording. The direct factory path also does not mount Gateway HTTP routes or the Web UI panel. Callers that need owner-scoped item browsing or export must expose those application surfaces themselves. Repository-free runtimes support ordinary delegation without an asynchronous lifecycle.
 
 ### Ordinary runaway protection remains
 
@@ -86,7 +86,7 @@ This limit is not batch capacity. It prevents an ordinary conversational run fro
 
 ### Mode selection is explicit
 
-A job is a batch only when the lead agent or another authorized caller invokes `batch_task`. DeerFlow does not infer batch mode from prompt wording, item count, or frontend state.
+A job is a batch only when the lead agent or another authorized caller invokes `batch_task`. BerkshireAgent does not infer batch mode from prompt wording, item count, or frontend state.
 
 The tool is exposed only when all of the following are true:
 
@@ -168,7 +168,7 @@ all finished work failed and no item succeeded; mixed success/failure is
 
 Submission is idempotent per `(user_id, submission_key)`, where model submissions use the stable `run_id:tool_call_id` identity. Item keys must be unique within a batch and survive retries.
 
-Execution is **at least once**, not exactly once. An external side effect can complete immediately before a worker crashes and before DeerFlow commits the result. Batch items therefore must be read-only or use their stable item key as an idempotency key at the external system.
+Execution is **at least once**, not exactly once. An external side effect can complete immediately before a worker crashes and before BerkshireAgent commits the result. Batch items therefore must be read-only or use their stable item key as an idempotency key at the external system.
 
 ### Authorization snapshot
 
@@ -223,7 +223,7 @@ OpenClaw does not treat unrestricted ordinary delegation as its large fan-out so
 - `maxChildrenPerGroup` (live collectors); and
 - `maxTotalPerGroup` (lifetime runaway backstop).
 
-Accepted collectors above concurrency queue FIFO inside the global subagent lane. This is the same important separation used here: explicit mode selection plus total, live, batch-running, and process-running boundaries. DeerFlow additionally persists each item and lease because issue #4993 requires long-running bulk work to survive Gateway restart rather than only organizing a conversational fan-out.
+Accepted collectors above concurrency queue FIFO inside the global subagent lane. This is the same important separation used here: explicit mode selection plus total, live, batch-running, and process-running boundaries. BerkshireAgent additionally persists each item and lease because issue #4993 requires long-running bulk work to survive Gateway restart rather than only organizing a conversational fan-out.
 
 Comparison was verified against OpenClaw commit `65bcdf2f`; future OpenClaw behavior may change.
 
@@ -234,7 +234,7 @@ This implementation makes a 5,000-item batch representable and recoverable. It d
 End-to-end throughput remains bounded by:
 
 - model-provider RPM and TPM;
-- DeerFlow's LLM limiter and provider retry behavior;
+- BerkshireAgent's LLM limiter and provider retry behavior;
 - sandbox CPU, memory, startup latency, and external tool quotas;
 - SQL connection pool and write throughput;
 - result size; and
@@ -244,11 +244,11 @@ Operators should raise capacity gradually, observe provider throttling and resou
 
 ## Related work
 
-- [#4993](https://github.com/bytedance/deer-flow/issues/4993) — bulk subagent capacity request addressed by this implementation.
-- [#3099](https://github.com/bytedance/deer-flow/issues/3099) and [PR #3415](https://github.com/bytedance/deer-flow/pull/3415) — model-visible and executor concurrency inconsistency.
-- [#2670](https://github.com/bytedance/deer-flow/issues/2670), [#1319](https://github.com/bytedance/deer-flow/issues/1319), and [#1339](https://github.com/bytedance/deer-flow/issues/1339) — concurrency, queueing, and subagent execution pressure.
-- [#3857](https://github.com/bytedance/deer-flow/issues/3857), [#4290](https://github.com/bytedance/deer-flow/issues/4290), and [#4560](https://github.com/bytedance/deer-flow/issues/4560) — runaway protection, token/cost bounds, and long-running execution safety.
-- [#3948](https://github.com/bytedance/deer-flow/issues/3948) and [#1223](https://github.com/bytedance/deer-flow/issues/1223) — persistent background work and recoverable task state.
+- [#4993](https://github.com/bytedance/berkshire-agent/issues/4993) — bulk subagent capacity request addressed by this implementation.
+- [#3099](https://github.com/bytedance/berkshire-agent/issues/3099) and [PR #3415](https://github.com/bytedance/berkshire-agent/pull/3415) — model-visible and executor concurrency inconsistency.
+- [#2670](https://github.com/bytedance/berkshire-agent/issues/2670), [#1319](https://github.com/bytedance/berkshire-agent/issues/1319), and [#1339](https://github.com/bytedance/berkshire-agent/issues/1339) — concurrency, queueing, and subagent execution pressure.
+- [#3857](https://github.com/bytedance/berkshire-agent/issues/3857), [#4290](https://github.com/bytedance/berkshire-agent/issues/4290), and [#4560](https://github.com/bytedance/berkshire-agent/issues/4560) — runaway protection, token/cost bounds, and long-running execution safety.
+- [#3948](https://github.com/bytedance/berkshire-agent/issues/3948) and [#1223](https://github.com/bytedance/berkshire-agent/issues/1223) — persistent background work and recoverable task state.
 
 ## Validation contract
 

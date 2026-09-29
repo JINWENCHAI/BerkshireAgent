@@ -15,7 +15,7 @@ To move beyond `static_only`, evidence must include:
 
 - subject digest;
 - model ID;
-- runtime or DeerFlow version;
+- runtime or BerkshireAgent version;
 - prompt inputs;
 - tool trace;
 - outputs;

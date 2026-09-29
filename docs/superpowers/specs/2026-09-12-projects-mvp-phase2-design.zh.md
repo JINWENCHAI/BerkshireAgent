@@ -1,9 +1,9 @@
-# DeerFlow 项目 MVP —— Phase 2 设计（项目说明、文档、提升、回收站）
+# BerkshireAgent 项目 MVP —— Phase 2 设计（项目说明、文档、提升、回收站）
 
 **日期**: 2026-09-12
-**状态**: 评审草案（RFC v2，[issue #5160](https://github.com/bytedance/deer-flow/issues/5160)）
+**状态**: 评审草案（RFC v2，[issue #5160](https://github.com/bytedance/berkshire-agent/issues/5160)）
 **阶段**: 项目 MVP 的 Phase 2。Phase 1（组织）已作为 #5265 落地（`cfda885c`..`e2f2afde`，2026-09-08 合并）。
-**权威来源**: **本 spec 全文是 Phase 2 的实施依据**，包括与 RFC v2（`docs/plans/2026-09-06-projects-mvp-rfc-v2.md` / `.zh.md`）或前身 spec 不一致的地方。RFC 仅作为历史背景；§10 解释重要偏差，但不是本 spec 取得优先权的前提。未说明的内容是应依据本 spec 解决的实现细节，不代表隐式引入 RFC 要求。需求追踪：[#5129](https://github.com/bytedance/deer-flow/issues/5129)。
+**权威来源**: **本 spec 全文是 Phase 2 的实施依据**，包括与 RFC v2（`docs/plans/2026-09-06-projects-mvp-rfc-v2.md` / `.zh.md`）或前身 spec 不一致的地方。RFC 仅作为历史背景；§10 解释重要偏差，但不是本 spec 取得优先权的前提。未说明的内容是应依据本 spec 解决的实现细节，不代表隐式引入 RFC 要求。需求追踪：[#5129](https://github.com/bytedance/berkshire-agent/issues/5129)。
 **前身**: `docs/superpowers/specs/2026-09-06-projects-mvp-design.md`（其 §"运行时设计（Phase 2）"、§"删除、回收站与归档语义"已被本文 §7/§8 **取代**；该 spec 的 Phase 1 各节依然准确）。
 **锚定**: 下文每条当前系统断言都在本次 checkout 的 `main @ 0464502a`（2026-09-12）上复核过。
 

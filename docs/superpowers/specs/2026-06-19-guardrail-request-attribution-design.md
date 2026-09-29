@@ -2,17 +2,17 @@
 
 ## 概述
 
-为 `GuardrailRequest` 补充可选的运行时用户上下文和工具调用归因字段，使可插拔 `GuardrailProvider` 能访问 DeerFlow 已认证用户、外部身份映射、run/thread/tool-call 定位信息。
+为 `GuardrailRequest` 补充可选的运行时用户上下文和工具调用归因字段，使可插拔 `GuardrailProvider` 能访问 BerkshireAgent 已认证用户、外部身份映射、run/thread/tool-call 定位信息。
 
-本设计不新增治理系统、不定义统一 policy schema，也不改变默认 allow/deny 行为。它只把 DeerFlow 运行时已经掌握的上下文传给 provider。
+本设计不新增治理系统、不定义统一 policy schema，也不改变默认 allow/deny 行为。它只把 BerkshireAgent 运行时已经掌握的上下文传给 provider。
 
 ## 背景
 
-DeerFlow 已通过 `GuardrailMiddleware` + 可插拔 `GuardrailProvider` 实现工具调用前授权。当前 `GuardrailDecision` 已能表达 allow/deny、原因、policy_id 和 metadata；缺口在 `GuardrailRequest` 侧：provider 只能看到 `tool_name` 和 `tool_input`，无法可靠知道“谁发起了这次工具调用”以及“这次调用属于哪个 run/tool_call”。
+BerkshireAgent 已通过 `GuardrailMiddleware` + 可插拔 `GuardrailProvider` 实现工具调用前授权。当前 `GuardrailDecision` 已能表达 allow/deny、原因、policy_id 和 metadata；缺口在 `GuardrailRequest` 侧：provider 只能看到 `tool_name` 和 `tool_input`，无法可靠知道“谁发起了这次工具调用”以及“这次调用属于哪个 run/tool_call”。
 
-源码中 DeerFlow 已有用户身份模型：
+源码中 BerkshireAgent 已有用户身份模型：
 
-- `users.id`：DeerFlow 内部稳定用户 ID。
+- `users.id`：BerkshireAgent 内部稳定用户 ID。
 - `users.system_role`：`admin` / `user`。
 - `users.oauth_provider`、`users.oauth_id`：未来 OAuth/SSO 外部身份映射字段，local user 下可为空。
 
@@ -55,7 +55,7 @@ class GuardrailRequest:
 
 | 字段 | 来源 | 说明 |
 |------|------|------|
-| `user_id` | `request.state.user.id` → `runtime.context["user_id"]` | DeerFlow 内部稳定用户 ID |
+| `user_id` | `request.state.user.id` → `runtime.context["user_id"]` | BerkshireAgent 内部稳定用户 ID |
 | `user_role` | `request.state.user.system_role` → `runtime.context["user_role"]` | 可用于简单 role-based policy |
 | `oauth_provider` | `request.state.user.oauth_provider` → `runtime.context["oauth_provider"]` | OAuth/SSO 外部 provider，local user 可为空 |
 | `oauth_id` | `request.state.user.oauth_id` → `runtime.context["oauth_id"]` | 外部 provider subject/user id，local user 可为空 |
@@ -71,7 +71,7 @@ Gateway 注入只信任服务端认证态 `request.state.user`。客户端 `body
 
 `user_id/run_id/thread_id/tool_call_id` 让 provider 或外部审计系统能回答：
 
-- 哪个 DeerFlow 用户触发了 tool call？
+- 哪个 BerkshireAgent 用户触发了 tool call？
 - 哪个 run 里发生了 deny？
 - 同一轮中多次同名工具调用时，具体是哪一次？
 
@@ -128,7 +128,7 @@ PYTHONPATH=. uv run pytest \
 ## 未涉及
 
 - 不新增 central governance subsystem。
-- 不新增 DeerFlow 内置 policy schema。
+- 不新增 BerkshireAgent 内置 policy schema。
 - 不修改 MCP 配置机制。
 - 不修改 OAuth/SSO 实现状态。
 - 不让 GuardrailMiddleware 直接依赖 FastAPI request、DB 或 auth repository。

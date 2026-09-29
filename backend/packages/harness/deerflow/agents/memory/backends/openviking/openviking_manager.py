@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 class OpenVikingMemoryManager(MemoryManager):
     """Single-user OpenViking backend using the official integration package.
 
-    DeerFlow continues to choose when capture and recall occur. The official
+    BerkshireAgent continues to choose when capture and recall occur. The official
     adapter owns SDK transport, message conversion, batching, commit retries,
     and retrieval behavior.
     """
@@ -133,7 +133,7 @@ class OpenVikingMemoryManager(MemoryManager):
         agent_name: str | None = None,
         user_id: str | None = None,
     ) -> None:
-        # Preserve DeerFlow's existing pre-compaction behavior. This backend
+        # Preserve BerkshireAgent's existing pre-compaction behavior. This backend
         # commits every accepted capture, so add_nowait needs no separate mode.
         self._write_conversation(
             thread_id,
@@ -460,7 +460,7 @@ class OpenVikingMemoryManager(MemoryManager):
     ) -> str:
         resolved_user = str(user_id or "default")
         if resolved_user != self._config.owner_user_id:
-            raise MemoryManagerError(f"OpenViking USER API key is bound to DeerFlow owner_user_id {self._config.owner_user_id!r}, but this request belongs to {resolved_user!r}. Refusing to share one credential across users.")
+            raise MemoryManagerError(f"OpenViking USER API key is bound to BerkshireAgent owner_user_id {self._config.owner_user_id!r}, but this request belongs to {resolved_user!r}. Refusing to share one credential across users.")
         return _canonical_peer_id(agent_name, self._config.default_peer_id)
 
     def _resolve_read_scope(
@@ -574,7 +574,7 @@ def _load_official_integration() -> dict[str, Any]:
         )
         from langchain_openviking.actor_peer import use_actor_peer
     except ImportError as exc:
-        raise ImportError("The OpenViking memory backend requires langchain-openviking==0.1.0. Install DeerFlow backend dependencies and retry.") from exc
+        raise ImportError("The OpenViking memory backend requires langchain-openviking==0.1.0. Install BerkshireAgent backend dependencies and retry.") from exc
     if not has_request_actor_peer_support():
         raise ImportError("The installed OpenViking SDK lacks request-scoped actor-peer support. Install openviking-sdk>=0.1.6,<0.2 and retry.")
     return {

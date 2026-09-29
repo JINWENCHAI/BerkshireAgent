@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# serve.sh — Unified DeerFlow service launcher
+# serve.sh — Unified BerkshireAgent service launcher
 #
 # Usage:
 #   ./scripts/serve.sh [--dev|--prod] [--daemon] [--stop|--restart]
@@ -85,7 +85,7 @@ done
 
 # ── Stop helper ──────────────────────────────────────────────────────────────
 
-# Every deer-flow worktree (the main checkout + each linked worktree) hardcodes
+# Every berkshire-agent worktree (the main checkout + each linked worktree) hardcodes
 # the same dev ports (8001/3000/2026), so a service started from ANY of them
 # must be reclaimable from here — otherwise `make stop`/`make dev` in this
 # worktree can neither kill nor take over a port held by a sibling worktree.
@@ -102,9 +102,9 @@ DEERFLOW_ROOTS="$(
     } | awk 'NF && !seen[$0]++ {print length($0)"\t"$0}' | sort -rn | sed 's/^[0-9]*\t//'
 )"
 
-# True if PID has an open file/cwd under any deer-flow worktree root. The
-# trailing slash keeps a sibling dir like ".../deer-flow-notes" from matching
-# the ".../deer-flow" root.
+# True if PID has an open file/cwd under any berkshire-agent worktree root. The
+# trailing slash keeps a sibling dir like ".../berkshire-agent-notes" from matching
+# the ".../berkshire-agent" root.
 _is_deerflow_pid() {
     local pid=$1 files root
 
@@ -270,13 +270,13 @@ stop_all() {
     sleep 1
     _kill_repo_nginx
     # Force-kill any survivors still holding the service ports. 2026 is included
-    # so a lingering nginx (or any deer-flow process) that _kill_repo_nginx did
+    # so a lingering nginx (or any berkshire-agent process) that _kill_repo_nginx did
     # not match by name still gets reclaimed — otherwise `make dev` fails its
     # nginx port preflight.
     _kill_repo_port 8001
     _kill_repo_port 3000
     _kill_repo_port 2026
-    bash ./scripts/cleanup-containers.sh deer-flow-sandbox 2>/dev/null || true
+    bash ./scripts/cleanup-containers.sh berkshire-agent-sandbox 2>/dev/null || true
     echo "✓ All services stopped"
 }
 
@@ -338,13 +338,13 @@ else
 fi
 
 # Runtime path defaults. Local `make dev` launches Gateway from `backend/`,
-# so pin DeerFlow-owned state to the expected backend runtime directory and
+# so pin BerkshireAgent-owned state to the expected backend runtime directory and
 # create it before uvicorn builds its reload exclude filter.
 if [ -z "$DEER_FLOW_PROJECT_ROOT" ]; then
     export DEER_FLOW_PROJECT_ROOT="$REPO_ROOT"
 fi
 
-BACKEND_RUNTIME_HOME="$REPO_ROOT/backend/.deer-flow"
+BACKEND_RUNTIME_HOME="$REPO_ROOT/backend/.berkshire-agent"
 if [ -z "$DEER_FLOW_HOME" ]; then
     export DEER_FLOW_HOME="$BACKEND_RUNTIME_HOME"
 fi
@@ -380,7 +380,7 @@ if ! { \
         [ -f backend/config.yaml ] || \
         [ -f config.yaml ]; \
     }; then
-    echo "✗ No DeerFlow config file found."
+    echo "✗ No BerkshireAgent config file found."
     echo "  Run 'make setup' (recommended) or 'make config' to generate config.yaml."
     exit 1
 fi
@@ -429,7 +429,7 @@ fi
 
 echo ""
 echo "=========================================="
-echo "  Starting DeerFlow"
+echo "  Starting BerkshireAgent"
 echo "=========================================="
 echo ""
 echo "  Mode: $MODE_LABEL"
@@ -512,7 +512,7 @@ run_service "Nginx" \
 
 echo ""
 echo "=========================================="
-echo "  ✓ DeerFlow is running!  [$MODE_LABEL]"
+echo "  ✓ BerkshireAgent is running!  [$MODE_LABEL]"
 echo "=========================================="
 echo ""
 echo "  🌐 http://localhost:2026"

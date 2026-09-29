@@ -25,7 +25,7 @@ class ReasoningEffortCapabilitiesResponse(BaseModel):
 
     values: list[str] = Field(..., description="Accepted effort values (provider vocabulary)")
     default: str | None = Field(default=None, description="Effort applied when the caller does not choose one")
-    aliases: dict[str, str] = Field(default_factory=dict, description="Generic DeerFlow value -> provider value")
+    aliases: dict[str, str] = Field(default_factory=dict, description="Generic BerkshireAgent value -> provider value")
 
 
 class ReasoningCapabilitiesResponse(BaseModel):

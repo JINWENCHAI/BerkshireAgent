@@ -1,6 +1,6 @@
 # DeerMem Capacity-Eviction Evaluation
 
-This directory makes the controlled comparison behind DeerMem's opt-in `hybrid-v1` capacity policy reproducible. It depends on [deer-flow#4789](https://github.com/bytedance/deer-flow/pull/4789), which implements the remediation proposed after the confidence-only eviction flaw reported in [deer-flow#4641](https://github.com/bytedance/deer-flow/issues/4641).
+This directory makes the controlled comparison behind DeerMem's opt-in `hybrid-v1` capacity policy reproducible. It depends on [berkshire-agent#4789](https://github.com/bytedance/berkshire-agent/pull/4789), which implements the remediation proposed after the confidence-only eviction flaw reported in [berkshire-agent#4641](https://github.com/bytedance/berkshire-agent/issues/4641).
 
 The evaluation calls the production `select_facts_for_capacity()` function. It does not copy the scoring implementation and does not introduce another eviction strategy.
 

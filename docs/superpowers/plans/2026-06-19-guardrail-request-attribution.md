@@ -142,7 +142,7 @@ value: admin:bash
 ```
 
 **文案约束：**
-- 不声称 DeerFlow 内置该 YAML schema。
+- 不声称 BerkshireAgent 内置该 YAML schema。
 - 不写成对标 AGT。
 - AGT/OPA/Cedar 只作为可选 policy engine 示例。
 

@@ -2,10 +2,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "deer-flow.fullname" . }}
-  namespace: {{ include "deer-flow.namespace" . }}
+  name: {{ include "berkshire-agent.fullname" . }}
+  namespace: {{ include "berkshire-agent.namespace" . }}
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

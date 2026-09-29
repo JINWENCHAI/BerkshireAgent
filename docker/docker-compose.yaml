@@ -1,4 +1,4 @@
-# DeerFlow Production Environment
+# BerkshireAgent Production Environment
 # Usage: make up
 #
 # Services:
@@ -10,7 +10,7 @@
 #
 # Key environment variables (set via environment/.env or scripts/deploy.sh):
 #   DEER_FLOW_PROJECT_ROOT           — project root for relative runtime paths
-#   DEER_FLOW_HOME                   — runtime data dir, default .deer-flow under $DEER_FLOW_PROJECT_ROOT (or cwd)
+#   DEER_FLOW_HOME                   — runtime data dir, default .berkshire-agent under $DEER_FLOW_PROJECT_ROOT (or cwd)
 #   DEER_FLOW_CONFIG_PATH            — path to config.yaml
 #   DEER_FLOW_EXTENSIONS_CONFIG_PATH — path to extensions_config.json
 #   DEER_FLOW_SKILLS_PATH            — skills dir, default $DEER_FLOW_PROJECT_ROOT/skills
@@ -28,7 +28,7 @@ services:
   # ── Redis Stream Bridge ────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
-    container_name: deer-flow-redis
+    container_name: berkshire-agent-redis
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data
@@ -38,14 +38,14 @@ services:
       timeout: 3s
       retries: 10
     networks:
-      - deer-flow
+      - berkshire-agent
     restart: unless-stopped
 
   # ── Reverse Proxy ──────────────────────────────────────────────────────────
   nginx:
     image: nginx:alpine
-    container_name: deer-flow-nginx
-    # Loopback-only by default: DeerFlow's agent can execute commands, so the
+    container_name: berkshire-agent-nginx
+    # Loopback-only by default: BerkshireAgent's agent can execute commands, so the
     # documented default deployment is a local trusted environment. A bare
     # "${PORT}:2026" would bind 0.0.0.0 instead, which does not match that.
     # Set BIND_HOST=0.0.0.0 only behind your own TLS/auth front door, and
@@ -74,7 +74,7 @@ services:
       gateway:
         condition: service_healthy
     networks:
-      - deer-flow
+      - berkshire-agent
     restart: unless-stopped
 
   # ── Frontend: Next.js Production ───────────────────────────────────────────
@@ -86,14 +86,14 @@ services:
       args:
         PNPM_STORE_PATH: ${PNPM_STORE_PATH:-/root/.local/share/pnpm/store}
         NPM_REGISTRY: ${NPM_REGISTRY:-}
-    container_name: deer-flow-frontend
+    container_name: berkshire-agent-frontend
     environment:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - DEER_FLOW_INTERNAL_GATEWAY_BASE_URL=http://gateway:8001
     env_file:
       - ../frontend/.env
     networks:
-      - deer-flow
+      - berkshire-agent
     restart: unless-stopped
 
   # ── Gateway API ────────────────────────────────────────────────────────────
@@ -108,7 +108,7 @@ services:
         UV_EXTRAS: ${UV_EXTRAS:-}
         NPM_REGISTRY: ${NPM_REGISTRY:-}
         LARK_CLI_NPM_VERSION: ${LARK_CLI_NPM_VERSION:-1.0.65}
-    container_name: deer-flow-gateway
+    container_name: berkshire-agent-gateway
     # Gateway hosts the agent runtime with in-process RunManager + StreamBridge
     # singletons -- run state lives in this worker's memory. Default to a single
     # worker: the Redis stream bridge solves cross-worker SSE delivery and
@@ -123,7 +123,7 @@ services:
       # above stays read-only because no API writes it.
       - ${DEER_FLOW_EXTENSIONS_CONFIG_PATH}:/app/backend/extensions_config.json
       - ../skills:/app/skills:ro
-      - ${DEER_FLOW_HOME}:/app/backend/.deer-flow
+      - ${DEER_FLOW_HOME}:/app/backend/.berkshire-agent
       # DooD: the host Docker socket is NOT mounted by default. It is added only
       # for aio (pure-DooD) sandbox mode via the opt-in docker-compose.dood.yaml
       # overlay (appended by scripts/deploy.sh). See backend/docs/CONFIGURATION.md
@@ -139,7 +139,7 @@ services:
     environment:
       - CI=true
       - DEER_FLOW_PROJECT_ROOT=/app
-      - DEER_FLOW_HOME=/app/backend/.deer-flow
+      - DEER_FLOW_HOME=/app/backend/.berkshire-agent
       - DEER_FLOW_CONFIG_PATH=/app/backend/config.yaml
       - DEER_FLOW_EXTENSIONS_CONFIG_PATH=/app/backend/extensions_config.json
       - DEER_FLOW_STREAM_BRIDGE_REDIS_URL=${DEER_FLOW_STREAM_BRIDGE_REDIS_URL:-redis://redis:6379/0}
@@ -169,7 +169,7 @@ services:
       retries: 30
       start_period: 20s
     networks:
-      - deer-flow
+      - berkshire-agent
     restart: unless-stopped
 
   # ── Sandbox Provisioner (optional, Kubernetes mode) ────────────────────────
@@ -180,14 +180,14 @@ services:
       args:
         APT_MIRROR: ${APT_MIRROR:-}
         PIP_INDEX_URL: ${PIP_INDEX_URL:-}
-    container_name: deer-flow-provisioner
+    container_name: berkshire-agent-provisioner
     volumes:
       - ~/.kube/config:/root/.kube/config:ro
     environment:
-      - K8S_NAMESPACE=deer-flow
+      - K8S_NAMESPACE=berkshire-agent
       - SANDBOX_IMAGE=enterprise-public-cn-beijing.cr.volces.com/vefaas-public/all-in-one-sandbox:latest
       # Optional lark-cli init image (Pattern A). Empty ⇒ legacy runtime mount.
-      # Set to a published tag (e.g. deer-flow/lark-cli-init:v1.0.65) to provision
+      # Set to a published tag (e.g. berkshire-agent/lark-cli-init:v1.0.65) to provision
       # the sandbox lark-cli runtime via an init container + emptyDir.
       - LARK_CLI_INIT_IMAGE=${LARK_CLI_INIT_IMAGE:-}
       # Optional lark-cli broker image (Pattern B, issue #4338). When set, the
@@ -205,7 +205,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      - deer-flow
+      - berkshire-agent
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
@@ -216,5 +216,5 @@ volumes:
   redis-data:
 
 networks:
-  deer-flow:
+  berkshire-agent:
     driver: bridge

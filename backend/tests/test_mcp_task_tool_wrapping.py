@@ -109,7 +109,7 @@ def test_submit_wrapper_preserves_server_description_and_appends_background_cont
     )
 
     assert configured[0].description == (
-        "Generate a quarterly financial report for the requested topic.\n\nSubmitted as durable background task 'report-generation'; returns a DeerFlow task ID immediately and status polling is handled automatically."
+        "Generate a quarterly financial report for the requested topic.\n\nSubmitted as durable background task 'report-generation'; returns a BerkshireAgent task ID immediately and status polling is handled automatically."
     )
 
 

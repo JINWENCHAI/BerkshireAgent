@@ -2,7 +2,7 @@
 
 Extension API **0.2.4** adds an optional `ExtensionRuntimeDeps.model_invoker`.
 An operator-authorized service can make an asynchronous, non-streaming text call
-using DeerFlow's configured models. The host constructs the provider client and
+using BerkshireAgent's configured models. The host constructs the provider client and
 returns plain data; the extension needs no provider credentials or LangChain dependency.
 
 ## Grant and route logical roles

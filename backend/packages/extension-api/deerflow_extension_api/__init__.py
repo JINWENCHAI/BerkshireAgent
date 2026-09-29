@@ -1,4 +1,4 @@
-"""Public contracts for DeerFlow extensions.
+"""Public contracts for BerkshireAgent extensions.
 
 This package MUST NOT import `deerflow`. Every host contract an extension
 needs lives here, while framework imports remain direct extension dependencies;

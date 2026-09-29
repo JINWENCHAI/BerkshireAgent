@@ -31,13 +31,13 @@ Cool? Cool.
 
 ---
 
-## DeerFlow Environment (⚠️ READ THIS FIRST)
+## BerkshireAgent Environment (⚠️ READ THIS FIRST)
 
-If you are running inside a **DeerFlow** sandboxed agent environment (you have access to the `skill_manage` tool), you MUST follow these rules for all skill file operations. These override the generic file-writing and packaging instructions below.
+If you are running inside a **BerkshireAgent** sandboxed agent environment (you have access to the `skill_manage` tool), you MUST follow these rules for all skill file operations. These override the generic file-writing and packaging instructions below.
 
 ### Why this matters
 
-In DeerFlow, the sandbox filesystem is isolated. Files written with `write_file` land in `/mnt/user-data/outputs/`, which is a **per-thread output directory** — new chats cannot see files there. Skills must be persisted through the dedicated `skill_manage` tool so they are stored in the per-user skill directory and immediately visible to all future chats.
+In BerkshireAgent, the sandbox filesystem is isolated. Files written with `write_file` land in `/mnt/user-data/outputs/`, which is a **per-thread output directory** — new chats cannot see files there. Skills must be persisted through the dedicated `skill_manage` tool so they are stored in the per-user skill directory and immediately visible to all future chats.
 
 ### Use `skill_manage` for all skill file operations
 
@@ -54,7 +54,7 @@ In DeerFlow, the sandbox filesystem is isolated. Files written with `write_file`
 
 1. **NEVER use sandbox `write_file` to create or modify skill files** (SKILL.md, scripts/, references/, assets/). These would land in `/mnt/user-data/outputs/` and be invisible to future chats. Always use `skill_manage` instead.
 
-2. **Skip the `package_skill.py` step**. In DeerFlow, `skill_manage` already persists the skill to the correct per-user directory. No `.skill` packaging or manual install is needed. The skill is immediately available in all new chats.
+2. **Skip the `package_skill.py` step**. In BerkshireAgent, `skill_manage` already persists the skill to the correct per-user directory. No `.skill` packaging or manual install is needed. The skill is immediately available in all new chats.
 
 3. **Skip the `present_files` step for skills**. Skills are NOT deliverables — they are persisted via `skill_manage` and auto-loaded by the skill system. Only use `present_files` for non-skill outputs (eval reports, benchmarks, etc.).
 
@@ -64,7 +64,7 @@ In DeerFlow, the sandbox filesystem is isolated. Files written with `write_file`
 
 6. **Updating an existing skill**: use `skill_manage(action="edit")` or `skill_manage(action="patch")`. Do NOT copy to `/tmp/` first — `skill_manage` handles the per-user storage directly.
 
-### Workflow in DeerFlow
+### Workflow in BerkshireAgent
 
 The core loop is the same, but the persistence mechanism changes:
 

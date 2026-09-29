@@ -1,4 +1,4 @@
-<!-- Authored by @zhfeng, discussed in https://github.com/bytedance/deer-flow/issues/4063.
+<!-- Authored by @zhfeng, discussed in https://github.com/bytedance/berkshire-agent/issues/4063.
      Added to the PR per @WillemJiang's request for design tracking. -->
 
 > **实施连续性要求：** 每个阶段的 PR 都必须阅读并更新
@@ -8,17 +8,17 @@
 
 # RFC: Pluggable Fine-Grained Authorization
 
-**Status:** Draft for feedback (responds to [#3462](https://github.com/bytedance/deer-flow/issues/3462)).
+**Status:** Draft for feedback (responds to [#3462](https://github.com/bytedance/berkshire-agent/issues/3462)).
 **Affects:** `backend/packages/harness/deerflow/authz/` (new), `backend/app/gateway/authz.py`, `backend/packages/harness/deerflow/guardrails/`, `backend/packages/harness/deerflow/agents/lead_agent/agent.py`, `backend/packages/harness/deerflow/client.py`, `backend/packages/harness/deerflow/subagents/executor.py`, `backend/app/gateway/services.py`, `config.example.yaml`.
 
-> Maintainer guidance from the issue ([@WillemJiang](https://github.com/bytedance/deer-flow/issues/3462)):
+> Maintainer guidance from the issue ([@WillemJiang](https://github.com/bytedance/berkshire-agent/issues/3462)):
 > *"在开始实现之前，我们需要梳理相关的资源与权限的管理映射关系。具体工具调用和资源访问这块可以结合现有的 GuardrailProvider 来进行整合。另外建议在实现之前，做一个 RFC 的设计，方便大家的提反馈建议。"*
 >
 > This RFC does exactly that: (1) maps the resource × permission space, (2) integrates with `GuardrailProvider`, (3) is an RFC for feedback before any implementation.
 
 ## TL;DR
 
-DeerFlow's authorization today is **authentication + ownership**: every authenticated user gets every API permission (`authz.py:144` hands all users `_ALL_PERMISSIONS`), and the only real authorization beyond login is thread ownership (`owner_check`) and a handful of hard-coded `require_admin_user()` routes. There is **no resource-level authorization** — no role can be told "you may not call `write_file`", "you may not use model X", or "you may not run sandbox code".
+BerkshireAgent's authorization today is **authentication + ownership**: every authenticated user gets every API permission (`authz.py:144` hands all users `_ALL_PERMISSIONS`), and the only real authorization beyond login is thread ownership (`owner_check`) and a handful of hard-coded `require_admin_user()` routes. There is **no resource-level authorization** — no role can be told "you may not call `write_file`", "you may not use model X", or "you may not run sandbox code".
 
 This RFC proposes a **single pluggable `AuthorizationProvider` Protocol** that is the policy brain for all fine-grained authz, enforced at **two layers** from one policy:
 
@@ -40,7 +40,7 @@ The two hard problems raised in the thread — **dynamic resources** and the **f
 | Source | `system_role` | When |
 |---|---|---|
 | Session (JWT cookie → `User`) | `"admin"` or `"user"` | Browser / API callers |
-| Internal (`X-DeerFlow-Internal-Token`) | `"internal"` | IM channel workers, scheduler |
+| Internal (`X-BerkshireAgent-Internal-Token`) | `"internal"` | IM channel workers, scheduler |
 | Auth-disabled | `"admin"` | `auth_disabled` mode |
 
 The `User` model (`backend/app/gateway/auth/models.py:15`) carries `system_role: Literal["admin", "user"]`; the DB column is `String(16)` *deliberately*, with a comment: *"kept as plain string to avoid ALTER TABLE pain when new roles are introduced"* (`persistence/user/model.py:33`). **The schema is already forward-compatible with new roles.**
@@ -88,9 +88,9 @@ Three agent build paths assemble tools, and they must all apply the same filter 
 |---|---|---|
 | Lead agent | `agents/lead_agent/agent.py:562` | ✅ |
 | Subagent | `subagents/executor.py:578` (`_apply_skill_allowed_tools`) | ✅ |
-| `DeerFlowClient` | `client.py:259` | ❌ *(passes `tools` straight to `assemble_deferred_tools`)* |
+| `BerkshireAgentClient` | `client.py:259` | ❌ *(passes `tools` straight to `assemble_deferred_tools`)* |
 
-The `DeerFlowClient` gap is a pre-existing inconsistency; any new authz filter must be applied on all three.
+The `BerkshireAgentClient` gap is a pre-existing inconsistency; any new authz filter must be applied on all three.
 
 ### 1.5 Identity flow into the run — reliable for the web, gap for channels
 
@@ -456,7 +456,7 @@ authorization:
 
 **This RFC = Plan A's pluggability + Plan B's batteries-included default + the two-layer enforcement that neither alone provides.**
 
-> **Prior-art note.** The choice to add a sibling `AuthorizationProvider` rather than extend `GuardrailProvider` is not second-guessing the guardrail design - it is what that design explicitly deferred. PR [#3665](https://github.com/bytedance/deer-flow/pull/3665) (which added `user_role`/`user_id` to `GuardrailRequest`) states its scope as: *"保持 Guardrail 的职责边界不变：不新增 policy engine、RBAC 系统、governance 子系统"* ("keeps the guardrail boundary: adds no policy engine, RBAC system, or governance subsystem"). The guardrail is the *execution enforcement point*; the RBAC brain that #3665 deliberately left out is what this RFC adds - and it reuses the guardrail as that enforcement point (§6).
+> **Prior-art note.** The choice to add a sibling `AuthorizationProvider` rather than extend `GuardrailProvider` is not second-guessing the guardrail design - it is what that design explicitly deferred. PR [#3665](https://github.com/bytedance/berkshire-agent/pull/3665) (which added `user_role`/`user_id` to `GuardrailRequest`) states its scope as: *"保持 Guardrail 的职责边界不变：不新增 policy engine、RBAC 系统、governance 子系统"* ("keeps the guardrail boundary: adds no policy engine, RBAC system, or governance subsystem"). The guardrail is the *execution enforcement point*; the RBAC brain that #3665 deliberately left out is what this RFC adds - and it reuses the guardrail as that enforcement point (§6).
 
 ---
 
@@ -477,7 +477,7 @@ Backend tests in `backend/tests/`. Minimum coverage for Phase 1:
 
 - `test_authz_provider_protocol.py` — Protocol conformance, `@runtime_checkable`, default `filter_resources` delegates to `authorize`.
 - `test_rbac_authorization_provider.py` — per-role allow/deny, `*` wildcard, `deny` wins, unknown role → `default_role` → `fail_closed`, all resource types.
-- `test_authz_tool_filter.py` — Layer 1: tools removed at assembly on all three build paths (lead / subagent / `DeerFlowClient`); filtered tools absent from `DeferredToolCatalog` (fail-closed promotion).
+- `test_authz_tool_filter.py` — Layer 1: tools removed at assembly on all three build paths (lead / subagent / `BerkshireAgentClient`); filtered tools absent from `DeferredToolCatalog` (fail-closed promotion).
 - `test_authz_guardrail_adapter.py` — Layer 2: adapter deny → `GuardrailMiddleware` returns error `ToolMessage`; `user_role` flows from context; `fail_closed` on provider error.
 - `test_authz_prompt_injection.py` — a tool removed at assembly cannot be invoked even when the prompt tries to call it (the security-boundary guarantee).
 - `test_authz_principal.py` — `user_role=None` → `default_role`; internal caller; subagent inherits principal.
@@ -487,7 +487,7 @@ Backend tests in `backend/tests/`. Minimum coverage for Phase 1:
 
 ## 14. References
 
-- Issue: [#3462](https://github.com/bytedance/deer-flow/issues/3462)
+- Issue: [#3462](https://github.com/bytedance/berkshire-agent/issues/3462)
 - Existing design: `backend/docs/AUTH_DESIGN.md`, `backend/docs/GUARDRAILS.md`
 - Guardrail provider: `backend/packages/harness/deerflow/guardrails/provider.py`
 - Guardrail middleware: `backend/packages/harness/deerflow/guardrails/middleware.py`
@@ -501,31 +501,31 @@ Backend tests in `backend/tests/`. Minimum coverage for Phase 1:
 
 ## 15. Related work & prior art (upstream issues & PRs)
 
-A search of `bytedance/deer-flow` confirms **no RBAC implementation exists**; RBAC is a recognized but unowned roadmap item. This RFC situates itself in the prior work below.
+A search of `bytedance/berkshire-agent` confirms **no RBAC implementation exists**; RBAC is a recognized but unowned roadmap item. This RFC situates itself in the prior work below.
 
 ### Direct lineage - what this RFC builds on
 
-- **[#1669](https://github.com/bytedance/deer-flow/issues/1669)** - Q2 Roadmap. Lists *"Implement Role-Based Access Control (RBAC)"* under "Security and Permission Strengthening 🔥🔥🔥🔥" (top priority), referencing #1721 and #3506. **This is the roadmap slot #3462 and this RFC fill.**
-- **[#1213](https://github.com/bytedance/deer-flow/issues/1213)** (closed) - the original RFC proposing OAP `before_tool_call` authorization for tools/skills. The `GuardrailProvider`/`GuardrailMiddleware` system is the implemented result. **Our RFC is the next layer on top of that lineage.**
-- **[#3664](https://github.com/bytedance/deer-flow/issues/3664) / PR [#3665](https://github.com/bytedance/deer-flow/pull/3665)** (merged) - added `user_id`/`user_role`/`oauth_*`/`run_id`/`tool_call_id` to `GuardrailRequest` and wired Gateway -> context -> middleware. **This is the plumbing our Layer 2 relies on.** Critically, #3665 explicitly scoped guardrails to *not* be an RBAC system (quoted in §11) - the RBAC brain is the deliberately-deferred gap this RFC adds.
-- **[#3672](https://github.com/bytedance/deer-flow/issues/3672) / PR [#3839](https://github.com/bytedance/deer-flow/pull/3839)** (merged) - propagate the bound connection owner's `role`/`oauth` into the guardrail context for IM/internal-auth runs. Documents the exact `user_role=None` gap for unbound channels ("If owner lookup fails, the run continues with role/oauth attribution unset") **that our `default_role` (§8) closes.**
-- **[#2507](https://github.com/bytedance/deer-flow/issues/2507) / RFC PR [#2504](https://github.com/bytedance/deer-flow/pull/2504)** (closed) - "Deferred MCP tools can execute before `tool_search` promotion." Proposed direction: *"Add an execution gate before tool execution."* This became `DeferredToolFilterMiddleware.wrap_tool_call`'s execution deny. **Our §7.2 two-layer design is consistent with this precedent** - the project already chose "execution gate" as the pattern for the deferred capability boundary.
+- **[#1669](https://github.com/bytedance/berkshire-agent/issues/1669)** - Q2 Roadmap. Lists *"Implement Role-Based Access Control (RBAC)"* under "Security and Permission Strengthening 🔥🔥🔥🔥" (top priority), referencing #1721 and #3506. **This is the roadmap slot #3462 and this RFC fill.**
+- **[#1213](https://github.com/bytedance/berkshire-agent/issues/1213)** (closed) - the original RFC proposing OAP `before_tool_call` authorization for tools/skills. The `GuardrailProvider`/`GuardrailMiddleware` system is the implemented result. **Our RFC is the next layer on top of that lineage.**
+- **[#3664](https://github.com/bytedance/berkshire-agent/issues/3664) / PR [#3665](https://github.com/bytedance/berkshire-agent/pull/3665)** (merged) - added `user_id`/`user_role`/`oauth_*`/`run_id`/`tool_call_id` to `GuardrailRequest` and wired Gateway -> context -> middleware. **This is the plumbing our Layer 2 relies on.** Critically, #3665 explicitly scoped guardrails to *not* be an RBAC system (quoted in §11) - the RBAC brain is the deliberately-deferred gap this RFC adds.
+- **[#3672](https://github.com/bytedance/berkshire-agent/issues/3672) / PR [#3839](https://github.com/bytedance/berkshire-agent/pull/3839)** (merged) - propagate the bound connection owner's `role`/`oauth` into the guardrail context for IM/internal-auth runs. Documents the exact `user_role=None` gap for unbound channels ("If owner lookup fails, the run continues with role/oauth attribution unset") **that our `default_role` (§8) closes.**
+- **[#2507](https://github.com/bytedance/berkshire-agent/issues/2507) / RFC PR [#2504](https://github.com/bytedance/berkshire-agent/pull/2504)** (closed) - "Deferred MCP tools can execute before `tool_search` promotion." Proposed direction: *"Add an execution gate before tool execution."* This became `DeferredToolFilterMiddleware.wrap_tool_call`'s execution deny. **Our §7.2 two-layer design is consistent with this precedent** - the project already chose "execution gate" as the pattern for the deferred capability boundary.
 
 ### Security precedents - the gaps that motivate #3462
 
-- **GHSA-4693 / [#2996](https://github.com/bytedance/deer-flow/pull/2996)** (closed) - proposed `@require_permission` for MCP/memory/skills routers after any authenticated user could RCE via MCP stdio config injection. The merged fix was **[#3855](https://github.com/bytedance/deer-flow/pull/3855)** (admin-gate skills) + **[#3425](https://github.com/bytedance/deer-flow/pull/3425)** (harden MCP config endpoint) - i.e. the project chose `require_admin_user` over fine-grained permissions for management surfaces. **This RFC respects that precedent** (§9 Phase 2, §12 Q6): management endpoints stay admin-gated; only ordinary routes migrate to the provider.
-- **[#1646](https://github.com/bytedance/deer-flow/issues/1646)**, **[#1648](https://github.com/bytedance/deer-flow/issues/1648)**, **[#2531](https://github.com/bytedance/deer-flow/issues/2531)** (open) - unauthenticated/over-broad MCP config + memory disclosure. Further evidence that resource-level authz is the open gap.
+- **GHSA-4693 / [#2996](https://github.com/bytedance/berkshire-agent/pull/2996)** (closed) - proposed `@require_permission` for MCP/memory/skills routers after any authenticated user could RCE via MCP stdio config injection. The merged fix was **[#3855](https://github.com/bytedance/berkshire-agent/pull/3855)** (admin-gate skills) + **[#3425](https://github.com/bytedance/berkshire-agent/pull/3425)** (harden MCP config endpoint) - i.e. the project chose `require_admin_user` over fine-grained permissions for management surfaces. **This RFC respects that precedent** (§9 Phase 2, §12 Q6): management endpoints stay admin-gated; only ordinary routes migrate to the provider.
+- **[#1646](https://github.com/bytedance/berkshire-agent/issues/1646)**, **[#1648](https://github.com/bytedance/berkshire-agent/issues/1648)**, **[#2531](https://github.com/bytedance/berkshire-agent/issues/2531)** (open) - unauthenticated/over-broad MCP config + memory disclosure. Further evidence that resource-level authz is the open gap.
 
 ### Complementary (distinct axis, not overlapping)
 
-- **[#2470](https://github.com/bytedance/deer-flow/issues/2470)** (open RFC) - "Pluggable auth *providers* with request-level hook." This is **authentication** (trusted-header/gateway SSO via an `AuthProvider` extension), and its non-goal #4 explicitly excludes authorization policy. **Complementary, not overlapping** - it decides *who you are*; this RFC decides *what you can do*.
-- **[#3322](https://github.com/bytedance/deer-flow/issues/3322)**, **[#3476](https://github.com/bytedance/deer-flow/issues/3476)**, **[#2761](https://github.com/bytedance/deer-flow/issues/2761)** (open) - **per-user credential** isolation (per-user MCP tokens, user connectors for GitHub/Linear, per-user model API keys). This is a *different axis* from per-*role* tool authorization: per-user creds = "act as this user on external service X"; this RFC = "may role Y use tool/model Z at all." The `Principal` (§5) and provider hook could eventually support per-user policies, but per-user credential plumbing is a separate effort.
-- **[#1721](https://github.com/bytedance/deer-flow/issues/1721)** (closed RFC) - the original user-authentication module design (the `AUTH_DESIGN.md` lineage). Scoped RBAC out as a non-goal ("当前用户角色只有 admin 和 user，尚未实现细粒度 RBAC"). **This RFC is the RBAC that #1721 deferred.**
+- **[#2470](https://github.com/bytedance/berkshire-agent/issues/2470)** (open RFC) - "Pluggable auth *providers* with request-level hook." This is **authentication** (trusted-header/gateway SSO via an `AuthProvider` extension), and its non-goal #4 explicitly excludes authorization policy. **Complementary, not overlapping** - it decides *who you are*; this RFC decides *what you can do*.
+- **[#3322](https://github.com/bytedance/berkshire-agent/issues/3322)**, **[#3476](https://github.com/bytedance/berkshire-agent/issues/3476)**, **[#2761](https://github.com/bytedance/berkshire-agent/issues/2761)** (open) - **per-user credential** isolation (per-user MCP tokens, user connectors for GitHub/Linear, per-user model API keys). This is a *different axis* from per-*role* tool authorization: per-user creds = "act as this user on external service X"; this RFC = "may role Y use tool/model Z at all." The `Principal` (§5) and provider hook could eventually support per-user policies, but per-user credential plumbing is a separate effort.
+- **[#1721](https://github.com/bytedance/berkshire-agent/issues/1721)** (closed RFC) - the original user-authentication module design (the `AUTH_DESIGN.md` lineage). Scoped RBAC out as a non-goal ("当前用户角色只有 admin 和 user，尚未实现细粒度 RBAC"). **This RFC is the RBAC that #1721 deferred.**
 
 ### Other relevant security work
 
-- **[#3630](https://github.com/bytedance/deer-flow/issues/3630) / [#3662](https://github.com/bytedance/deer-flow/pull/3662) / [#3661](https://github.com/bytedance/deer-flow/pull/3661)** (merged) - prompt-injection input sanitization + role isolation via system-message injection. Orthogonal defense; our Layer 1 (remove tools from the bound set) is the complementary capability-layer defense.
-- **[#3837](https://github.com/bytedance/deer-flow/pull/3837)** (merged) - persist guardrail interventions as run events. Our Layer 2 reuses this audit trail for free.
-- **[#3929](https://github.com/bytedance/deer-flow/issues/3929)** (open) - sandbox NodePort->ClusterIP (same author family of security hardening RFCs).
+- **[#3630](https://github.com/bytedance/berkshire-agent/issues/3630) / [#3662](https://github.com/bytedance/berkshire-agent/pull/3662) / [#3661](https://github.com/bytedance/berkshire-agent/pull/3661)** (merged) - prompt-injection input sanitization + role isolation via system-message injection. Orthogonal defense; our Layer 1 (remove tools from the bound set) is the complementary capability-layer defense.
+- **[#3837](https://github.com/bytedance/berkshire-agent/pull/3837)** (merged) - persist guardrail interventions as run events. Our Layer 2 reuses this audit trail for free.
+- **[#3929](https://github.com/bytedance/berkshire-agent/issues/3929)** (open) - sandbox NodePort->ClusterIP (same author family of security hardening RFCs).
 
 **Net takeaway:** the upstream has spent real effort plumbing identity into the guardrail execution point (#3665, #3839) and has explicitly deferred the RBAC policy brain. The two-layer design in this RFC is the natural next step the prior work points at - not a competing or redundant proposal.

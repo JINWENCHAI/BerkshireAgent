@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# DeerFlow "lark-cli broker" image (Pattern B, issue #4338).
+# BerkshireAgent "lark-cli broker" image (Pattern B, issue #4338).
 #
 # Purpose: hold `lark-cli` + the per-user Lark credentials in a long-running
 # sidecar and expose only the command surface over loopback, so the plaintext
@@ -27,7 +27,7 @@
 # shim can never drift from the Gateway's copy.
 #
 # Build (defaults to the pinned version below):
-#   docker build -t deer-flow/lark-cli-broker:v1.0.65 \
+#   docker build -t berkshire-agent/lark-cli-broker:v1.0.65 \
 #     --build-arg LARK_CLI_VERSION=v1.0.65 \
 #     -f docker/lark-cli-broker/Dockerfile .
 #

@@ -35,7 +35,7 @@ def write_initial_credentials(email: str, password: str, *, label: str = "initia
     target.parent.mkdir(parents=True, exist_ok=True)
 
     content = (
-        f"# DeerFlow admin {label} credentials\n# This file is generated on first boot or password reset.\n# Change the password after login via Settings -> Account,\n# then delete this file.\n#\nemail: {email}\npassword: {password}\n"
+        f"# BerkshireAgent admin {label} credentials\n# This file is generated on first boot or password reset.\n# Change the password after login via Settings -> Account,\n# then delete this file.\n#\nemail: {email}\npassword: {password}\n"
     )
 
     # Atomic 0600 create-or-truncate. O_TRUNC (not O_EXCL) so the

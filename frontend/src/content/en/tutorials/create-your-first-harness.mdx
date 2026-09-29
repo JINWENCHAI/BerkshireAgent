@@ -1,24 +1,24 @@
 ---
 title: Create Your First Harness
-description: This tutorial shows you how to use the DeerFlow Harness programmatically — importing and using DeerFlow directly in your Python code rather than through the web interface.
+description: This tutorial shows you how to use the BerkshireAgent Harness programmatically — importing and using BerkshireAgent directly in your Python code rather than through the web interface.
 ---
 
 import { Callout, Steps } from "nextra/components";
 
 # Create Your First Harness
 
-This tutorial shows you how to use the DeerFlow Harness programmatically — importing and using DeerFlow directly in your Python code rather than through the web interface.
+This tutorial shows you how to use the BerkshireAgent Harness programmatically — importing and using BerkshireAgent directly in your Python code rather than through the web interface.
 
 ## Prerequisites
 
 - Python 3.12+
 - `uv` installed
-- DeerFlow repository cloned
+- BerkshireAgent repository cloned
 
 ## Install
 
 ```bash
-cd deer-flow/backend
+cd berkshire-agent/backend
 uv sync
 ```
 
@@ -55,7 +55,7 @@ Create `my_agent.py` in the `backend/` directory:
 ```python
 import asyncio
 import os
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 from deerflow.config import load_config
 
 os.environ["OPENAI_API_KEY"] = "sk-..."
@@ -63,7 +63,7 @@ os.environ["OPENAI_API_KEY"] = "sk-..."
 # Load config.yaml
 load_config()
 
-client = DeerFlowClient()
+client = BerkshireAgentClient()
 
 async def main():
     async for event in client.astream(

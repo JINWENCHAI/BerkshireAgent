@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://deerflow.dev/contracts/skill_review/review_facts.v1.schema.json",
-  "title": "DeerFlow Skill Review Facts v1",
+  "title": "BerkshireAgent Skill Review Facts v1",
   "type": "object",
   "required": ["schema_version", "subject", "profile", "completeness", "summary", "findings", "resources", "evals", "analyzer_errors"],
   "properties": {

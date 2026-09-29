@@ -716,7 +716,7 @@ def test_ls_tool_skills_path_uses_sandbox_mapping_user_id_not_contextvar(tmp_pat
     # Create two user-specific custom skill directories:
     # - user-abc: has a skill "my-skill"
     # - default: empty (the fallback when contextvar is unset)
-    base_dir = tmp_path / ".deer-flow"
+    base_dir = tmp_path / ".berkshire-agent"
     user_abc_custom = base_dir / "users" / "user-abc" / "skills" / "custom"
     user_abc_custom.mkdir(parents=True)
     (user_abc_custom / "my-skill").mkdir()
@@ -951,7 +951,7 @@ def _make_custom_skills_sandbox(tmp_path, monkeypatch, *, user_id: str, disabled
     """
     from deerflow.skills.storage import reset_skill_storage
 
-    base_dir = tmp_path / ".deer-flow"
+    base_dir = tmp_path / ".berkshire-agent"
     user_skills = base_dir / "users" / user_id / "skills"
     user_custom = user_skills / "custom"
     for name, body in [(disabled, "SECRET_PROCEDURE = step-1-step-2\n"), ("open-custom", "PUBLIC_PROCEDURE = hello\n")]:

@@ -92,7 +92,7 @@ def test_wait_for_sandbox_ready_bypasses_environment_proxy_for_docker_host(monke
 
     monkeypatch.setattr(readiness.requests, "Session", FakeSession)
 
-    headers = {"X-DeerFlow-Relay-Token": "secret-token"}
+    headers = {"X-BerkshireAgent-Relay-Token": "secret-token"}
     assert (
         readiness.wait_for_sandbox_ready(
             "http://host.docker.internal:8080",
@@ -132,7 +132,7 @@ async def test_wait_for_sandbox_ready_async_uses_nonblocking_polling(monkeypatch
     monkeypatch.setattr(readiness.requests, "get", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("requests.get should not be used")))
     monkeypatch.setattr(readiness.time, "sleep", lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("time.sleep should not be used")))
 
-    headers = {"X-DeerFlow-Relay-Token": "secret-token"}
+    headers = {"X-BerkshireAgent-Relay-Token": "secret-token"}
     assert (
         await readiness.wait_for_sandbox_ready_async(
             "http://sandbox",

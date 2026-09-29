@@ -2,20 +2,20 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "deer-flow.fullname" . }}-provisioner
-  namespace: {{ include "deer-flow.namespace" . }}
+  name: {{ include "berkshire-agent.fullname" . }}-provisioner
+  namespace: {{ include "berkshire-agent.namespace" . }}
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
     app.kubernetes.io/component: provisioner
 ---
 # Namespaced permissions: manage sandbox Pods + Services in this namespace.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "deer-flow.fullname" . }}-provisioner
-  namespace: {{ include "deer-flow.namespace" . }}
+  name: {{ include "berkshire-agent.fullname" . }}-provisioner
+  namespace: {{ include "berkshire-agent.namespace" . }}
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
     app.kubernetes.io/component: provisioner
 rules:
   # Verbs mirror docker/provisioner/app.py, which only calls get/create/delete
@@ -30,18 +30,18 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "deer-flow.fullname" . }}-provisioner
-  namespace: {{ include "deer-flow.namespace" . }}
+  name: {{ include "berkshire-agent.fullname" . }}-provisioner
+  namespace: {{ include "berkshire-agent.namespace" . }}
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
     app.kubernetes.io/component: provisioner
 subjects:
   - kind: ServiceAccount
-    name: {{ include "deer-flow.fullname" . }}-provisioner
-    namespace: {{ include "deer-flow.namespace" . }}
+    name: {{ include "berkshire-agent.fullname" . }}-provisioner
+    namespace: {{ include "berkshire-agent.namespace" . }}
 roleRef:
   kind: Role
-  name: {{ include "deer-flow.fullname" . }}-provisioner
+  name: {{ include "berkshire-agent.fullname" . }}-provisioner
   apiGroup: rbac.authorization.k8s.io
 ---
 # Cluster-scoped: read/create Namespaces so the provisioner can ensure the
@@ -49,9 +49,9 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "deer-flow.fullname" . }}-provisioner-ns
+  name: {{ include "berkshire-agent.fullname" . }}-provisioner-ns
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
     app.kubernetes.io/component: provisioner
 rules:
   - apiGroups: [""]
@@ -61,16 +61,16 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "deer-flow.fullname" . }}-provisioner-ns
+  name: {{ include "berkshire-agent.fullname" . }}-provisioner-ns
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
     app.kubernetes.io/component: provisioner
 subjects:
   - kind: ServiceAccount
-    name: {{ include "deer-flow.fullname" . }}-provisioner
-    namespace: {{ include "deer-flow.namespace" . }}
+    name: {{ include "berkshire-agent.fullname" . }}-provisioner
+    namespace: {{ include "berkshire-agent.namespace" . }}
 roleRef:
   kind: ClusterRole
-  name: {{ include "deer-flow.fullname" . }}-provisioner-ns
+  name: {{ include "berkshire-agent.fullname" . }}-provisioner-ns
   apiGroup: rbac.authorization.k8s.io
 {{- end -}}

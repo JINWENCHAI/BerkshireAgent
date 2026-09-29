@@ -188,7 +188,7 @@ def _write_demo_wheel(directory: Path, *, version: str = "1.0.0", marker: str | 
 
 
 def test_install_local_directory_makes_it_deployable_and_enabled(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -224,7 +224,7 @@ def test_install_local_directory_makes_it_deployable_and_enabled(tmp_path: Path)
 
 
 def test_install_rejects_an_already_snapshotted_local_directory(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -238,7 +238,7 @@ def test_install_rejects_an_already_snapshotted_local_directory(tmp_path: Path) 
 
 
 def test_upgrade_replaces_local_snapshot_and_preserves_private_config(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -278,7 +278,7 @@ def test_upgrade_replaces_local_snapshot_and_preserves_private_config(tmp_path: 
 
 
 def test_failed_upgrade_restores_the_previous_snapshot_and_config(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -314,7 +314,7 @@ def test_deerflow_extensions_upgrade_exposes_the_local_replace_flow(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -337,7 +337,7 @@ def test_deerflow_extensions_upgrade_exposes_the_local_replace_flow(
 
 
 def test_upgrade_rejects_a_local_source_that_is_not_installed(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -352,7 +352,7 @@ def test_upgrade_rejects_a_local_source_that_is_not_installed(tmp_path: Path) ->
 
 
 def test_upgrade_rejects_a_requirement_that_is_not_installed(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
 
@@ -361,7 +361,7 @@ def test_upgrade_rejects_a_requirement_that_is_not_installed(tmp_path: Path) -> 
 
 
 def test_upgrade_rejects_a_git_source_that_is_not_installed(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     pyproject = root / "backend" / "pyproject.toml"
@@ -378,7 +378,7 @@ def test_upgrade_rejects_a_git_source_that_is_not_installed(tmp_path: Path) -> N
 
 
 def test_upgrade_repins_an_installed_git_source_and_preserves_private_config(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-git-source"
     root.mkdir()
     source.mkdir()
@@ -461,7 +461,7 @@ def test_upgrade_repins_an_installed_requirement_and_preserves_private_config(
     added_names is empty; identification must take the added_specs fallback so
     private config/required/enabled survive the lock re-pin.
     """
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     simple_root = tmp_path / "simple"
     package_dir = simple_root / "deerflow-extension-demo"
     root.mkdir()
@@ -532,7 +532,7 @@ def test_failed_upgrade_leaves_snapshot_when_staging_rename_fails(tmp_path: Path
     that like a failed install would rmtree the original snapshot that was
     never replaced.
     """
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -572,7 +572,7 @@ def test_failed_upgrade_restores_snapshot_when_a_concurrent_dependency_edit_bloc
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -610,7 +610,7 @@ def test_install_defaults_to_a_fail_open_plugin_record(tmp_path: Path) -> None:
     """A managed install must not silently choose the fail-closed side: with
     `required: true`, a later broken extension aborts Gateway startup entirely,
     and recovery needs shell access to run `extensions disable`."""
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -624,7 +624,7 @@ def test_install_defaults_to_a_fail_open_plugin_record(tmp_path: Path) -> None:
 
 
 def test_install_records_required_when_the_operator_opts_in(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -638,7 +638,7 @@ def test_install_records_required_when_the_operator_opts_in(tmp_path: Path) -> N
 
 
 def test_cli_install_exposes_the_required_opt_in(tmp_path: Path, monkeypatch, capsys) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -673,7 +673,7 @@ def test_contended_lock_waits_instead_of_failing() -> None:
 
 
 def test_mutating_operations_are_serialized_for_one_checkout(tmp_path: Path, monkeypatch) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     first_entered = threading.Event()
     release_first = threading.Event()
@@ -708,7 +708,7 @@ def test_deerflow_extensions_install_exposes_the_local_install_flow(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -728,7 +728,7 @@ def test_hidden_source_env_option_reads_the_install_source_outside_the_shell_rec
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -764,7 +764,7 @@ def test_explicit_invalid_project_root_does_not_fall_back_to_current_checkout(
 
 
 def test_install_git_source_discovers_and_enables_its_packaging_entry_point(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-git-source"
     root.mkdir()
     source.mkdir()
@@ -797,7 +797,7 @@ def test_install_rejects_a_pypi_requirement_resolved_from_an_external_local_whee
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     wheels = tmp_path / "wheels"
     root.mkdir()
     _write_host_project(root)
@@ -821,7 +821,7 @@ def test_install_rejects_a_local_wheel_directory_ignored_by_the_docker_context(
     monkeypatch,
     relative_wheels: str,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     wheels = root / "backend" / relative_wheels
@@ -844,7 +844,7 @@ def test_install_rejects_a_relative_find_links_wheelhouse_outside_the_build_cont
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     _write_demo_wheel(root / "backend" / "wheelhouse")
@@ -1096,7 +1096,7 @@ source = {{ editable = "{workspace_member.as_posix()}" }}
 
 
 def test_file_urls_are_rejected_because_they_cannot_enter_the_docker_build_context(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
 
@@ -1105,7 +1105,7 @@ def test_file_urls_are_rejected_because_they_cannot_enter_the_docker_build_conte
 
 
 def test_install_rolls_back_when_the_declared_entry_point_cannot_be_imported(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1135,7 +1135,7 @@ def test_relative_or_absolute_direct_paths_must_use_the_managed_directory_snapsh
     tmp_path: Path,
     source: str,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     pyproject = root / "backend" / "pyproject.toml"
@@ -1149,7 +1149,7 @@ def test_relative_or_absolute_direct_paths_must_use_the_managed_directory_snapsh
 
 
 def test_install_preserves_unrelated_config_comments_and_layout(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1182,7 +1182,7 @@ database:
 
 
 def test_toggle_preserves_the_next_section_header_and_crlf_style(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1217,7 +1217,7 @@ def test_deerflow_extensions_disable_keeps_the_plugin_configuration(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1260,7 +1260,7 @@ def test_hidden_name_env_option_reads_the_extension_name_outside_the_shell_recip
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1289,7 +1289,7 @@ def test_deerflow_extensions_enable_reactivates_a_configured_plugin(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1317,12 +1317,12 @@ plugins:
 
 
 def test_distribution_identifier_uses_pep_503_normalization(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
     config_path.write_text(
-        "plugins:\n  - name: demo\n    package: DeerFlow_Extension.Demo\n    use: demo_extension:install\n    enabled: true\n",
+        "plugins:\n  - name: demo\n    package: BerkshireAgent_Extension.Demo\n    use: demo_extension:install\n    enabled: true\n",
         encoding="utf-8",
     )
 
@@ -1336,7 +1336,7 @@ def test_deerflow_extensions_list_reports_activation_and_package(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     (root / "config.yaml").write_text(
@@ -1369,7 +1369,7 @@ def test_cli_reports_invalid_config_without_a_traceback(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     (root / "config.yaml").write_text("plugins: [\n", encoding="utf-8")
@@ -1379,7 +1379,7 @@ def test_cli_reports_invalid_config_without_a_traceback(
 
     captured = capsys.readouterr()
     assert exit_code == 1
-    assert "invalid DeerFlow config YAML" in captured.err
+    assert "invalid BerkshireAgent config YAML" in captured.err
     assert "Traceback" not in captured.err
 
 
@@ -1394,7 +1394,7 @@ def test_deerflow_extensions_list_rejects_entries_the_runtime_schema_rejects(
     capsys,
     malformed_plugin: object,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     (root / "config.yaml").write_text(
@@ -1417,7 +1417,7 @@ def test_deerflow_extensions_remove_uninstalls_dependency_source_and_activation(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1431,7 +1431,7 @@ def test_deerflow_extensions_remove_uninstalls_dependency_source_and_activation(
     assert exit_code == 0
     output = capsys.readouterr().out
     assert "Removed demo" in output
-    assert "Restart DeerFlow" in output
+    assert "Restart BerkshireAgent" in output
     config = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
     assert config["plugins"] == []
     assert not (root / "backend" / "extensions" / "sources" / "deerflow-extension-demo").exists()
@@ -1442,7 +1442,7 @@ def test_deerflow_extensions_remove_uninstalls_dependency_source_and_activation(
 def test_remove_one_configured_instance_keeps_its_shared_distribution_runnable(
     tmp_path: Path,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1456,7 +1456,7 @@ def test_remove_one_configured_instance_keeps_its_shared_distribution_runnable(
     second = {
         **installed,
         "name": "second",
-        "package": "DeerFlow_Extension.Demo",
+        "package": "BerkshireAgent_Extension.Demo",
         "config": {"instance": 2},
     }
     config_path.write_text(
@@ -1481,7 +1481,7 @@ def test_install_prompts_for_trust_when_yes_is_not_supplied(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1497,7 +1497,7 @@ def test_install_prompts_for_trust_when_yes_is_not_supplied(
 
 
 def test_failed_entry_point_discovery_rolls_back_dependency_and_lock(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "broken-git-source"
     root.mkdir()
     source.mkdir()
@@ -1534,7 +1534,7 @@ def test_failed_install_does_not_overwrite_a_concurrent_operator_config_edit(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1567,7 +1567,7 @@ def test_failed_install_preserves_a_concurrent_dependency_file_edit(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1595,7 +1595,7 @@ def test_uv_add_partial_writes_are_rolled_back_when_the_command_fails(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1629,7 +1629,7 @@ def test_uv_add_partial_writes_are_rolled_back_when_the_command_fails(
 
 
 def test_local_install_rejects_symlinks_before_copying_or_resolving(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1649,7 +1649,7 @@ def test_local_install_rejects_symlinks_before_copying_or_resolving(tmp_path: Pa
 
 @pytest.mark.skipif(os.name == "nt", reason="named pipes are POSIX-specific")
 def test_local_install_rejects_special_files_before_snapshotting(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1671,7 +1671,7 @@ def test_local_install_rejects_likely_secret_files(
     tmp_path: Path,
     secret_name: str,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1690,7 +1690,7 @@ def test_local_install_rejects_distribution_names_that_escape_the_managed_root(
     tmp_path: Path,
     distribution: str,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1704,7 +1704,7 @@ def test_local_install_rejects_distribution_names_that_escape_the_managed_root(
 
 
 def test_install_adopts_an_existing_manual_plugin_instead_of_loading_it_twice(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1762,7 +1762,7 @@ def test_install_rejects_identity_collisions_with_a_different_entry_point(
     tmp_path: Path,
     configured_plugin: dict[str, object],
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1784,7 +1784,7 @@ def test_install_rejects_identity_collisions_with_a_different_entry_point(
 
 
 def test_install_replaces_inline_empty_plugins_with_one_schema_valid_block(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -1816,7 +1816,7 @@ def test_disable_replaces_nonempty_flow_style_plugins_without_duplicate_key(
     tmp_path: Path,
     plugins_key: str,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1837,7 +1837,7 @@ def test_disable_replaces_nonempty_flow_style_plugins_without_duplicate_key(
 def test_toggle_rejects_duplicate_top_level_plugins_keys_without_mutating_config(
     tmp_path: Path,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1863,7 +1863,7 @@ def test_plugins_rewrite_preserves_the_next_quoted_or_plain_top_level_section(
     tmp_path: Path,
     next_key: str,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1886,7 +1886,7 @@ def test_plugins_rewrite_preserves_a_following_section_with_an_unconventional_ke
 ) -> None:
     """`AppConfig` allows extra top-level keys, so the managed rewrite must not
     assume the next section is named like a Python identifier."""
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1905,7 +1905,7 @@ def test_plugins_rewrite_preserves_a_following_section_with_an_unconventional_ke
 def test_plugins_rewrite_preserves_trailing_content_below_a_final_plugins_block(tmp_path: Path) -> None:
     """The manager appends `plugins:` at end of file, so the steady-state shape
     has no following key; trailing operator notes still must survive a toggle."""
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1924,7 +1924,7 @@ def test_plugins_rewrite_preserves_trailing_content_below_a_final_plugins_block(
 
 
 def test_null_plugins_is_treated_as_the_runtime_default_and_can_be_managed(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     config_path = root / "config.yaml"
@@ -1935,7 +1935,7 @@ def test_null_plugins_is_treated_as_the_runtime_default_and_can_be_managed(tmp_p
 
 
 def test_list_uses_the_same_boolean_coercion_as_the_runtime_loader(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     (root / "config.yaml").write_text(
@@ -1967,7 +1967,7 @@ def test_cli_install_updates_the_runtime_selected_config_file(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     runtime_config = tmp_path / "deployment.yaml"
     root.mkdir()
@@ -1988,7 +1988,7 @@ def test_cli_install_updates_the_runtime_selected_config_file(
 
 
 def test_manager_falls_back_to_the_legacy_backend_config_path(tmp_path: Path) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     (root / "config.yaml").unlink()
@@ -2002,7 +2002,7 @@ def test_remove_rolls_back_package_lock_config_source_and_environment_when_confi
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2045,7 +2045,7 @@ def test_failed_remove_preserves_a_concurrent_operator_config_edit(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2084,7 +2084,7 @@ def test_failed_remove_preserves_a_concurrent_dependency_file_edit(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2115,7 +2115,7 @@ def test_uv_remove_partial_writes_are_rolled_back_when_the_command_fails(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2158,7 +2158,7 @@ def test_cli_reports_uv_install_failure_without_traceback_or_partial_state(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     pyproject_path = root / "backend" / "pyproject.toml"
@@ -2187,7 +2187,7 @@ def test_remote_sources_with_embedded_credentials_are_rejected_before_uv(
     tmp_path: Path,
     source: str,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     original = (root / "backend" / "pyproject.toml").read_bytes()
@@ -2260,7 +2260,7 @@ def test_remote_git_ssh_sources_are_rejected_before_uv(
     tmp_path: Path,
     source: str,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     pyproject_path = root / "backend" / "pyproject.toml"
@@ -2299,7 +2299,7 @@ def test_cli_rejects_git_ssh_without_traceback_or_partial_state(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     pyproject_path = root / "backend" / "pyproject.toml"
@@ -2352,7 +2352,7 @@ def test_cli_never_echoes_rejected_source_credentials(
     monkeypatch,
     capsys,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     monkeypatch.setenv("DEER_FLOW_PROJECT_ROOT", str(root))
@@ -2370,7 +2370,7 @@ def test_install_uses_one_controlled_uv_project_and_deferred_sync(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2457,7 +2457,7 @@ def test_install_validates_the_config_before_running_third_party_build_hooks(
     """`uv add`/`uv sync` execute the package's build backend, so a config the
     manager can never write to must be rejected before that code runs — not
     after it, via rollback."""
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2490,7 +2490,7 @@ def test_failed_recovery_sync_still_restores_the_dependency_files(
     """The recovery `uv sync` runs without `--locked` when the checkout had no
     lock, so uv writes one while resolving. If that sync then fails, the
     operator must not be left holding a lock file they never had."""
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2533,7 +2533,7 @@ def test_interrupt_during_install_restores_files_without_a_recovery_resolve(
     """Ctrl-C must not be answered by blocking on a full dependency resolve: a
     second interrupt during that sync would escape the handler and strand the
     checkout mid-transaction."""
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2577,7 +2577,7 @@ def test_entry_point_discovery_tolerates_interpreter_startup_output(
 ) -> None:
     """A `sitecustomize`/`.pth` banner on the child interpreter's stdout must
     not roll back an otherwise-successful install with a JSON parse error."""
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2608,7 +2608,7 @@ def test_install_rejects_uv_versions_without_no_workspace_support(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     source = tmp_path / "demo-source"
     root.mkdir()
     source.mkdir()
@@ -2635,7 +2635,7 @@ def test_remove_uses_deferred_uv_mutation_then_the_same_controlled_sync(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    root = tmp_path / "deer-flow"
+    root = tmp_path / "berkshire-agent"
     root.mkdir()
     _write_host_project(root)
     (root / "config.yaml").write_text(

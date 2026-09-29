@@ -1642,7 +1642,7 @@ class MemoryUpdater:
         inheritance, so log records emitted here would otherwise lose the
         request trace id (it only reached the pre-LLM-call tracing hook before). The
         host-injected ``trace_context_manager`` hook (``None`` when DeerMem runs
-        standalone, outside the deer-flow factory) binds ``trace_id`` for the
+        standalone, outside the berkshire-agent factory) binds ``trace_id`` for the
         duration of the call and restores the prior binding on exit. A ``None``
         trace_id leaves the ContextVar untouched (no fabricated id).
         """

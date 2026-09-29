@@ -1,4 +1,4 @@
-"""Canonical thread identifier validation shared across DeerFlow backends."""
+"""Canonical thread identifier validation shared across BerkshireAgent backends."""
 
 from __future__ import annotations
 

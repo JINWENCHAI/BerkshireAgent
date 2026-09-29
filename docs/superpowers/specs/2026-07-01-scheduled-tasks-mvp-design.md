@@ -1,18 +1,18 @@
-# DeerFlow Scheduled Tasks MVP Design
+# BerkshireAgent Scheduled Tasks MVP Design
 
 **Date**: 2026-07-01
 **Status**: Approved for implementation
-**Scope**: First-class scheduled-task management for DeerFlow web workspace
+**Scope**: First-class scheduled-task management for BerkshireAgent web workspace
 
 ---
 
 ## Problem Statement
 
-DeerFlow main does not ship a real scheduled-task product surface today. The repository already has internal timers, worker pools, and run persistence, but users cannot create, inspect, pause, resume, trigger, or delete durable background tasks from the product.
+BerkshireAgent main does not ship a real scheduled-task product surface today. The repository already has internal timers, worker pools, and run persistence, but users cannot create, inspect, pause, resume, trigger, or delete durable background tasks from the product.
 
 This creates three concrete problems:
 
-1. Users cannot automate recurring DeerFlow work such as daily summaries, periodic follow-ups, or recurring repo triage from the normal workspace.
+1. Users cannot automate recurring BerkshireAgent work such as daily summaries, periodic follow-ups, or recurring repo triage from the normal workspace.
 2. Existing cron-related PRs prove demand, but they either cut scope too broadly or start from the wrong interaction surface, which makes them hard to merge and harder to operate safely.
 3. Without a management surface, any future chat-created schedule would be operationally unsafe because users would have no first-class place to inspect or stop unattended jobs.
 
@@ -23,7 +23,7 @@ The first implementation must solve the operational and product-control problem 
 Build a scheduled-task MVP with these hard boundaries:
 
 1. **Durable backend resource**: add a `scheduled_task` resource with DB-backed persistence and DB-backed task-run history.
-2. **Shared execution path**: scheduled executions must launch through the existing DeerFlow run lifecycle, not a parallel agent path.
+2. **Shared execution path**: scheduled executions must launch through the existing BerkshireAgent run lifecycle, not a parallel agent path.
 3. **Workspace management page**: add a first-class page at `/workspace/scheduled-tasks` for list/detail/create/edit/pause/resume/trigger/delete.
 4. **Execution context mode is explicit**: every task chooses whether runs reuse an existing thread or create a fresh thread per occurrence.
 5. **Minimal schedule surface**: MVP supports `once` and `cron`, but not `interval`.
@@ -47,7 +47,7 @@ These exclusions are not optional polish cuts. They are what keeps the first PR 
 
 ### Why this shape
 
-This MVP combines the right parts of prior DeerFlow cron attempts without inheriting their problems:
+This MVP combines the right parts of prior BerkshireAgent cron attempts without inheriting their problems:
 
 1. Keep the **execution discipline** from the narrower backend MVPs: scheduler decides *when* to run, existing run services decide *how* to run.
 2. Keep the **durable task identity + task history** shape from broader implementations.
@@ -62,17 +62,17 @@ The MVP introduces two durable entities:
 
 `scheduled_tasks` is the durable trigger definition. `scheduled_task_runs` is the execution ledger per occurrence.
 
-This keeps schedule identity separate from DeerFlow `runs`, which already model one concrete execution attempt.
+This keeps schedule identity separate from BerkshireAgent `runs`, which already model one concrete execution attempt.
 
 ## User Stories
 
-1. As a DeerFlow user, I want to create a one-time task that can run in a fresh thread, so periodic automation does not silently accumulate old context.
-2. As a DeerFlow user, I want to create a recurring cron task that can either reuse a thread or create a fresh thread per run, so I can choose between continuity and isolation explicitly.
-3. As a DeerFlow user, I want to see next run time, last run result, and last error at a glance, so I know whether automation is healthy.
-4. As a DeerFlow user, I want to pause and resume a task, so I can stop automation without deleting configuration.
-5. As a DeerFlow user, I want to trigger a task manually, so I can test or re-run it on demand.
-6. As a DeerFlow user, I want to inspect task run history, so I can audit what happened.
-7. As a DeerFlow user, I want tasks to be owner-scoped, so no other user can list or mutate my automations.
+1. As a BerkshireAgent user, I want to create a one-time task that can run in a fresh thread, so periodic automation does not silently accumulate old context.
+2. As a BerkshireAgent user, I want to create a recurring cron task that can either reuse a thread or create a fresh thread per run, so I can choose between continuity and isolation explicitly.
+3. As a BerkshireAgent user, I want to see next run time, last run result, and last error at a glance, so I know whether automation is healthy.
+4. As a BerkshireAgent user, I want to pause and resume a task, so I can stop automation without deleting configuration.
+5. As a BerkshireAgent user, I want to trigger a task manually, so I can test or re-run it on demand.
+6. As a BerkshireAgent user, I want to inspect task run history, so I can audit what happened.
+7. As a BerkshireAgent user, I want tasks to be owner-scoped, so no other user can list or mutate my automations.
 8. As a maintainer, I want scheduler execution to reuse existing run-launch code, so scheduled runs do not become a second runtime stack.
 
 ## MVP Product Shape
@@ -93,7 +93,7 @@ That means every scheduled task is defined as:
 - schedule definition
 - runtime policy
 
-When it fires, DeerFlow launches a normal run, but the execution thread is selected by `context_mode`.
+When it fires, BerkshireAgent launches a normal run, but the execution thread is selected by `context_mode`.
 
 These are fixed MVP semantics, not user-editable API fields and not persisted schema columns. The first PR must behave as if every task implicitly carries those values, without prematurely generalizing the contract.
 
@@ -117,7 +117,7 @@ If later added, `interval` can be layered on the same resource model.
 
 The MVP supports two execution-context modes:
 
-1. `fresh_thread_per_run` — default. Each scheduled occurrence creates a fresh DeerFlow thread.
+1. `fresh_thread_per_run` — default. Each scheduled occurrence creates a fresh BerkshireAgent thread.
 2. `reuse_thread` — optional. Each scheduled occurrence reuses an existing thread.
 
 This is deliberate:
@@ -162,8 +162,8 @@ Fields:
 - `misfire_policy`: fixed to `run_once` in MVP, still persisted explicitly
 - `next_run_at`: UTC timestamp, indexed
 - `last_run_at`: nullable UTC timestamp
-- `last_run_id`: nullable DeerFlow run id
-- `last_thread_id`: nullable DeerFlow thread id from the latest execution
+- `last_run_id`: nullable BerkshireAgent run id
+- `last_thread_id`: nullable BerkshireAgent thread id from the latest execution
 - `last_error`: nullable text
 - `lease_owner`: nullable string
 - `lease_expires_at`: nullable UTC timestamp
@@ -190,7 +190,7 @@ Fields:
 - `id`: string primary key
 - `task_id`: foreign-key-like indexed link to `scheduled_tasks.id`
 - `thread_id`: indexed for efficient thread-level lookup
-- `run_id`: nullable DeerFlow run id
+- `run_id`: nullable BerkshireAgent run id
 - `scheduled_for`: UTC timestamp
 - `trigger`: `scheduled | manual`
 - `status`: `queued | running | success | failed | skipped`
@@ -199,9 +199,9 @@ Fields:
 - `finished_at`: nullable UTC timestamp
 - `created_at`
 
-This run ledger is distinct from DeerFlow `runs` because:
+This run ledger is distinct from BerkshireAgent `runs` because:
 
-1. a scheduled occurrence may fail before a DeerFlow run is created,
+1. a scheduled occurrence may fail before a BerkshireAgent run is created,
 2. an overlap skip still deserves audit visibility,
 3. manual and scheduled triggers need explicit occurrence records.
 
@@ -266,7 +266,7 @@ For each poll cycle:
 2. for each claimed task:
    - create `scheduled_task_runs` row with `status=queued`,
    - compute and persist the next schedule before or immediately after launch,
-   - dispatch a normal DeerFlow run through shared run-launch helper,
+   - dispatch a normal BerkshireAgent run through shared run-launch helper,
    - persist `last_run_id`, `last_run_at`, `run_count`, task-run status, and error fields,
    - release lease.
 
@@ -530,7 +530,7 @@ The UI must not show a healthy-looking task row when the last scheduler attempt 
 1. CRUD API with owner isolation
 2. thread-scoped task list route
 3. pause/resume/trigger/delete flows
-4. manual trigger creates a normal DeerFlow run through shared launch helper
+4. manual trigger creates a normal BerkshireAgent run through shared launch helper
 5. scheduler loop claims each due task once
 6. dispatch failure writes task and task-run errors correctly
 7. deleted thread does not hot-loop retries
@@ -559,7 +559,7 @@ Required before claiming feature complete:
 1. start backend and frontend
 2. create a one-time task due soon from the real UI
 3. observe row move through live status updates
-4. confirm linked DeerFlow run exists
+4. confirm linked BerkshireAgent run exists
 5. confirm completed/failure state is visible in the management page
 
 ## Documentation Updates Required

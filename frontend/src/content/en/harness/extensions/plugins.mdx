@@ -14,7 +14,7 @@ import { Callout } from "nextra/components";
   interfaces are shared by both and may still change before 1.0.
 </Callout>
 
-The other contribution kinds change what the host does behind the scenes. A **plugin** adds a feature users can see and use: a page in the workspace, an entry in the conversation menu, backend actions that page can call, and tools the model can call. All of it comes from one Python package installed through the ordinary extension workflow, so there is no DeerFlow frontend rebuild and no host code specific to the plugin.
+The other contribution kinds change what the host does behind the scenes. A **plugin** adds a feature users can see and use: a page in the workspace, an entry in the conversation menu, backend actions that page can call, and tools the model can call. All of it comes from one Python package installed through the ordinary extension workflow, so there is no BerkshireAgent frontend rebuild and no host code specific to the plugin.
 
 ## What users see
 
@@ -353,7 +353,7 @@ The host serves plugins through four authenticated Gateway routes, behind the no
 
 A stale inline hash or asset revision returns `404` and requires a page reload. Both download routes serve a plugin's code even while the plugin is disabled.
 
-The browser sends `X-Deerflow-Plugin-Viewer` with the `viewer_id` it discovered, so an action from a view opened under a different account is rejected with `409`.
+The browser sends `X-BerkshireAgent-Plugin-Viewer` with the `viewer_id` it discovered, so an action from a view opened under a different account is rejected with `409`.
 
 ## Security model
 
@@ -378,7 +378,7 @@ What remains the plugin's job: authorizing access to its own data by `principal.
 
 ## Walkthrough: the bookmarks example
 
-[`examples/deerflow-extension-bookmarks`](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-bookmarks) (version 0.2.0, which requires `deerflow-extension-api>=0.2.3`) is a complete plugin: users save the last visible answer from a conversation menu, then search, rename, open, or delete their bookmarks on a **My bookmarks** page. The Agent can search them too. It exercises every piece of this chapter:
+[`examples/deerflow-extension-bookmarks`](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-bookmarks) (version 0.2.0, which requires `deerflow-extension-api>=0.2.3`) is a complete plugin: users save the last visible answer from a conversation menu, then search, rename, open, or delete their bookmarks on a **My bookmarks** page. The Agent can search them too. It exercises every piece of this chapter:
 
 1. **Config and state.** `install()` requires `config.enabled` (a boolean) and an absolute `config.storage_path`, and opens a SQLite store there. Mount a persistent directory for it in containers.
 2. **The contribution.** Namespace `community.bookmarks`, `enabled=config["enabled"]`, `BrowserAssets("bookmarks.v1", Path(__file__).parent)`, five `BackendAction`s (`save`, `search`, `get`, `rename`, `delete`), and one read-only `ModelTool`, `search_bookmarks`, which the model sees as `ext_community_bookmarks_search_bookmarks_<hash>`.

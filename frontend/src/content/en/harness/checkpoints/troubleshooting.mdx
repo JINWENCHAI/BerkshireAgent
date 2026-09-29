@@ -62,7 +62,7 @@ checkpoint_delta.snapshot_frequency is restart-required and cannot change in a r
 
 in its run record, its SSE `error` frame, or the worker log line `Run %s failed: %s`.
 
-**Cause**: `CheckpointModeReconfigurationError`. The process froze its mode and cadence at startup, and something built a graph with a different value — a config hot-reload that diverged from the frozen startup snapshot. Only Gateway startup, `make_lead_agent`, and `DeerFlowClient.__init__` call the freeze helpers, and no state, history, or thread route builds an agent — those routes read the startup-frozen `app.state` values — so this is a run-side failure: none of them answers `503` for a config edit. The router-level `503` mapping exists for that error class but nothing in the threads routes raises it.
+**Cause**: `CheckpointModeReconfigurationError`. The process froze its mode and cadence at startup, and something built a graph with a different value — a config hot-reload that diverged from the frozen startup snapshot. Only Gateway startup, `make_lead_agent`, and `BerkshireAgentClient.__init__` call the freeze helpers, and no state, history, or thread route builds an agent — those routes read the startup-frozen `app.state` values — so this is a run-side failure: none of them answers `503` for a config edit. The router-level `503` mapping exists for that error class but nothing in the threads routes raises it.
 
 Each knob behaves differently:
 
@@ -75,7 +75,7 @@ Each knob behaves differently:
 
 **Symptom**: you edited `database.checkpoint_channel_mode` or `database.checkpoint_delta.snapshot_frequency`, but threads keep behaving as before.
 
-**Cause**: the mode is frozen process-globally the first time an agent is built, from the startup snapshot; the cadence is frozen alongside it. On the first freeze a client-supplied `configurable.__deerflow_checkpoint_channel_mode` is ignored, and once frozen any differing value fails closed. The embedded `DeerFlowClient` freezes mode and cadence the same way. Also note `checkpoint_delta.*` is ignored in full mode.
+**Cause**: the mode is frozen process-globally the first time an agent is built, from the startup snapshot; the cadence is frozen alongside it. On the first freeze a client-supplied `configurable.__deerflow_checkpoint_channel_mode` is ignored, and once frozen any differing value fails closed. The embedded `BerkshireAgentClient` freezes mode and cadence the same way. Also note `checkpoint_delta.*` is ignored in full mode.
 
 **Fix**: restart every process that shares the checkpoint database; all of them must use the same value. Confirm the switch by reading a thread's marker (see [Observability](/docs/harness/checkpoints/observability)). Only one related key is re-read at runtime: `database.checkpoint_graph_cache.accessor_graph_max` (on each eviction check). `database.checkpoint_cache.*` is *not frozen* — it cannot corrupt a thread and may differ across workers — but it is also not hot-reloadable; see [the next entry](#a-history-cache-change-appears-to-have-no-effect).
 
@@ -115,7 +115,7 @@ Two other endpoints fail more quietly for the same reason: `GET /api/threads/{th
 - The process is still in `full` — the default — because the key was never set, or was set without a restart. `checkpoint_delta.*` does nothing in full mode, and the history cache wraps the saver only in delta mode.
 - You compared the wrong table. Delta moves per-step payloads into the writes table, so a fair comparison counts checkpoint payload bytes **plus** write rows. The storage guard asserts delta keeps at most one snapshot blob where full keeps at least four.
 
-A related caution: retention that drops intermediate checkpoints must not drop the ancestor checkpoints or writes between the kept checkpoint and the nearest `_DeltaSnapshot`, or delta channels silently reconstruct empty with no error raised. DeerFlow ships no production trigger for `prune`/`aprune`, so this is a constraint on any wiring, not a live failure.
+A related caution: retention that drops intermediate checkpoints must not drop the ancestor checkpoints or writes between the kept checkpoint and the nearest `_DeltaSnapshot`, or delta channels silently reconstruct empty with no error raised. BerkshireAgent ships no production trigger for `prune`/`aprune`, so this is a constraint on any wiring, not a live failure.
 
 **Fix**: confirm the mode from a thread's marker, restart if needed, and compare checkpoint payload plus writes rows. See [History Cache](/docs/harness/checkpoints/history-cache) and [Operating Checkpoints](/docs/harness/checkpoints/operations).
 
@@ -131,11 +131,11 @@ A related caution: retention that drops intermediate checkpoints must not drop t
 
 ### The old answer reappears after regenerate
 
-**Symptom**: regenerating in a branched thread leaves the replaced assistant message beside the new one after a reload, and branch history can break when seeded rows share one run id ([#4458](https://github.com/bytedance/deer-flow/issues/4458)).
+**Symptom**: regenerating in a branched thread leaves the replaced assistant message beside the new one after a reload, and branch history can break when seeded rows share one run id ([#4458](https://github.com/bytedance/berkshire-agent/issues/4458)).
 
 **Cause**: delta cannot fork correctly — the fork itself is accepted, the read is what breaks. Resuming from an older checkpoint forks the lineage, and the delta history walk collects **every** `pending_writes` entry on each on-path ancestor — but a shared parent also carries the writes of the sibling that was abandoned, so those writes are replayed into the fork and the run starts from a message list that still contains the answer it was supposed to replace. Reproduced on Postgres, SQLite, and the in-memory saver; full mode is unaffected because its checkpoints carry complete channel values.
 
-**Fix**: DeerFlow linearizes instead of forking. It materializes the requested checkpoint's state and writes it with replace semantics on the current head (which has no other children), resets channels that exist only on the newer head to their schema default or `None`, consumes the selector, then runs linearly. Linearization is a no-op when the mode is full, there is no checkpointer, the selector already names the head, or the namespace is non-root; it **fails closed** rather than falling back to the fork:
+**Fix**: BerkshireAgent linearizes instead of forking. It materializes the requested checkpoint's state and writes it with replace semantics on the current head (which has no other children), resets channels that exist only on the newer head to their schema default or `None`, consumes the selector, then runs linearly. Linearization is a no-op when the mode is full, there is no checkpointer, the selector already names the head, or the namespace is non-root; it **fails closed** rather than falling back to the fork:
 
 ```
 Run {run_id} could not materialize resume checkpoint {checkpoint_id}
@@ -149,7 +149,7 @@ The upstream fix is PR [#8548](https://github.com/langchain-ai/langgraph/pull/85
 
 **Cause**: pinned upstream defect ([langgraph #8382](https://github.com/langchain-ai/langgraph/issues/8382)), open, fix PR [#8544](https://github.com/langchain-ai/langgraph/pull/8544) unmerged, no released version. Delta replay orders writes by hashed `(task_id, idx)` instead of the path order `apply_writes` used live, so same-superstep writes are permuted. Present in `langgraph-checkpoint 4.2.0`; reproduced on memory, SQLite, and Postgres.
 
-**Fix**: none locally. DeerFlow's test asserts the correct contract and trigger-skips while the defect is present, naming the issue:
+**Fix**: none locally. BerkshireAgent's test asserts the correct contract and trigger-skips while the defect is present, naming the issue:
 
 ```
 upstream langgraph#8382 unfixed in langgraph-checkpoint 4.2.0: delta replay orders writes by hashed (task_id, idx) instead of the path order apply_writes used live, so get_state/resume reorders same-superstep writes
@@ -181,7 +181,7 @@ Cadence bounds replay depth, so a smaller `snapshot_frequency` keeps the walk sh
 database.checkpoint_cache.type 'redis' is not supported on the sync checkpointer path (TUI/embedded); use 'memory'.
 ```
 
-**Cause**: the TUI and headless modes build `DeerFlowClient(checkpointer=get_checkpointer())` — the **sync** singleton checkpointer — and only the `memory` backend is supported on the sync path (it is process-local anyway). A config that is valid for the Gateway can therefore break the TUI.
+**Cause**: the TUI and headless modes build `BerkshireAgentClient(checkpointer=get_checkpointer())` — the **sync** singleton checkpointer — and only the `memory` backend is supported on the sync path (it is process-local anyway). A config that is valid for the Gateway can therefore break the TUI.
 
 **Fix**: set `database.checkpoint_cache.type: memory`. Gateway-only deployments can keep `redis`, which is the async path's shared cache.
 
@@ -207,12 +207,12 @@ database.checkpoint_cache.type 'redis' is not supported on the sync checkpointer
 **Symptom**: calling `create_deerflow_agent(..., checkpoint_channel_mode="delta", checkpointer=...)` raises a `ValueError`:
 
 ```
-create_deerflow_agent does not support checkpoint_channel_mode='delta' with a checkpointer: persisted graphs built here bypass checkpoint mode marker injection and the fail-closed compatibility gate (see deerflow.runtime.checkpoint_mode), so a mixed-mode store would silently corrupt thread state.  Use the guarded application paths (make_lead_agent or DeerFlowClient) for delta persistence; delta without a checkpointer is ephemeral and allowed.
+create_deerflow_agent does not support checkpoint_channel_mode='delta' with a checkpointer: persisted graphs built here bypass checkpoint mode marker injection and the fail-closed compatibility gate (see deerflow.runtime.checkpoint_mode), so a mixed-mode store would silently corrupt thread state.  Use the guarded application paths (make_lead_agent or BerkshireAgentClient) for delta persistence; delta without a checkpointer is ephemeral and allowed.
 ```
 
 **Cause**: a graph built directly this way bypasses marker injection and the fail-closed compatibility gate, so a mixed-mode store could silently corrupt thread state. Delta **without** a checkpointer is ephemeral and allowed.
 
-**Fix**: for delta persistence, go through the guarded paths — `make_lead_agent` or `DeerFlowClient`. If you only need an ephemeral delta graph, drop the checkpointer.
+**Fix**: for delta persistence, go through the guarded paths — `make_lead_agent` or `BerkshireAgentClient`. If you only need an ephemeral delta graph, drop the checkpointer.
 
 <Callout type="tip">
   Before chasing a symptom, get two facts: the process's frozen mode (from

@@ -283,7 +283,7 @@ async def readiness_payload(checkpointer_config: CheckpointerConfig | None = Non
     degraded = DATABASE_UNREACHABLE in (database, checkpointer)
     payload = {
         "status": "degraded" if degraded else "ready",
-        "service": "deer-flow-gateway",
+        "service": "berkshire-agent-gateway",
         "database": database,
         "checkpointer": checkpointer,
     }

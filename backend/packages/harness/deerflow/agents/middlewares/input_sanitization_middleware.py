@@ -3,7 +3,7 @@
 Escapes blocked XML-like tags in every genuine user message (e.g.
 ``<system>`` → ``&lt;system&gt;``) so they render as literal text instead
 of structured-context markers.  This preserves the user's intent ("how do
-I use DeerFlow's <think> tag?") while neutralizing injection attempts —
+I use BerkshireAgent's <think> tag?") while neutralizing injection attempts —
 the same de-identify-don't-reject strategy as AWS Bedrock's PII ANONYMIZE.
 
 The whole conversation is covered, not only the newest turn: the transformation

@@ -21,7 +21,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from pydantic import PrivateAttr, ValidationError
 
 from deerflow.agents.middlewares.llm_error_handling_middleware import LLMErrorHandlingMiddleware
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 from deerflow.agents.thread_state import ThreadState
 from deerflow.config.app_config import AppConfig
 from deerflow.config.sandbox_config import SandboxConfig
@@ -96,7 +96,7 @@ def build_graph(jev, *, enabled=True, summary_trigger=2000):
     assert not diagnostics
     app_config = AppConfig(sandbox=SandboxConfig(use="deerflow.sandbox.local:LocalSandboxProvider"))
     model, summary_model = RecordingModel(), RecordingModel()
-    summary = DeerFlowSummarizationMiddleware(model=summary_model, trigger=("tokens", summary_trigger), keep=("messages", 6), token_counter=count_tokens_approximately, app_config=app_config)
+    summary = BerkshireAgentSummarizationMiddleware(model=summary_model, trigger=("tokens", summary_trigger), keep=("messages", 6), token_counter=count_tokens_approximately, app_config=app_config)
     stack = compose_with_extensions([LLMErrorHandlingMiddleware(app_config=app_config), summary], AgentScope.LEAD, AgentBuildContext(scope=AgentScope.LEAD), loaded)
     graph = create_agent(model, tools=[], middleware=stack, state_schema=ThreadState, checkpointer=InMemorySaver())
     return graph, model, summary_model, loaded

@@ -8,7 +8,7 @@ import pytest
 from langchain.agents.middleware import AgentMiddleware
 
 from deerflow.agents import create_deerflow_agent
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 from deerflow.config.extensions_config import ExtensionsConfig
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -48,7 +48,7 @@ def test_custom_middleware_example_uses_current_lifecycle_hooks(path: Path) -> N
 
 def test_documented_registration_apis_exist() -> None:
     ExtensionsConfig.model_validate({"middlewares": ["pkg.mod:MyMiddleware"]})
-    assert "middlewares" in inspect.signature(DeerFlowClient.__init__).parameters
+    assert "middlewares" in inspect.signature(BerkshireAgentClient.__init__).parameters
     assert "extra_middleware" in inspect.signature(create_deerflow_agent).parameters
 
 
@@ -57,7 +57,7 @@ def test_embedded_middleware_scope_is_explicit(path: Path) -> None:
     content = (REPO_ROOT / path).read_text(encoding="utf-8")
     markers = (
         (
-            "DeerFlowClient(middlewares=[",
+            "BerkshireAgentClient(middlewares=[",
             "builds the full lead-agent chain",
             "create_deerflow_agent(extra_middleware=[",
             "builds a smaller feature-based lead-agent chain",
@@ -65,7 +65,7 @@ def test_embedded_middleware_scope_is_explicit(path: Path) -> None:
         )
         if "/zh/" not in path.as_posix()
         else (
-            "DeerFlowClient(middlewares=[",
+            "BerkshireAgentClient(middlewares=[",
             "构建完整的主 Agent 链",
             "create_deerflow_agent(extra_middleware=[",
             "构建较小的按功能组装的主 Agent 链",

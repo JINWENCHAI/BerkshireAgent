@@ -1,7 +1,7 @@
 [project]
 name = "deerflow-extension-jev-screening"
 version = "0.1.0"
-description = "Opt-in advisory screening of fetched content, contributed as a DeerFlow extension middleware"
+description = "Opt-in advisory screening of fetched content, contributed as a BerkshireAgent extension middleware"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"

@@ -46,7 +46,7 @@ Top-level `recursion_limit` and `max_recursion_limit` are hot-reloaded per Gatew
 Infrastructure fields are **restart-required**. The authoritative list lives in `packages/harness/deerflow/config/reload_boundary.py::STARTUP_ONLY_FIELDS` and is mirrored by the standardised `"startup-only:"` prefix on the corresponding `Field(description=...)` in `AppConfig` or an explicitly registered nested config model, so IDE hover on those fields surfaces the reason inline (no need to context-switch into this table). Currently registered: `plugins`, `database`, `checkpointer`, `run_events`, `agent_storage`, `stream_bridge`, `sandbox`, `skills.container_path`, `log_level`, `logging`, `channels`, `channel_connections`, `scheduler`, `mcp_tasks`, `subagent_runtime`, `subagent_batches`, `run_ownership`, `dedupe_storage`. Adding a new restart-required field requires updating the registry; drift is pinned by `tests/test_reload_boundary.py`. `scheduler.recursion_limit` is the exception inside that section: it is read from `get_app_config()` at each scheduled dispatch, so a YAML edit applies to the next run without restarting the poller.
 
 **Persistence backend resolution**: the unified `database` section selects the
-Gateway's LangGraph checkpointer, LangGraph Store, and DeerFlow SQL repositories.
+Gateway's LangGraph checkpointer, LangGraph Store, and BerkshireAgent SQL repositories.
 The deprecated `checkpointer` section remains backward compatible and, when
 present, overrides `database` for the LangGraph checkpointer and Store only;
 application repositories continue to use `database`.
@@ -102,7 +102,7 @@ Extensions are optional only in the fallback *search* mode (priority 3-4 above):
   A declared custom `reasoning.effort.path` is the only effort serialization path: `ModelConfig` rejects leftover `reasoning_effort` keys in the profile or thinking templates, even if their values are otherwise accepted.
   A boolean or level-string `reasoning` (`true` / `false`, or `low|medium|high` for gpt-oss style models) remains the legacy native ChatOllama setting and is passed to the provider; only a mapping opts into the contract.
 - `logging.enhance` - Log output only (`enabled`, `format`): whether log records carry a `trace_id` field, and in which format. Trace ids are issued unconditionally — the Gateway `X-Trace-Id` header and Langfuse `deerflow_trace_id` metadata are always present whatever this says (see the Request Trace Context section in `packages/harness/deerflow/AGENTS.md`); restart-required
-- vLLM reasoning models should use `deerflow.models.vllm_provider:VllmChatModel`; for Qwen-style parsers prefer `when_thinking_enabled.extra_body.chat_template_kwargs.enable_thinking`, and DeerFlow will also normalize the older `thinking` alias
+- vLLM reasoning models should use `deerflow.models.vllm_provider:VllmChatModel`; for Qwen-style parsers prefer `when_thinking_enabled.extra_body.chat_template_kwargs.enable_thinking`, and BerkshireAgent will also normalize the older `thinking` alias
 - `tools[]` - Tool configs with `use` variable path and `group`
 - `tool_groups[]` - Logical groupings for tools
 - `sandbox.use` - Sandbox provider class path
@@ -129,9 +129,9 @@ Extensions are optional only in the fallback *search* mode (priority 3-4 above):
 - `skills` - Map of skill name → state (enabled)
 - `middlewares` - `AgentMiddleware` entries for lead and subagent runtime extension: class-path strings or `{class, kwargs}` objects. `kwargs` values must be JSON types; YAML dates and timestamps are coerced to ISO strings so they match JSON. `config.yaml -> extensions` can override these fields after validation; overrides are replace-per-field, not list concatenation.
 
-Gateway API endpoints and `DeerFlowClient` methods can modify MCP servers and skill state at runtime; their `extensions_config.json` writes use the shared atomic replacement helper, while `middlewares` remains an operator-controlled config-file extension point.
+Gateway API endpoints and `BerkshireAgentClient` methods can modify MCP servers and skill state at runtime; their `extensions_config.json` writes use the shared atomic replacement helper, while `middlewares` remains an operator-controlled config-file extension point.
 
-Values beginning with `$` are resolved from the environment when the file is loaded, and an unset variable becomes `""`. Runtime writers (MCP router, skill toggle, `DeerFlowClient`) therefore read the raw file with `read_raw_extensions_config`, merge into it (`set_raw_skill_enabled` for skill state), check the candidate with `validate_raw_extensions_config`, and write that raw dict. They never serialize an `ExtensionsConfig` model back to disk: its resolved values would persist secrets in plaintext and erase the references. When the file does not exist yet, the Gateway skill toggle seeds only the cached skill states. `tests/test_extensions_config_raw_writes.py` and the placeholder tests in `tests/test_client.py` pin this.
+Values beginning with `$` are resolved from the environment when the file is loaded, and an unset variable becomes `""`. Runtime writers (MCP router, skill toggle, `BerkshireAgentClient`) therefore read the raw file with `read_raw_extensions_config`, merge into it (`set_raw_skill_enabled` for skill state), check the candidate with `validate_raw_extensions_config`, and write that raw dict. They never serialize an `ExtensionsConfig` model back to disk: its resolved values would persist secrets in plaintext and erase the references. When the file does not exist yet, the Gateway skill toggle seeds only the cached skill states. `tests/test_extensions_config_raw_writes.py` and the placeholder tests in `tests/test_client.py` pin this.
 
 `AgentConfig.knowledge_scope` uses the versioned `KnowledgeScope` contract as a
 Gateway new-turn default. The API preserves omitted updates and clears explicit

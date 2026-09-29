@@ -1,6 +1,6 @@
-# DeerFlow behavioural tests (Monocle Test Tools)
+# BerkshireAgent behavioural tests (Monocle Test Tools)
 
-Trace-based tests for DeerFlow. Monocle records each run as a structured trace
+Trace-based tests for BerkshireAgent. Monocle records each run as a structured trace
 (the agent invocation, every tool call, token usage, timings), and these tests
 assert against that trace with [Monocle Test Tools](https://github.com/monocle2ai/monocle).
 
@@ -22,7 +22,7 @@ The suite has two:
 - **One offline example** (`test_assertion_api_example`) loads a recorded trace
   from file and shows the full fluent vocabulary in one place. It needs no keys
   and no network. Because it asserts against frozen JSON, it guards the trace
-  format and the asserter wiring, not DeerFlow's behaviour. Treat it as the
+  format and the asserter wiring, not BerkshireAgent's behaviour. Treat it as the
   worked example for writing your own assertions.
 - **Two live tests** drive the agent end-to-end and assert on the trace the real
   run emits. These are the behavioural guards: a change that alters routing, tool
@@ -42,7 +42,7 @@ The suite has two:
 
 `traces/web_research_ev_battery.json` is a full, unmodified recording of a real
 run, committed whole so the offline example parses a genuine trace. That means
-it embeds the DeerFlow system prompt as of the recording date and the content
+it embeds the BerkshireAgent system prompt as of the recording date and the content
 the run fetched from the web, alongside the span structure the assertions read.
 It contains no credentials.
 
@@ -87,10 +87,10 @@ MONOCLE_LIVE_TESTS=1 uv run pytest tests/monocle/     # + live
 The live tests are opt-in by design: without `MONOCLE_LIVE_TESTS=1` they skip
 even on a checkout where credentials and `config.yaml` are present, so the
 default command can never spend tokens or write to a sandbox. When opted in,
-they still skip if the DeerFlow app is not importable or `config.yaml` is
+they still skip if the BerkshireAgent app is not importable or `config.yaml` is
 missing. Model credentials are validated by the configured model itself —
 `config.yaml` may select any provider (OpenAI, Anthropic, Gemini, and so on),
-so there is no hard-coded key requirement. DeerFlow's `web_search` is
+so there is no hard-coded key requirement. BerkshireAgent's `web_search` is
 DuckDuckGo and needs no key of its own.
 
 The `monocle_trace_asserter` fixture is provided by `monocle_test_tools`' own
@@ -99,7 +99,7 @@ point); no `pytest_plugins` configuration is needed.
 
 ## Add your own test
 
-1. Run DeerFlow under Monocle and capture a trace of a run you are happy with
+1. Run BerkshireAgent under Monocle and capture a trace of a run you are happy with
    (Monocle writes trace JSON to `.monocle/` by default).
 2. For an offline example, move it into `traces/` and load it with
    `monocle_trace_asserter.with_trace_source("file", trace_path=path)`.

@@ -1,7 +1,7 @@
 [project]
 name = "deerflow-extension-jev-classify"
 version = "0.1.0"
-description = "Opt-in text-list classification for DeerFlow through Jev or an OpenAI-compatible chat endpoint"
+description = "Opt-in text-list classification for BerkshireAgent through Jev or an OpenAI-compatible chat endpoint"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"

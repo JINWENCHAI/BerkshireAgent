@@ -379,7 +379,7 @@ uv run ruff format --check packages/harness/deerflow/authz app/gateway/services.
 - Lead agent、native subagent、embedded client 的 Layer 1 工具过滤。
 - `DeferredToolCatalog` 和 `tool_search` 的授权集成。
 - Layer 2 `GuardrailMiddleware` 自动装配以及与显式 guardrail 的组合顺序。
-- `DeerFlowClient` 现有 skill filter 缺口修复。
+- `BerkshireAgentClient` 现有 skill filter 缺口修复。
 - route、model、skill、sandbox、MCP server 的实际授权接线。
 - provider 缓存、跨 build singleton 或热更新生命周期优化。
 - 前端权限展示。

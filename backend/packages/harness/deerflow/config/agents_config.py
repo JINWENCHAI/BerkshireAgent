@@ -175,7 +175,7 @@ def validate_agent_name(name: str | None) -> str | None:
 class AgentModelSettings(BaseModel):
     """Per-agent LLM sampling overrides layered on top of the model profile.
 
-    These are provider sampling knobs (not DeerFlow runtime switches like
+    These are provider sampling knobs (not BerkshireAgent runtime switches like
     ``thinking_enabled``). They let two agents that reference the *same*
     ``models:`` profile still run with different temperature / output length —
     the core ask of issue #4336, where "different agents have different

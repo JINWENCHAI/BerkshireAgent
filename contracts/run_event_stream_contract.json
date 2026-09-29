@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_dialect": "https://json-schema.org/draft/2020-12/schema",
-  "description": "The current DeerFlow run event stream contract. It freezes existing names and categories, describes producer payloads, and records compatibility rules without changing runtime behavior.",
+  "description": "The current BerkshireAgent run event stream contract. It freezes existing names and categories, describes producer payloads, and records compatibility rules without changing runtime behavior.",
   "compatibility": {
     "current_event_names": "frozen",
     "consumer_rule": "Consumers must ignore unknown event types, unknown envelope fields, and unknown optional payload or metadata fields.",

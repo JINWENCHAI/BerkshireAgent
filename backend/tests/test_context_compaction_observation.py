@@ -68,12 +68,12 @@ def test_source_hashes_are_computed_on_content_directly_not_a_stringified_copy()
     """
     from langchain_core.messages import HumanMessage
 
-    from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+    from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 
     a = HumanMessage(content=[{"type": "text", "text": "hi"}, {"b": 1, "a": 2}])
     b = HumanMessage(content=[{"type": "text", "text": "hi"}, {"a": 2, "b": 1}])
 
-    middleware = DeerFlowSummarizationMiddleware(model=MagicMock(), extensions=_observed_extensions())
+    middleware = BerkshireAgentSummarizationMiddleware(model=MagicMock(), extensions=_observed_extensions())
     hashes = middleware._freeze_compaction_sources([a, b])
     assert hashes[0] == hashes[1]
     assert hashes[0] == canonical_hash(a.content)
@@ -109,13 +109,13 @@ def _runtime(thread_id: str | None = "thread-1") -> SimpleNamespace:
 
 
 def _middleware(*, trigger=("messages", 4), keep=("messages", 2), extensions=_UNOBSERVED):
-    from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+    from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 
     model = MagicMock()
     model.invoke.return_value = SimpleNamespace(text="compressed summary")
     model.ainvoke = AsyncMock(return_value=SimpleNamespace(text="compressed summary"))
     model.with_config.return_value = model
-    return DeerFlowSummarizationMiddleware(
+    return BerkshireAgentSummarizationMiddleware(
         model=model,
         trigger=trigger,
         keep=keep,

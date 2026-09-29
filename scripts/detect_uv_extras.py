@@ -126,7 +126,7 @@ def _unquote(value: str) -> str:
 def section_value(lines: list[str], section: str, key: str) -> str | None:
     """Return the value of `section.key` from a flat-ish YAML, or None.
 
-    Only handles the shallow shape DeerFlow uses for these settings:
+    Only handles the shallow shape BerkshireAgent uses for these settings:
         database:
           backend: postgres
     Nested mappings deeper than the immediate child level are ignored on

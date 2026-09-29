@@ -1,4 +1,4 @@
-"""``TenkiSandbox`` — DeerFlow :class:`Sandbox` backed by a Tenki cloud sandbox.
+"""``TenkiSandbox`` — BerkshireAgent :class:`Sandbox` backed by a Tenki cloud sandbox.
 
 Tenki's Python SDK (the ``tenki`` distribution, which ships the
 ``tenki_sandbox`` module) is synchronous, so — unlike
@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 
 _MAX_DOWNLOAD_SIZE = 100 * 1024 * 1024  # 100 MB
 # Tenki sandboxes run as the unprivileged ``tenki`` user (HOME=/home/tenki) and
-# ``/mnt`` is root-owned, so DeerFlow's ``/mnt/user-data`` virtual prefix is not
+# ``/mnt`` is root-owned, so BerkshireAgent's ``/mnt/user-data`` virtual prefix is not
 # writable directly. Like ``community/e2b_sandbox``, file ops are remapped under
 # this home dir (the provider also best-effort symlinks /mnt/user-data → here so
 # agent shell commands using the literal path still work).
@@ -74,10 +74,10 @@ _TERMINAL_ERROR_NAMES = frozenset(
 
 
 class TenkiSandbox(Sandbox):
-    """DeerFlow Sandbox adapter that delegates to a live Tenki cloud sandbox.
+    """BerkshireAgent Sandbox adapter that delegates to a live Tenki cloud sandbox.
 
     Args:
-        id: DeerFlow-side sandbox id (the provider's cache key).
+        id: BerkshireAgent-side sandbox id (the provider's cache key).
         sandbox: A live, started ``tenki_sandbox.Sandbox``. The provider owns
             its lifecycle; this adapter terminates it on :meth:`close`.
         default_env: Static environment merged into every command, overridden
@@ -219,7 +219,7 @@ class TenkiSandbox(Sandbox):
         return normalized
 
     def _resolve_path(self, path: str) -> str:
-        """Map DeerFlow virtual paths into the writable sandbox home dir.
+        """Map BerkshireAgent virtual paths into the writable sandbox home dir.
 
         ``VIRTUAL_PATH_PREFIX`` (``/mnt/user-data``) is rewritten under
         :attr:`_home_dir`; other absolute paths pass through so the sandbox can
@@ -254,7 +254,7 @@ class TenkiSandbox(Sandbox):
     ) -> str:
         """Run ``command`` through a shell in the Tenki sandbox and return output.
 
-        DeerFlow passes a bash command *string*; it runs through ``sh -lc``.
+        BerkshireAgent passes a bash command *string*; it runs through ``sh -lc``.
         Per-call ``env`` is layered over the static config environment and
         scoped to this command only (request-scoped secrets, issue #3861).
         """

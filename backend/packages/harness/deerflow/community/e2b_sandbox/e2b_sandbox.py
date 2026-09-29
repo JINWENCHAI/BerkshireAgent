@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 _MAX_DOWNLOAD_SIZE = 100 * 1024 * 1024  # 100 MB
 
-# Where DeerFlow's ``/mnt/user-data`` virtual prefix is materialised inside
+# Where BerkshireAgent's ``/mnt/user-data`` virtual prefix is materialised inside
 # the e2b sandbox.  e2b code-interpreter templates default to ``/home/user``
 # as the working directory.
 DEFAULT_E2B_HOME_DIR = "/home/user"
@@ -41,10 +41,10 @@ def _is_sandbox_gone_error(exc: BaseException) -> bool:
 
 
 class E2BSandbox(Sandbox):
-    """DeerFlow Sandbox adapter that delegates to an e2b cloud sandbox.
+    """BerkshireAgent Sandbox adapter that delegates to an e2b cloud sandbox.
 
     Args:
-        id: DeerFlow-side sandbox id (used as cache key in the provider).
+        id: BerkshireAgent-side sandbox id (used as cache key in the provider).
         client: A live ``e2b_code_interpreter.Sandbox`` (sync) instance.
             The caller owns the connection and is responsible for ``kill()``;
             this wrapper only calls ``close()`` on its host-side HTTP client
@@ -85,7 +85,7 @@ class E2BSandbox(Sandbox):
 
     @property
     def sandbox_id(self) -> str:
-        """e2b-side sandbox id (different from DeerFlow's ``self.id`` cache key)."""
+        """e2b-side sandbox id (different from BerkshireAgent's ``self.id`` cache key)."""
         return getattr(self._client, "sandbox_id", None) or self.id
 
     def close(self) -> None:
@@ -111,7 +111,7 @@ class E2BSandbox(Sandbox):
                 return
 
     def _resolve_path(self, path: str) -> str:
-        """Map DeerFlow virtual paths into the e2b sandbox filesystem.
+        """Map BerkshireAgent virtual paths into the e2b sandbox filesystem.
 
         ``VIRTUAL_PATH_PREFIX`` (``/mnt/user-data``) is rewritten under
         :attr:`home_dir`, mirroring how ``LocalContainerBackend`` bind-mounts

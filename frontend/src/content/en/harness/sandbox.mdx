@@ -9,7 +9,7 @@ import { Callout, Tabs } from "nextra/components";
 
 <Callout type="info" emoji="📦">
   The sandbox is the isolated workspace where the agent does file and
-  command-based work. It is what makes DeerFlow capable of real action, not just
+  command-based work. It is what makes BerkshireAgent capable of real action, not just
   conversation.
 </Callout>
 
@@ -17,7 +17,7 @@ The sandbox gives the Lead Agent a controlled environment where it can read file
 
 ## Sandbox modes
 
-DeerFlow supports four sandbox modes. Choose the one that fits your deployment:
+BerkshireAgent supports four sandbox modes. Choose the one that fits your deployment:
 
 ### LocalSandbox (default)
 
@@ -48,8 +48,8 @@ sandbox:
   # Optional: max concurrent containers (default: 3, LRU eviction when exceeded)
   replicas: 3
 
-  # Optional: container name prefix (default: deer-flow-sandbox)
-  container_prefix: deer-flow-sandbox
+  # Optional: container name prefix (default: berkshire-agent-sandbox)
+  container_prefix: berkshire-agent-sandbox
 
   # Optional: idle timeout in seconds (default: 600)
   idle_timeout: 600
@@ -69,7 +69,7 @@ Install: `cd backend && uv add 'deerflow-harness[aio-sandbox]'`
 
 ### E2B Cloud Sandbox
 
-Commands run in an [E2B](https://e2b.dev) cloud micro-VM. Each thread is bound to its own sandbox via metadata, so the same DeerFlow thread keeps reaching the same e2b sandbox even across gateway restarts and across processes. The cloud VM is reaped automatically by e2b once the configured idle timeout elapses.
+Commands run in an [E2B](https://e2b.dev) cloud micro-VM. Each thread is bound to its own sandbox via metadata, so the same BerkshireAgent thread keeps reaching the same e2b sandbox even across gateway restarts and across processes. The cloud VM is reaped automatically by e2b once the configured idle timeout elapses.
 
 - **Best for**: hosted/serverless deployments, teams that do not want to operate Docker or Kubernetes themselves, workloads that need a real Jupyter kernel out of the box.
 - **Trade-off**: requires network access to the e2b control plane and an API key. Mounts are **one-shot uploads** at sandbox start (host bind-mounts are not possible because the sandbox lives in the cloud).
@@ -117,7 +117,7 @@ Install: `e2b-code-interpreter` is already a core dependency of `deerflow-harnes
 Get an API key at [e2b.dev/dashboard](https://e2b.dev/dashboard) and either set `sandbox.api_key` directly in `config.yaml` or export `E2B_API_KEY` in your `.env`.
 
 <Callout type="info">
-  Because e2b is a remote sandbox, DeerFlow's `/mnt/user-data` virtual prefix is
+  Because e2b is a remote sandbox, BerkshireAgent's `/mnt/user-data` virtual prefix is
   remapped onto `home_dir` (default `/home/user`) inside the cloud VM. Tools
   that read or write under `/mnt/user-data/...` continue to work transparently.
 </Callout>
@@ -141,7 +141,7 @@ The sandbox uses path mappings to bridge the host filesystem and the container's
 | Host path                                   | Container path                               | Access     |
 | ------------------------------------------- | -------------------------------------------- | ---------- |
 | `skills/` (from `skills.path`)              | `/mnt/skills` (from `skills.container_path`) | Read-only  |
-| `.deer-flow/threads/{thread_id}/user-data/` | `/mnt/user-data/`                            | Read-write |
+| `.berkshire-agent/threads/{thread_id}/user-data/` | `/mnt/user-data/`                            | Read-write |
 
 The skills directory is always mounted read-only. Threads write their working data (uploads, outputs, intermediate files) to `/mnt/user-data/`.
 
@@ -164,7 +164,7 @@ sandbox:
 </Callout>
 
 When `LocalSandboxProvider` runs under production Docker (`make up`), the
-provider runs inside the `deer-flow-gateway` container. In that mode,
+provider runs inside the `berkshire-agent-gateway` container. In that mode,
 `host_path` is resolved from the gateway container's filesystem, not directly
 from your Docker host. Bind the host directory into the gateway service first,
 then use the in-container path in `config.yaml`:
@@ -174,19 +174,19 @@ then use the in-container path in `config.yaml`:
 services:
   gateway:
     volumes:
-      - ${DEER_FLOW_REPO_ROOT}/.deer-flow/knowledge:/app/.deer-flow/knowledge:ro
+      - ${DEER_FLOW_REPO_ROOT}/.berkshire-agent/knowledge:/app/.berkshire-agent/knowledge:ro
 ```
 
 ```yaml
 sandbox:
   use: deerflow.sandbox.local:LocalSandboxProvider
   mounts:
-    - host_path: /app/.deer-flow/knowledge
+    - host_path: /app/.berkshire-agent/knowledge
       container_path: /mnt/knowledge
       read_only: true
 ```
 
-If the configured `host_path` is not visible to the gateway process, DeerFlow
+If the configured `host_path` is not visible to the gateway process, BerkshireAgent
 logs an error and ignores that mount.
 
 ## Output truncation

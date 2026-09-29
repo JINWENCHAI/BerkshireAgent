@@ -31,7 +31,7 @@ export function bindFrontendServices(
           headers: {
             "Content-Type": "application/json",
             ...(entry.viewer_id
-              ? { "X-Deerflow-Plugin-Viewer": entry.viewer_id }
+              ? { "X-BerkshireAgent-Plugin-Viewer": entry.viewer_id }
               : {}),
           },
           body: JSON.stringify(payload),

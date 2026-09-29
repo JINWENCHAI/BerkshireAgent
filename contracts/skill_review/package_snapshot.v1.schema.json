@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://deerflow.dev/contracts/skill_review/package_snapshot.v1.schema.json",
-  "title": "DeerFlow Skill Package Snapshot v1",
+  "title": "BerkshireAgent Skill Package Snapshot v1",
   "type": "object",
   "required": ["schema_version", "subject", "limits", "files", "truncated", "reader_errors"],
   "properties": {

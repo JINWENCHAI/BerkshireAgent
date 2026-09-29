@@ -370,7 +370,7 @@ def test_idle_timeout_zero_is_preserved_and_disables_reaper(monkeypatch):
 
 
 def test_create_box_passes_prefixed_sandbox_id_as_name(monkeypatch):
-    """_create_box gives BoxLite a DeerFlow-owned name prefix."""
+    """_create_box gives BoxLite a BerkshireAgent-owned name prefix."""
     monkeypatch.setattr(
         "deerflow.community.boxlite.provider.get_app_config",
         lambda: _stub_config(),
@@ -394,12 +394,12 @@ def test_create_box_passes_prefixed_sandbox_id_as_name(monkeypatch):
 
     box = provider._create_box("test-sandbox-id")
     assert len(created_boxes) == 1
-    assert created_boxes[0]["name"] == "deer-flow-boxlite-test-sandbox-id"
+    assert created_boxes[0]["name"] == "berkshire-agent-boxlite-test-sandbox-id"
     assert box.id == "test-sandbox-id"
 
 
 def test_startup_reconciliation_adopts_prefixed_existing_boxes(monkeypatch):
-    """Existing DeerFlow-named BoxLite boxes are adopted into the warm pool."""
+    """Existing BerkshireAgent-named BoxLite boxes are adopted into the warm pool."""
     monkeypatch.setattr(
         "deerflow.community.boxlite.provider.get_app_config",
         lambda: _stub_config(),
@@ -419,13 +419,13 @@ def test_startup_reconciliation_adopts_prefixed_existing_boxes(monkeypatch):
 
         def list_info(self):
             return [
-                types.SimpleNamespace(name="deer-flow-boxlite-adopted"),
+                types.SimpleNamespace(name="berkshire-agent-boxlite-adopted"),
                 types.SimpleNamespace(name="unrelated-box"),
                 types.SimpleNamespace(name=None),
             ]
 
         def get(self, name):
-            if name == "deer-flow-boxlite-adopted":
+            if name == "berkshire-agent-boxlite-adopted":
                 return _NativeBox()
             raise AssertionError(f"unexpected box lookup: {name}")
 
@@ -704,7 +704,7 @@ def test_adopted_warm_pool_box_still_health_checks(monkeypatch):
     provider = BoxliteProvider()
     adopted = BoxliteBox(
         "adopted",
-        _FakeBox(name="deer-flow-boxlite-adopted"),
+        _FakeBox(name="berkshire-agent-boxlite-adopted"),
         _fake_run,
         default_env={},
     )
@@ -1239,13 +1239,13 @@ def test_late_same_tenant_collision_reuses_active_box(monkeypatch):
     key = ("user-a", "thread-a")
     active = BoxliteBox(
         sandbox_id,
-        _FakeBox(name=f"deer-flow-boxlite-{sandbox_id}"),
+        _FakeBox(name=f"berkshire-agent-boxlite-{sandbox_id}"),
         _fake_run,
         default_env={},
     )
     duplicate = BoxliteBox(
         sandbox_id,
-        _FakeBox(name=f"deer-flow-boxlite-{sandbox_id}"),
+        _FakeBox(name=f"berkshire-agent-boxlite-{sandbox_id}"),
         _fake_run,
         default_env={},
     )
@@ -1280,13 +1280,13 @@ def test_failed_health_check_does_not_remove_swapped_warm_entry(monkeypatch):
     provider = BoxliteProvider()
     stale = BoxliteBox(
         "shared-id",
-        _FakeBox(name="deer-flow-boxlite-shared-id"),
+        _FakeBox(name="berkshire-agent-boxlite-shared-id"),
         _fake_run,
         default_env={},
     )
     replacement = BoxliteBox(
         "shared-id",
-        _FakeBox(name="deer-flow-boxlite-shared-id"),
+        _FakeBox(name="berkshire-agent-boxlite-shared-id"),
         _fake_run,
         default_env={},
     )

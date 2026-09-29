@@ -1,4 +1,4 @@
-"""Runtime bridge between ``DeerFlowClient`` streaming and the view-state reducer.
+"""Runtime bridge between ``BerkshireAgentClient`` streaming and the view-state reducer.
 
 Two layers, both kept free of Textual:
 
@@ -35,7 +35,7 @@ class _StreamEventLike(Protocol):
 
 class _ClientLike(Protocol):
     def stream(self, message: str, *, thread_id: str | None = None, **kwargs: Any) -> Iterator[Any]:
-        """Yield streaming events for *message* (see ``DeerFlowClient.stream``)."""
+        """Yield streaming events for *message* (see ``BerkshireAgentClient.stream``)."""
 
 
 def translate(event: _StreamEventLike) -> list[Action]:

@@ -1,6 +1,6 @@
 ---
 title: 检查点与增量通道
-description: DeerFlow 如何持久化线程状态，以及 database.checkpoint_channel_mode 如何在整份消息检查点与 LangGraph DeltaChannel 增量检查点之间取舍。含概念、存储形态与本手册阅读路线。
+description: BerkshireAgent 如何持久化线程状态，以及 database.checkpoint_channel_mode 如何在整份消息检查点与 LangGraph DeltaChannel 增量检查点之间取舍。含概念、存储形态与本手册阅读路线。
 asIndexPage: true
 ---
 
@@ -14,7 +14,7 @@ import { Callout } from "nextra/components";
   在读需要时重建列表。默认值是 `full`。
 </Callout>
 
-DeerFlow 的每次运行都会在每一步之后把线程状态写成检查点：消息列表、目标、沙箱句柄、持久上下文，以及中间件贡献的各类通道。在长任务里消息列表占据绝大部分体积，因此它在磁盘上的表示方式，决定了 N 轮之后这个存储到底保留了多少：`full` 模式保留的量是平方级，`delta` 模式则按快照节奏把这一平方项缩小，而不是把它消掉。本手册讲这两种表示、切换它们的开关，以及每种选择的运维代价。
+BerkshireAgent 的每次运行都会在每一步之后把线程状态写成检查点：消息列表、目标、沙箱句柄、持久上下文，以及中间件贡献的各类通道。在长任务里消息列表占据绝大部分体积，因此它在磁盘上的表示方式，决定了 N 轮之后这个存储到底保留了多少：`full` 模式保留的量是平方级，`delta` 模式则按快照节奏把这一平方项缩小，而不是把它消掉。本手册讲这两种表示、切换它们的开关，以及每种选择的运维代价。
 
 ## 如何阅读本手册
 
@@ -43,7 +43,7 @@ DeerFlow 的每次运行都会在每一步之后把线程状态写成检查点�
 | 单步边际成本     | 把整份列表重新序列化进又一份会被保留的检查点     | 追加该步的写入；另外每 K 次写入还会落一份整份快照                                                  |
 | N 轮后保留的总量 | O(N²)                                            | O(N²/K + N)                                                                                      |
 
-也就是说，delta 是把平方项按 K 大致缩小（默认 `10`），而不是删掉它。快照越少，残余越小，读也越慢——物化要从最近一份快照开始重放（见[快照节奏](/docs/harness/checkpoints/cadence)）。DeerFlow 目前没有任何机制清理这些快照，因此容量应按**保留总量**估算，而不是按单步写入成本（见[运维检查点](/docs/harness/checkpoints/operations)）。
+也就是说，delta 是把平方项按 K 大致缩小（默认 `10`），而不是删掉它。快照越少，残余越小，读也越慢——物化要从最近一份快照开始重放（见[快照节奏](/docs/harness/checkpoints/cadence)）。BerkshireAgent 目前没有任何机制清理这些快照，因此容量应按**保留总量**估算，而不是按单步写入成本（见[运维检查点](/docs/harness/checkpoints/operations)）。
 
 |                  | `full`                                           | `delta`                                                                                          |
 | ---------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
@@ -75,7 +75,7 @@ DeerFlow 的每次运行都会在每一步之后把线程状态写成检查点�
 | 保留 / 裁剪（retention / prune） | 删除检查点行。增量模式下，重建所依赖的 writes 行必须保留。                                                                                  |
 | 缓存（cache）                 | 增量模式专用的历史缓存，缓存已物化的通道历史。                                                                                                 |
 | 冻结（frozen）                | 在第一次构建图之前每个进程解析一次；之后出现不同取值就是错误，改动需要重启。                                                                   |
-| 网关 / 内嵌（Gateway / embedded） | 异步的 Gateway 路径，对比同步的 TUI 或进程内 `DeerFlowClient` 路径。                                                                       |
+| 网关 / 内嵌（Gateway / embedded） | 异步的 Gateway 路径，对比同步的 TUI 或进程内 `BerkshireAgentClient` 路径。                                                                       |
 
 <Cards num={3}>
   <Cards.Card title="快速上手" href="/docs/harness/checkpoints/quick-start" />

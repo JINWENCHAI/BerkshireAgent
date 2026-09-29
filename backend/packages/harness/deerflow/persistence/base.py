@@ -1,6 +1,6 @@
 """SQLAlchemy declarative base with automatic to_dict support.
 
-All DeerFlow ORM models inherit from this Base. It provides a generic
+All BerkshireAgent ORM models inherit from this Base. It provides a generic
 to_dict() method via SQLAlchemy's inspect() so individual models don't
 need to write their own serialization logic.
 
@@ -27,7 +27,7 @@ def _column_keys(cls: type) -> tuple[str, ...]:
 
 
 class Base(DeclarativeBase):
-    """Base class for all DeerFlow ORM models.
+    """Base class for all BerkshireAgent ORM models.
 
     Provides:
     - Automatic to_dict() via SQLAlchemy column inspection.

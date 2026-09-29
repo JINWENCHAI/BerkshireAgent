@@ -14,7 +14,7 @@ from pydantic import ValidationError
 
 from deerflow.agents.memory.summarization_hook import memory_flush_hook
 from deerflow.agents.middlewares.dynamic_context_middleware import _DYNAMIC_CONTEXT_REMINDER_KEY, DynamicContextMiddleware, is_dynamic_context_reminder
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware, SummarizationEvent, SummaryGenerationError, create_summarization_middleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware, SummarizationEvent, SummaryGenerationError, create_summarization_middleware
 from deerflow.agents.thread_state import ThreadState
 from deerflow.config.app_config import AppConfig
 from deerflow.config.memory_config import MemoryConfig
@@ -79,12 +79,12 @@ def _middleware(
     before_summarization=None,
     trigger=("messages", 4),
     keep=("messages", 2),
-) -> DeerFlowSummarizationMiddleware:
+) -> BerkshireAgentSummarizationMiddleware:
     model = MagicMock()
     model.invoke.return_value = SimpleNamespace(text="compressed summary")
     model.ainvoke = AsyncMock(return_value=SimpleNamespace(text="compressed summary"))
     model.with_config.return_value = model
-    return DeerFlowSummarizationMiddleware(
+    return BerkshireAgentSummarizationMiddleware(
         model=model,
         trigger=trigger,
         keep=keep,
@@ -158,7 +158,7 @@ async def test_compaction_skips_a_fully_rescued_partition(asynchronous: bool) ->
 
 
 def test_summarization_middleware_emits_frontend_update_key_in_agent_stream() -> None:
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=_StaticChatModel(text="compressed summary"),
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -173,7 +173,7 @@ def test_summarization_middleware_emits_frontend_update_key_in_agent_stream() ->
 
     chunks = list(agent.stream({"messages": _messages()}, stream_mode="updates"))
     update = next(
-        (chunk["DeerFlowSummarizationMiddleware.before_model"] for chunk in chunks if "DeerFlowSummarizationMiddleware.before_model" in chunk),
+        (chunk["BerkshireAgentSummarizationMiddleware.before_model"] for chunk in chunks if "BerkshireAgentSummarizationMiddleware.before_model" in chunk),
         None,
     )
 
@@ -193,7 +193,7 @@ def test_summary_model_is_tagged_nostream_to_avoid_stream_pollution() -> None:
             return super()._generate(messages, stop=stop, run_manager=run_manager, **kwargs)
 
     model = _RecordingChatModel(text="compressed summary")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -238,7 +238,7 @@ def test_summarization_does_not_mutate_shared_model_across_concurrent_runs() -> 
             return self._generate(messages, stop=stop, run_manager=run_manager, **kwargs)
 
     model = _BlockingChatModel(text="compressed summary")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -262,7 +262,7 @@ def test_summarization_does_not_mutate_shared_model_across_concurrent_runs() -> 
 def test_raw_model_is_preserved_for_parent_profile_inspection() -> None:
     """self.model must stay the original model so attribute access does not drift."""
     model = _StaticChatModel(text="compressed summary")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -284,7 +284,7 @@ def test_summary_model_preserves_existing_tags_when_adding_nostream() -> None:
     preserve existing tags instead of overwriting them with just [TAG_NOSTREAM].
     """
     tagged_model = _StaticChatModel(text="compressed summary").with_config(tags=["middleware:summarize"])
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=tagged_model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -868,7 +868,7 @@ def test_null_model_summarizes_with_the_run_model(monkeypatch: pytest.MonkeyPatc
     default_model = MagicMock()
     default_model.with_config.return_value = default_model
     default_model.invoke.return_value = SimpleNamespace(text="from-default")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=default_model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -897,7 +897,7 @@ def test_explicit_summary_model_failure_falls_back_to_run_model(monkeypatch: pyt
     explicit = MagicMock()
     explicit.with_config.return_value = explicit
     explicit.invoke.side_effect = RuntimeError("summary provider down")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=explicit,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -924,7 +924,7 @@ async def test_async_explicit_failure_falls_back_to_run_model(monkeypatch: pytes
     explicit = MagicMock()
     explicit.with_config.return_value = explicit
     explicit.ainvoke = AsyncMock(side_effect=RuntimeError("summary provider down"))
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=explicit,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -951,7 +951,7 @@ def test_both_summary_models_failing_returns_none_on_automatic_path(monkeypatch:
     explicit = MagicMock()
     explicit.with_config.return_value = explicit
     explicit.invoke.side_effect = RuntimeError("provider down")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=explicit,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -978,7 +978,7 @@ def test_explicit_summary_model_equal_to_run_model_is_not_retried(monkeypatch: p
     explicit = MagicMock()
     explicit.with_config.return_value = explicit
     explicit.invoke.side_effect = RuntimeError("provider down")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=explicit,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1008,7 +1008,7 @@ def test_fallback_construction_error_does_not_escape_automatic_path(monkeypatch:
     explicit = MagicMock()
     explicit.with_config.return_value = explicit
     explicit.invoke.side_effect = RuntimeError("summary provider down")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=explicit,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1033,7 +1033,7 @@ def test_blank_summary_response_is_not_committed_null_case(monkeypatch: pytest.M
 
     default_model = MagicMock()
     default_model.with_config.return_value = default_model
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=default_model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1057,7 +1057,7 @@ async def test_blank_summary_response_is_not_committed_async(monkeypatch: pytest
 
     default_model = MagicMock()
     default_model.with_config.return_value = default_model
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=default_model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1080,7 +1080,7 @@ def test_blank_primary_summary_falls_back_to_run_model(monkeypatch: pytest.Monke
     monkeypatch.setattr("deerflow.agents.middlewares.summarization_middleware.create_chat_model", _tracking_create_chat_model(built))
 
     explicit = _blank_model()  # primary returns whitespace
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=explicit,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1105,7 +1105,7 @@ def test_manual_compaction_failure_raises_summary_generation_error(monkeypatch: 
     default_model = MagicMock()
     default_model.with_config.return_value = default_model
     default_model.invoke.side_effect = RuntimeError("provider down")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=default_model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1126,7 +1126,7 @@ def test_force_alone_does_not_raise_on_failure(monkeypatch: pytest.MonkeyPatch) 
     default_model = MagicMock()
     default_model.with_config.return_value = default_model
     default_model.invoke.side_effect = RuntimeError("provider down")
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=default_model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1146,7 +1146,7 @@ def test_before_summarization_hook_not_fired_when_summary_fails(monkeypatch: pyt
     default_model.with_config.return_value = default_model
     default_model.invoke.side_effect = RuntimeError("provider down")
     captured: list[SummarizationEvent] = []
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=default_model,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1440,7 +1440,7 @@ def test_text_extraction_failure_falls_back_to_run_model(monkeypatch):
     monkeypatch.setattr("deerflow.agents.middlewares.summarization_middleware.create_chat_model", _tracking_create_chat_model(built))
 
     primary = _text_raises_model()
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=primary,
         trigger=("messages", 4),
         keep=("messages", 2),
@@ -1465,7 +1465,7 @@ async def test_text_extraction_failure_falls_back_to_run_model_async(monkeypatch
     monkeypatch.setattr("deerflow.agents.middlewares.summarization_middleware.create_chat_model", _tracking_create_chat_model(built))
 
     primary = _text_raises_model()
-    middleware = DeerFlowSummarizationMiddleware(
+    middleware = BerkshireAgentSummarizationMiddleware(
         model=primary,
         trigger=("messages", 4),
         keep=("messages", 2),

@@ -16,7 +16,7 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      "https://api.github.com/repos/bytedance/deer-flow",
+      "https://api.github.com/repos/bytedance/berkshire-agent",
       {
         headers: {
           Authorization: `Bearer ${token}`,

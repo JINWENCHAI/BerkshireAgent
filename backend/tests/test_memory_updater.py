@@ -445,7 +445,7 @@ def test_apply_updates_skips_same_batch_duplicates_and_keeps_source_metadata() -
         "newFacts": [
             {**_DURABLE_USER_FACT, "content": "User prefers dark mode", "category": "preference", "confidence": 0.91},
             {**_DURABLE_USER_FACT, "content": "User prefers dark mode", "category": "preference", "confidence": 0.92},
-            {**_DURABLE_USER_FACT, "content": "User works on DeerFlow", "category": "context", "confidence": 0.87},
+            {**_DURABLE_USER_FACT, "content": "User works on BerkshireAgent", "category": "context", "confidence": 0.87},
         ],
     }
 
@@ -453,7 +453,7 @@ def test_apply_updates_skips_same_batch_duplicates_and_keeps_source_metadata() -
 
     assert [fact["content"] for fact in result["facts"]] == [
         "User prefers dark mode",
-        "User works on DeerFlow",
+        "User works on BerkshireAgent",
     ]
     assert all(fact["id"].startswith("fact_") for fact in result["facts"])
     assert all(fact["source"] == "thread-42" for fact in result["facts"])
@@ -542,7 +542,7 @@ def test_apply_updates_ignores_empty_source_error() -> None:
 
 def test_clear_memory_data_clears_facts_and_preserves_shared_summaries() -> None:
     memory = _make_memory(facts=[{"id": "fact_1", "content": "Keep tests focused"}])
-    memory["user"]["workContext"]["summary"] = "Working on DeerFlow"
+    memory["user"]["workContext"]["summary"] = "Working on BerkshireAgent"
     memory["history"]["recentMonths"]["summary"] = "Migrated memory storage"
     storage = _MemoryStorage(memory)
     updater = _make_updater(storage=storage)
@@ -550,7 +550,7 @@ def test_clear_memory_data_clears_facts_and_preserves_shared_summaries() -> None
     result = updater.clear_memory_data(agent_name="researcher")
 
     assert result["facts"] == []
-    assert result["user"]["workContext"]["summary"] == "Working on DeerFlow"
+    assert result["user"]["workContext"]["summary"] == "Working on BerkshireAgent"
     assert result["history"]["recentMonths"]["summary"] == "Migrated memory storage"
     assert storage.save_calls == [("researcher", None, 0)]
 
@@ -829,7 +829,7 @@ def test_import_memory_data_saves_and_returns_imported_memory() -> None:
         facts=[
             {
                 "id": "fact_import",
-                "content": "User works on DeerFlow.",
+                "content": "User works on BerkshireAgent.",
                 "category": "context",
                 "confidence": 0.87,
                 "createdAt": "2026-03-20T00:00:00Z",
@@ -1268,14 +1268,14 @@ class TestUpdateMemoryStructuredResponse:
         """Parsed JSON with bad field types should not break the memory update."""
         response = (
             '{"user": "bad", "history": [], "newFacts": ["bad", '
-            '{"content": "User works on DeerFlow", "category": "context", "confidence": 0.91, '
+            '{"content": "User works on BerkshireAgent", "category": "context", "confidence": 0.91, '
             '"scope": "user", "durability": "durable", "authority": "descriptive"}], "factsToRemove": "bad"}'
         )
 
         result, storage = self._run_update_with_response(response)
 
         assert result is True
-        assert [fact["content"] for fact in storage.memory["facts"]] == ["User works on DeerFlow"]
+        assert [fact["content"] for fact in storage.memory["facts"]] == ["User works on BerkshireAgent"]
 
     def test_fact_schema_guard_coerces_and_filters_nested_fields(self):
         """Malformed fact entries should be normalized per fact, not fail the whole update."""

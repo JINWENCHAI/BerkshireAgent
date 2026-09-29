@@ -430,7 +430,7 @@ def test_parse_skill_file_saved_with_utf8_bom(tmp_path):
     Windows Notepad and PowerShell's ``Set-Content -Encoding UTF8`` prepend U+FEFF to
     every file they save. The front-matter anchor began at ``^---``, so that mark made
     ``parse_skill_file`` return ``None`` and the catalog builder dropped the skill with
-    no log line and no error - the skill simply never existed as far as DeerFlow was
+    no log line and no error - the skill simply never existed as far as BerkshireAgent was
     concerned, while the exact same file edited on Linux loaded fine.
     """
     skill_file = _write_skill(tmp_path, "name: my-skill\ndescription: A test skill", encoding="utf-8-sig")

@@ -1,6 +1,6 @@
 # Authentication Upgrade Guide
 
-DeerFlow 内置了认证模块。本文档面向从无认证版本升级的用户。
+BerkshireAgent 内置了认证模块。本文档面向从无认证版本升级的用户。
 
 完整设计见 [AUTH_DESIGN.md](AUTH_DESIGN.md)。
 
@@ -79,14 +79,14 @@ python -m app.gateway.auth.reset_admin
 python -m app.gateway.auth.reset_admin --email user@example.com
 ```
 
-会把新的随机密码写入 `.deer-flow/admin_initial_credentials.txt`，文件权限为 `0600`。命令行只输出文件路径，不输出明文密码。
+会把新的随机密码写入 `.berkshire-agent/admin_initial_credentials.txt`，文件权限为 `0600`。命令行只输出文件路径，不输出明文密码。
 
 ### 完全重置
 
 删除统一 SQLite 数据库，重启后重新访问 `/setup` 创建新 admin：
 
 ```bash
-rm -f backend/.deer-flow/data/deerflow.db
+rm -f backend/.berkshire-agent/data/deerflow.db
 # 重启服务后访问 http://localhost:2026/setup
 ```
 
@@ -94,12 +94,12 @@ rm -f backend/.deer-flow/data/deerflow.db
 
 | 文件 | 内容 |
 |------|------|
-| `.deer-flow/data/deerflow.db` | 统一 SQLite 数据库（users、threads_meta、runs、feedback 等应用数据） |
-| `.deer-flow/users/{user_id}/threads/{thread_id}/user-data/` | 用户线程的 workspace、uploads、outputs |
-| `.deer-flow/users/{user_id}/memory.json` | 用户级 memory |
-| `.deer-flow/users/{user_id}/agents/{agent_name}/` | 用户自定义 agent 配置、SOUL 和 agent memory |
-| `.deer-flow/admin_initial_credentials.txt` | `reset_admin` 生成的新凭据文件（0600，读完应删除） |
-| `.env` 中的 `AUTH_JWT_SECRET` | JWT 签名密钥（未设置时自动生成并持久化到 `.deer-flow/.jwt_secret`，重启后 session 保持） |
+| `.berkshire-agent/data/deerflow.db` | 统一 SQLite 数据库（users、threads_meta、runs、feedback 等应用数据） |
+| `.berkshire-agent/users/{user_id}/threads/{thread_id}/user-data/` | 用户线程的 workspace、uploads、outputs |
+| `.berkshire-agent/users/{user_id}/memory.json` | 用户级 memory |
+| `.berkshire-agent/users/{user_id}/agents/{agent_name}/` | 用户自定义 agent 配置、SOUL 和 agent memory |
+| `.berkshire-agent/admin_initial_credentials.txt` | `reset_admin` 生成的新凭据文件（0600，读完应删除） |
+| `.env` 中的 `AUTH_JWT_SECRET` | JWT 签名密钥（未设置时自动生成并持久化到 `.berkshire-agent/.jwt_secret`，重启后 session 保持） |
 
 ### 生产环境建议
 
@@ -126,9 +126,9 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 - **本地开发**（`make dev`）：Gateway embedded runtime 完全兼容；无 admin 时访问 `/setup` 初始化
 - **Gateway embedded runtime**：标准脚本、Docker dev 和生产部署均通过 Gateway 提供认证与 LangGraph-compatible API
-- **Docker 部署**：完全兼容，`.deer-flow/data/deerflow.db` 需持久化卷挂载
+- **Docker 部署**：完全兼容，`.berkshire-agent/data/deerflow.db` 需持久化卷挂载
 - **IM 渠道**（Feishu/Slack/Telegram）：通过 Gateway 内部认证通信，使用 `default` 用户桶
-- **DeerFlowClient**（嵌入式）：不经过 HTTP，不受认证影响
+- **BerkshireAgentClient**（嵌入式）：不经过 HTTP，不受认证影响
 
 ## 故障排查
 

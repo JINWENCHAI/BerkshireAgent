@@ -1,4 +1,4 @@
-"""DeerMem's own storage path resolution (no deer-flow ``get_paths`` / ``AGENT_NAME_PATTERN``).
+"""DeerMem's own storage path resolution (no berkshire-agent ``get_paths`` / ``AGENT_NAME_PATTERN``).
 
 The host no longer dictates where DeerMem stores data. Root = ``config.storage_path``
 (if set, absolute or relative) or ``$DEERMEM_DATA_DIR`` or ``~/.deermem/``.
@@ -29,7 +29,7 @@ _SAFE_USER_ID_RE = re.compile(r"^[A-Za-z0-9_\-]+$")
 _UNSAFE_USER_ID_CHAR_RE = re.compile(r"[^A-Za-z0-9_\-]")
 _SAFE_USER_ID_DIGEST_HEX_LEN = 16
 
-# agent_name validation (inlined; was deer-flow's AGENT_NAME_PATTERN).
+# agent_name validation (inlined; was berkshire-agent's AGENT_NAME_PATTERN).
 AGENT_NAME_PATTERN = re.compile(r"^[A-Za-z0-9-]+$")
 # Internal bucket used when callers omit ``agent_name``.  The underscores keep
 # it outside the public custom-agent namespace accepted by AGENT_NAME_PATTERN.
@@ -78,7 +78,7 @@ def memory_file_path(
     """Resolve the memory file path under DeerMem's own data root.
 
     ``config.storage_path`` (absolute or relative) is the root. Empty -> default root
-    (``$DEERMEM_DATA_DIR`` / ``~/.deermem/``). The host (deer-flow factory)
+    (``$DEERMEM_DATA_DIR`` / ``~/.deermem/``). The host (berkshire-agent factory)
     injects an absolute base_dir as ``storage_path`` so memory lands at
     ``{base_dir}/users/{user_id}/memory.json`` (CWD-independent).
     """

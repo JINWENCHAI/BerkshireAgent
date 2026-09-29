@@ -109,8 +109,8 @@ def parse_allowed_tools(raw: object, skill_file: Path) -> tuple[str, ...] | None
 
     Returns None when the field is omitted. Accepts the Agent Skills standard
     space-separated string or a YAML sequence of strings. Known portable client
-    aliases normalize to DeerFlow runtime names. Unknown names and
-    command-scoped patterns remain literal because DeerFlow does not inspect
+    aliases normalize to BerkshireAgent runtime names. Unknown names and
+    command-scoped patterns remain literal because BerkshireAgent does not inspect
     tool arguments. Returns an empty tuple for an explicit empty value. Raises
     ValueError for malformed values.
     """

@@ -27,7 +27,7 @@ class OIDCProviderConfig(BaseModel):
     # ── User provisioning ─────────────────────────────────────────────
     auto_create_users: bool = Field(
         default=True,
-        description="Automatically create a DeerFlow user on first SSO login",
+        description="Automatically create a BerkshireAgent user on first SSO login",
     )
     require_verified_email: bool = Field(
         default=True,
@@ -102,7 +102,7 @@ class LocalAuthConfig(BaseModel):
 
 
 class AuthAppConfig(BaseModel):
-    """Authentication configuration section for the DeerFlow app config."""
+    """Authentication configuration section for the BerkshireAgent app config."""
 
     oidc: OIDCAuthConfig = Field(default_factory=OIDCAuthConfig, description="OIDC SSO authentication settings")
     local: LocalAuthConfig = Field(default_factory=LocalAuthConfig, description="Built-in email/password authentication settings")

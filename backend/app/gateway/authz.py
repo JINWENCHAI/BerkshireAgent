@@ -1,4 +1,4 @@
-"""Authorization decorators and context for DeerFlow.
+"""Authorization decorators and context for BerkshireAgent.
 
 Inspired by LangGraph Auth system: https://github.com/langchain-ai/langgraph/blob/main/libs/sdk-py/langgraph_sdk/auth/__init__.py
 
@@ -1016,7 +1016,7 @@ def require_permission(
                 )
                 if not allowed and getattr(auth.user, "system_role", None) == INTERNAL_SYSTEM_ROLE:
                     # Trusted internal callers (channel workers) also act for
-                    # the connection owner carried in X-DeerFlow-Owner-User-Id.
+                    # the connection owner carried in X-BerkshireAgent-Owner-User-Id.
                     # Scope the check to that owner instead of bypassing it; a
                     # leaked internal token must not grant cross-user thread
                     # access. The header is honored only after ``auth`` proved

@@ -1,6 +1,6 @@
 # Spec: MCP 工具产物持久化句柄注册表（Artifact Handle Registry）
 
-**关联 Issue**: [#4676](https://github.com/bytedance/deer-flow/issues/4676) — [feat] 为 MCP 协议工具产物提供通用句柄以支持可持久化引用
+**关联 Issue**: [#4676](https://github.com/bytedance/berkshire-agent/issues/4676) — [feat] 为 MCP 协议工具产物提供通用句柄以支持可持久化引用
 **范围**: 后端 harness + 中间件 + state schema + 前端渲染
 **依赖**: 无（独立实现，可与 #4652 MCP Tasks 扩展协议并存）
 **状态**: 草案（待评审）

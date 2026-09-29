@@ -166,7 +166,7 @@ EXACT_CALL_RULES: dict[str, _CallRule] = {
         "INFO",
         "ASYNC_FILE_IO_OFFLOAD",
         DEDICATED_EXECUTOR,
-        "Offloads filesystem work into DeerFlow's dedicated file-IO executor.",
+        "Offloads filesystem work into BerkshireAgent's dedicated file-IO executor.",
     ),
     "anyio.to_thread.run_sync": _CallRule(
         "INFO",
@@ -220,13 +220,13 @@ EXACT_CALL_RULES: dict[str, _CallRule] = {
         "INFO",
         "SYNC_TOOL_WRAPPER",
         DEDICATED_EXECUTOR,
-        "Adapts an async tool for sync invocation through DeerFlow's dedicated tool executor.",
+        "Adapts an async tool for sync invocation through BerkshireAgent's dedicated tool executor.",
     ),
     "deerflow.tools.sync.make_sync_tool_wrapper": _CallRule(
         "INFO",
         "SYNC_TOOL_WRAPPER",
         DEDICATED_EXECUTOR,
-        "Adapts an async tool for sync invocation through DeerFlow's dedicated tool executor.",
+        "Adapts an async tool for sync invocation through BerkshireAgent's dedicated tool executor.",
     ),
 }
 THREAD_POOL_CONSTRUCTORS = {"concurrent.futures.ThreadPoolExecutor"}

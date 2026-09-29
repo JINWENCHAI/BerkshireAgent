@@ -524,7 +524,7 @@ def test_shared_assembly_skips_when_not_configured():
 def _run_adapter_tool_in_graph(*, isolate_request_runtime: bool = False) -> dict[str, Any]:
     """Drive a real adapter tool through a real graph; return the headers it sent.
 
-    DeerFlow does not wrap HTTP/SSE MCP tools, so the tool under test here is the
+    BerkshireAgent does not wrap HTTP/SSE MCP tools, so the tool under test here is the
     one ``langchain_mcp_adapters`` builds, invoked by LangGraph's own tool node.
 
     With *isolate_request_runtime* the ambient-runtime fallback is disabled, so

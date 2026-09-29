@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# status.sh — Check DeerFlow status and list available resources.
+# status.sh — Check BerkshireAgent status and list available resources.
 #
 # Usage:
 #   bash status.sh                  # health + summary
@@ -25,16 +25,16 @@ ARG="${2:-}"
 
 case "$CMD" in
   health)
-    echo "Checking DeerFlow at ${GATEWAY_URL}..."
+    echo "Checking BerkshireAgent at ${GATEWAY_URL}..."
     HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${GATEWAY_URL}/health" 2>/dev/null || echo "000")
     if [ "$HTTP_CODE" = "000" ]; then
-      echo "UNREACHABLE — DeerFlow is not running at ${GATEWAY_URL}"
+      echo "UNREACHABLE — BerkshireAgent is not running at ${GATEWAY_URL}"
       exit 1
     elif [ "$HTTP_CODE" -ge 400 ]; then
       echo "ERROR — Health check returned HTTP ${HTTP_CODE}"
       exit 1
     else
-      echo "OK — DeerFlow is running (HTTP ${HTTP_CODE})"
+      echo "OK — BerkshireAgent is running (HTTP ${HTTP_CODE})"
     fi
     ;;
   models)

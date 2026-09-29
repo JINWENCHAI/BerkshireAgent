@@ -1,8 +1,8 @@
-"""``BoxliteProvider`` — DeerFlow :class:`SandboxProvider` backed by BoxLite.
+"""``BoxliteProvider`` — BerkshireAgent :class:`SandboxProvider` backed by BoxLite.
 
 Integrates `BoxLite <https://github.com/boxlite-ai/boxlite>`_ — a daemonless,
-OCI-native micro-VM runtime — as a DeerFlow sandbox backend. See
-https://github.com/bytedance/deer-flow/issues/3936.
+OCI-native micro-VM runtime — as a BerkshireAgent sandbox backend. See
+https://github.com/bytedance/berkshire-agent/issues/3936.
 
 Config is read off :class:`SandboxConfig` (``extra="allow"``), so BoxLite keys
 may appear under ``sandbox:`` in ``config.yaml`` even though they are not declared
@@ -42,9 +42,9 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 DEFAULT_IMAGE = "python:3.12-slim"
-_BOX_NAME_PREFIX = "deer-flow-boxlite-"
+_BOX_NAME_PREFIX = "berkshire-agent-boxlite-"
 _NO_ACTIVE_IDENTITY = object()
-# DeerFlow's virtual prefixes, materialised on the box rootfs at start so the
+# BerkshireAgent's virtual prefixes, materialised on the box rootfs at start so the
 # Sandbox file APIs (which address /mnt/user-data/...) resolve natively.
 _VIRTUAL_DIRS = (
     f"{VIRTUAL_PATH_PREFIX}/workspace",
@@ -91,7 +91,7 @@ def _import_sync_boxlite_runtime():
 class _EventLoopThread:
     """A private asyncio event loop running on a dedicated daemon thread.
 
-    BoxLite is async-native and its box handles are loop-affine, while DeerFlow's
+    BoxLite is async-native and its box handles are loop-affine, while BerkshireAgent's
     ``Sandbox`` contract is synchronous and may be invoked from arbitrary
     ``asyncio.to_thread`` workers. Owning one loop here and marshalling every
     coroutine onto it via ``run_coroutine_threadsafe`` gives a stable, thread-safe
@@ -180,7 +180,7 @@ def _run_sync_adapter[T](coro: Awaitable[T], *, timeout: float | None = None) ->
 
 
 class BoxliteProvider(WarmPoolLifecycleMixin[BoxliteBox], SandboxProvider):
-    """Run each DeerFlow sandbox as a BoxLite micro-VM."""
+    """Run each BerkshireAgent sandbox as a BoxLite micro-VM."""
 
     uses_thread_data_mounts = False
     needs_upload_permission_adjustment = True
@@ -309,9 +309,9 @@ class BoxliteProvider(WarmPoolLifecycleMixin[BoxliteBox], SandboxProvider):
         box_to_close.close()
 
     def _reconcile_orphans(self) -> None:
-        """Adopt DeerFlow-owned BoxLite boxes left by a previous provider/process.
+        """Adopt BerkshireAgent-owned BoxLite boxes left by a previous provider/process.
 
-        BoxLite boxes are discovered by a DeerFlow-specific name prefix. Adopted
+        BoxLite boxes are discovered by a BerkshireAgent-specific name prefix. Adopted
         boxes enter the warm pool so the normal idle reaper can reclaim them.
         """
         try:
@@ -457,7 +457,7 @@ class BoxliteProvider(WarmPoolLifecycleMixin[BoxliteBox], SandboxProvider):
                 cpus=self._config["cpus"],
             )
             await box.start()
-            # Materialise DeerFlow's virtual prefixes so file ops resolve natively.
+            # Materialise BerkshireAgent's virtual prefixes so file ops resolve natively.
             await box.exec("sh", "-lc", mkdir_cmd)
             return box
 

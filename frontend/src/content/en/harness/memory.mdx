@@ -1,6 +1,6 @@
 ---
 title: Memory
-description: Memory is a runtime feature of the DeerFlow Harness. It is not a simple conversation log — it is a structured store of facts and context summaries that persist across separate sessions and inform the agent's behavior in future conversations.
+description: Memory is a runtime feature of the BerkshireAgent Harness. It is not a simple conversation log — it is a structured store of facts and context summaries that persist across separate sessions and inform the agent's behavior in future conversations.
 ---
 
 import { Callout } from "nextra/components";
@@ -8,12 +8,12 @@ import { Callout } from "nextra/components";
 # Memory
 
 <Callout type="info" emoji="💾">
-  Memory lets DeerFlow carry useful information across sessions. The agent
+  Memory lets BerkshireAgent carry useful information across sessions. The agent
   remembers user preferences, project context, and recurring facts so it can
   give better responses without starting from zero every time.
 </Callout>
 
-Memory is a runtime feature of the DeerFlow Harness. It is not a simple conversation log — it is a structured store of facts and context summaries that persist across separate sessions and inform the agent's behavior in future conversations.
+Memory is a runtime feature of the BerkshireAgent Harness. It is not a simple conversation log — it is a structured store of facts and context summaries that persist across separate sessions and inform the agent's behavior in future conversations.
 
 ## What memory stores
 
@@ -33,7 +33,7 @@ Memory has two operation modes:
 
 1. **Injection in both modes**: at the start of each conversation, the agent's current memory is injected into the system prompt at a controlled token budget (`max_injection_tokens`).
 2. **Middleware mode (default)**: `MemoryMiddleware` runs after each Lead Agent turn. It filters the conversation, queues a background update, and extracts new facts automatically. Updates are debounced by `debounce_seconds` to batch rapid changes.
-3. **Tool mode (experimental)**: DeerFlow registers `memory_search`, `memory_add`, `memory_update`, and `memory_delete` as agent tools and skips `MemoryMiddleware`. The model decides when to search or write memory, so effectiveness depends on model tool-use behavior. These explicit CRUD tools are not the passive staleness-review path; operators who enable tool mode are opting into model-directed updates/deletes instead of the middleware staleness guardrails.
+3. **Tool mode (experimental)**: BerkshireAgent registers `memory_search`, `memory_add`, `memory_update`, and `memory_delete` as agent tools and skips `MemoryMiddleware`. The model decides when to search or write memory, so effectiveness depends on model tool-use behavior. These explicit CRUD tools are not the passive staleness-review path; operators who enable tool mode are opting into model-directed updates/deletes instead of the middleware staleness guardrails.
 4. **Per-agent memory**: when a custom agent is active, its memory is stored separately from the global memory. This keeps different agents' knowledge isolated.
 
 In tool mode, the four `memory_*` tool names are reserved. If an MCP server or custom tool already uses `memory_search`, `memory_add`, `memory_update`, or `memory_delete`, the existing tool keeps that name and the colliding memory tool is skipped with a warning.
@@ -44,12 +44,12 @@ At the core of the memory feature is a **backend-neutral `MemoryManager`** (defi
 
 ### Design philosophy
 
-The design goal is a single sentence: **swapping the memory backend requires zero changes anywhere else in DeerFlow**.
+The design goal is a single sentence: **swapping the memory backend requires zero changes anywhere else in BerkshireAgent**.
 
 - **The contract says what, not how.** `get_context()` only has to return injection-ready text — whether that comes from a local file load or a remote retrieval call is the backend's own business. The contract does not even assume memory is a set of "facts".
 - **Tiered by implementation cost.** Only three members are mandatory: the `from_config` classmethod (assembly), `add` (write) and `get_context` (read-and-inject). Search, clear, import and fact CRUD ship with a default "unsupported" implementation, and the buffered-write helpers (`add_nowait`, `shutdown_flush`, `cancel_by_agent`) default to simple pass-throughs, so a backend exposes exactly as much capability as it implements.
 - **Fail loud, never silently.** Memory is persistent data. A misconfigured backend or a corrupted file raises directly (e.g. `ValueError` at build time, HTTP 409 on write conflicts) instead of quietly falling back to another store — which would silently write your data to the wrong place.
-- **Host and backend decoupled.** Host capabilities (Langfuse spans, the default LLM, extraction metrics) are injected as hooks that backends consume as needed, so the backend package itself never depends on a DeerFlow-specific concept and can be shipped independently.
+- **Host and backend decoupled.** Host capabilities (Langfuse spans, the default LLM, extraction metrics) are injected as hooks that backends consume as needed, so the backend package itself never depends on a BerkshireAgent-specific concept and can be shipped independently.
 
 The `MemoryManager` contract at a glance:
 
@@ -96,7 +96,7 @@ deermem is the default backend and implements the full contract:
 
 ### How openviking is integrated
 
-OpenViking is a remote memory backend with a crisp responsibility split: **DeerFlow owns capture timing, the recall query, and the transcript cursor; the `langchain-openviking` package owns transport, message conversion, batching, and Session commits.**
+OpenViking is a remote memory backend with a crisp responsibility split: **BerkshireAgent owns capture timing, the recall query, and the transcript cursor; the `langchain-openviking` package owns transport, message conversion, batching, and Session commits.**
 
 ```yaml
 memory:
@@ -119,13 +119,13 @@ memory:
 
 Integration notes:
 
-- **One API key is bound to one DeerFlow owner**; accessing another owner is rejected. Keep the USER key in the server environment (`api_key_env`), never in `config.yaml`.
-- **One DeerFlow thread maps to one stable OpenViking Session**; bounded hash-only cursors live under `{storage_path}/openviking/sessions/`.
+- **One API key is bound to one BerkshireAgent owner**; accessing another owner is rejected. Keep the USER key in the server environment (`api_key_env`), never in `config.yaml`.
+- **One BerkshireAgent thread maps to one stable OpenViking Session**; bounded hash-only cursors live under `{storage_path}/openviking/sessions/`.
 - This version supports one user with one key in middleware mode; multi-user key provisioning is out of scope. See `docs/OPENVIKING.md` for the full boundary and startup guide.
 
 ## Implementing your own memory backend
 
-Hooking up your own memory system (a database, an internal service, or a new product) takes four steps — nothing else in DeerFlow changes.
+Hooking up your own memory system (a database, an internal service, or a new product) takes four steps — nothing else in BerkshireAgent changes.
 
 ### Step 1: Create the backend package
 
@@ -228,7 +228,7 @@ memory:
   # level) because they are DeerMem-specific -- a different backend
   # self-interprets its own backend_config. Unknown keys are ignored.
   backend_config:
-    # Data root. Empty = deer-flow base_dir; per-user memory at
+    # Data root. Empty = berkshire-agent base_dir; per-user memory at
     # {root}/users/{user_id}/memory.json. Absolute path = that root.
     storage_path: ""
 
@@ -262,7 +262,7 @@ memory:
 
 Set `manager_class: openviking` to send completed turns to an independent
 OpenViking server and recall its memory through the official
-`langchain-openviking` adapter. This first version supports one DeerFlow user
+`langchain-openviking` adapter. This first version supports one BerkshireAgent user
 with one OpenViking USER API key in middleware mode; DeerMem remains the
 default.
 
@@ -285,7 +285,7 @@ memory:
       max_injection_chars: 12000
 ```
 
-Use `owner_user_id: default` when DeerFlow authentication is disabled. Put the
+Use `owner_user_id: default` when BerkshireAgent authentication is disabled. Put the
 USER key in the server environment, not directly in `config.yaml`. Trusted-mode
 account headers, root-key memory access, and multi-user key provisioning are not
 part of this version. See `docs/OPENVIKING.md` for the full boundary and startup
@@ -293,7 +293,7 @@ guide.
 
 ## Global vs per-agent memory
 
-DeerFlow supports two levels of memory:
+BerkshireAgent supports two levels of memory:
 
 - **Global memory**: stored at `{base_dir}/memory.json`. Used when no specific agent is active or when the agent has no per-agent memory file.
 - **Per-agent memory**: stored at `{base_dir}/agents/{agent_name}/memory.json`. Used when a custom agent is active, keeping that agent's learned knowledge separate.
@@ -306,9 +306,9 @@ Agent names used for memory storage are validated against `AGENT_NAME_PATTERN` t
 
 By default, memory files are stored under the backend base directory:
 
-- Base directory: `backend/.deer-flow/`
-- Global memory: `backend/.deer-flow/memory.json`
-- Per-agent memory: `backend/.deer-flow/agents/{agent_name}/memory.json`
+- Base directory: `backend/.berkshire-agent/`
+- Global memory: `backend/.berkshire-agent/memory.json`
+- Per-agent memory: `backend/.berkshire-agent/agents/{agent_name}/memory.json`
 
 You can change the storage path with the `storage_path` field. Relative paths are resolved against the base directory. Use an absolute path to store memory in a custom location.
 

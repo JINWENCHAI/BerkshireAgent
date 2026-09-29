@@ -54,7 +54,7 @@ def test_local_sandbox_client_forwards_trusted_relay_headers():
     from deerflow.community.aio_sandbox.aio_sandbox import AioSandbox
 
     sentinel_httpx = MagicMock()
-    headers = {"X-DeerFlow-Relay-Token": "secret-token"}
+    headers = {"X-BerkshireAgent-Relay-Token": "secret-token"}
     with (
         patch("deerflow.community.aio_sandbox.aio_sandbox.httpx.Client", return_value=sentinel_httpx),
         patch("deerflow.community.aio_sandbox.aio_sandbox.AioSandboxClient") as sdk_cls,

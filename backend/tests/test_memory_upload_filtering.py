@@ -60,7 +60,7 @@ class TestFilterMessagesForMemory:
         combined = _UPLOAD_BLOCK + "\n\nWhat does this file contain?"
         msgs = [
             _human(combined),
-            _ai("The file contains: Hello DeerFlow."),
+            _ai("The file contains: Hello BerkshireAgent."),
         ]
         result = filter_messages_for_memory(msgs)
 
@@ -68,7 +68,7 @@ class TestFilterMessagesForMemory:
         human_result = result[0]
         assert "<current_uploads>" not in human_result.content
         assert "What does this file contain?" in human_result.content
-        assert result[1].content == "The file contains: Hello DeerFlow."
+        assert result[1].content == "The file contains: Hello BerkshireAgent."
 
     def test_legacy_uploaded_files_block_is_plain_user_content(self):
         """Scope decision for #4212: the pre-#4174 ``<uploaded_files>`` tag is no

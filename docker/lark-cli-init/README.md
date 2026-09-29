@@ -30,7 +30,7 @@ hostPath/PVC.
 ## Build
 
 ```bash
-docker build -t deer-flow/lark-cli-init:v1.0.65 \
+docker build -t berkshire-agent/lark-cli-init:v1.0.65 \
   --build-arg LARK_CLI_VERSION=v1.0.65 \
   docker/lark-cli-init
 ```
@@ -39,9 +39,9 @@ The tag should encode the lark-cli version so it can be bumped independently of
 the upstream `all-in-one-sandbox` sandbox image.
 
 CI publishes multi-arch (`linux/amd64,linux/arm64`) images to
-`ghcr.io/<owner>/deer-flow-lark-cli-init:<lark-cli-version>` via
+`ghcr.io/<owner>/berkshire-agent-lark-cli-init:<lark-cli-version>` via
 `.github/workflows/lark-cli-images.yaml` (run it with a `lark_cli_version` input,
-or push a `lark-cli-v*` tag). This is decoupled from the DeerFlow `v*` release
+or push a `lark-cli-v*` tag). This is decoupled from the BerkshireAgent `v*` release
 because the image tracks the upstream `larksuite/cli` version.
 
 ## Wiring it into the provisioner
@@ -50,7 +50,7 @@ The init-container runtime path is **opt-in** and off by default. Enable it by
 publishing this image and pointing the provisioner at it:
 
 - Set `LARK_CLI_INIT_IMAGE` on the provisioner service to the published tag
-  (e.g. `deer-flow/lark-cli-init:v1.0.65`). Empty ⇒ legacy hostPath / Gateway
+  (e.g. `berkshire-agent/lark-cli-init:v1.0.65`). Empty ⇒ legacy hostPath / Gateway
   download path (no behavior change).
 - When set, the provisioner adds a `lark-cli-runtime` `emptyDir` volume, an
   `lark-cli-init` init container, and a read-only runtime mount on the sandbox

@@ -42,7 +42,7 @@ The `SKILL.md` file is the authoritative definition of the skill. It is parsed b
 
 ## Built-in skills
 
-DeerFlow ships with the following public skills:
+BerkshireAgent ships with the following public skills:
 
 | Skill                          | Description                                                                      |
 | ------------------------------ | -------------------------------------------------------------------------------- |
@@ -110,7 +110,7 @@ The `container_path` is important: it tells the agent where to find skill resour
 
 Skill availability is tracked in `extensions_config.json` (separate from `config.yaml`). You can manage skill state:
 
-- **Through the DeerFlow App UI**: the skills panel lets you toggle skills on and off.
+- **Through the BerkshireAgent App UI**: the skills panel lets you toggle skills on and off.
 - **Through the Gateway API**: `PUT /api/skills/{name}` with body `{"enabled": true}` or `{"enabled": false}` (admin only).
 - **By editing `extensions_config.json` directly**.
 
@@ -145,7 +145,7 @@ configuration changes take effect on the thread's next run.
 
 ## Skill evolution
 
-DeerFlow includes an optional **skill evolution** feature that allows the agent to autonomously create and improve skills in the `skills/custom/` directory:
+BerkshireAgent includes an optional **skill evolution** feature that allows the agent to autonomously create and improve skills in the `skills/custom/` directory:
 
 ```yaml
 skill_evolution:

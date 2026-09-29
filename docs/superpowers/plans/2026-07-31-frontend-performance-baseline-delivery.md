@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 16, TypeScript, Rstest, Node.js, Nginx, pnpm.
 
-**Global Constraints:** Work only in `/Users/minimax/workspace/deer-flow/.worktrees/fix-frontend-performance`. Preserve current API routes. Do not gzip SSE or already-compressed media. Every fix follows RED, GREEN, regression proof, then commit.
+**Global Constraints:** Work only in `/Users/minimax/workspace/berkshire-agent/.worktrees/fix-frontend-performance`. Preserve current API routes. Do not gzip SSE or already-compressed media. Every fix follows RED, GREEN, regression proof, then commit.
 
 ## Task 1: Add a reproducible route-asset budget gate
 

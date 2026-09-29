@@ -1,6 +1,6 @@
 ---
 title: Lead Agent
-description: Lead Agent 是 DeerFlow 线程中的核心执行者。每个对话、任务和工作流都通过它进行。理解它的工作方式有助于你有效地配置它，并在需要时扩展它。
+description: Lead Agent 是 BerkshireAgent 线程中的核心执行者。每个对话、任务和工作流都通过它进行。理解它的工作方式有助于你有效地配置它，并在需要时扩展它。
 ---
 
 import { Callout, Steps } from "nextra/components";
@@ -8,12 +8,12 @@ import { Callout, Steps } from "nextra/components";
 # Lead Agent
 
 <Callout type="info" emoji="🧠">
-  Lead Agent 是每个 DeerFlow
+  Lead Agent 是每个 BerkshireAgent
   线程中的主要推理和编排单元。它决定要做什么、调用工具、委派子
   Agent，并返回产出物。
 </Callout>
 
-Lead Agent 是 DeerFlow 线程中的核心执行者。每个对话、任务和工作流都通过它进行。理解它的工作方式有助于你有效地配置它，并在需要时扩展它。
+Lead Agent 是 BerkshireAgent 线程中的核心执行者。每个对话、任务和工作流都通过它进行。理解它的工作方式有助于你有效地配置它，并在需要时扩展它。
 
 ## Lead Agent 的职责
 
@@ -121,7 +121,7 @@ models:
 - 它可以使用的**工具组**
 - 它默认使用的**模型**
 
-自定义 Agent 通过 DeerFlow 应用界面或 `/api/agents` 端点创建。这两种方式都要求在 `config.yaml` 中设置 `agents_api.enabled: true`；管理 API 默认关闭。使用默认的 `agent_storage.backend: file` 时，配置按用户存储在 `{base_dir}/users/{user_id}/agents/{name}/config.yaml` 中，其中 `{base_dir}` 是 `DEER_FLOW_HOME`（默认值为 `backend/.deer-flow`）。使用 `agent_storage.backend: db` 时，定义会改为存储在共享 SQL 数据库中；它要求 `database.backend: sqlite` 或 `database.backend: postgres`。使用 `backend/scripts/migrate_agents_to_db.py` 迁移已有的文件后端定义。
+自定义 Agent 通过 BerkshireAgent 应用界面或 `/api/agents` 端点创建。这两种方式都要求在 `config.yaml` 中设置 `agents_api.enabled: true`；管理 API 默认关闭。使用默认的 `agent_storage.backend: file` 时，配置按用户存储在 `{base_dir}/users/{user_id}/agents/{name}/config.yaml` 中，其中 `{base_dir}` 是 `DEER_FLOW_HOME`（默认值为 `backend/.berkshire-agent`）。使用 `agent_storage.backend: db` 时，定义会改为存储在共享 SQL 数据库中；它要求 `database.backend: sqlite` 或 `database.backend: postgres`。使用 `backend/scripts/migrate_agents_to_db.py` 迁移已有的文件后端定义。
 
 <Callout type="tip">
   当在线程中选择自定义 Agent 时，Lead Agent 在运行时加载该 Agent 的配置。为特定

@@ -49,14 +49,14 @@ def test_tool_message_becomes_tool_step_with_output():
         "id": "tool-1",
         "name": "web_search",
         "tool_call_id": "call_1",
-        "content": "Result: DeerFlow is a LangGraph super-agent.",
+        "content": "Result: BerkshireAgent is a LangGraph super-agent.",
     }
 
     step = build_subagent_step(message, task_id="call_task", message_index=2)
 
     assert step["kind"] == "tool"
     assert step["tool_name"] == "web_search"
-    assert step["text"] == "Result: DeerFlow is a LangGraph super-agent."
+    assert step["text"] == "Result: BerkshireAgent is a LangGraph super-agent."
     assert step["truncated"] is False
     assert "tool_calls" not in step
 
@@ -244,7 +244,7 @@ def test_capture_new_step_messages_is_noop_on_values_reyield():
 
 
 def test_capture_new_step_messages_handles_history_contraction():
-    # Regression for #3875 Phase 3: DeerFlowSummarizationMiddleware rewrites the
+    # Regression for #3875 Phase 3: BerkshireAgentSummarizationMiddleware rewrites the
     # messages channel via RemoveMessage(id=REMOVE_ALL_MESSAGES), which shrinks
     # len(messages) below the cursor we were tracking. Without a contraction
     # reset, every step appended AFTER the compaction is dropped until total

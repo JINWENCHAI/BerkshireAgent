@@ -52,7 +52,7 @@ def _get_work_dir(thread_id: str | None) -> str:
 
 
 def _build_mcp_servers() -> dict[str, dict[str, Any]]:
-    """Build ACP ``mcpServers`` config from DeerFlow's enabled MCP servers."""
+    """Build ACP ``mcpServers`` config from BerkshireAgent's enabled MCP servers."""
     from deerflow.config.extensions_config import ExtensionsConfig
     from deerflow.mcp.client import build_servers_config
 
@@ -62,7 +62,7 @@ def _build_mcp_servers() -> dict[str, dict[str, Any]]:
 def _build_acp_mcp_servers() -> list[dict[str, Any]]:
     """Build ACP ``mcpServers`` payload for ``new_session``.
 
-    The ACP client expects a list of server objects, while DeerFlow's MCP helper
+    The ACP client expects a list of server objects, while BerkshireAgent's MCP helper
     returns a name -> config mapping for the LangChain MCP adapter. This helper
     converts the enabled servers into the ACP wire format.
     """
@@ -136,7 +136,7 @@ def _format_invocation_error(agent: str, cmd: str, exc: Exception) -> str:
 
     if agent == "mcode":
         return (
-            f"{message} Install it with `npm install --global @minimax-ai/code`, run `mcode login`, and restart DeerFlow so it inherits the updated PATH. "
+            f"{message} Install it with `npm install --global @minimax-ai/code`, run `mcode login`, and restart BerkshireAgent so it inherits the updated PATH. "
             "If the Gateway runs in Docker, ensure `mcode` is installed and authenticated inside the Gateway container/image."
         )
     return f"{message} Install the agent binary or update `acp_agents.{agent}.command` in config.yaml."
@@ -237,7 +237,7 @@ def build_invoke_acp_agent_tool(agents: dict) -> BaseTool:
                 await conn.initialize(
                     protocol_version=PROTOCOL_VERSION,
                     client_capabilities=ClientCapabilities(),
-                    client_info=Implementation(name="deerflow", title="DeerFlow", version="0.1.0"),
+                    client_info=Implementation(name="deerflow", title="BerkshireAgent", version="0.1.0"),
                 )
                 session_kwargs: dict[str, Any] = {"cwd": physical_cwd, "mcp_servers": mcp_servers}
                 if agent_config.model:

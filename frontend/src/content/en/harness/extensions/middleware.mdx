@@ -106,7 +106,7 @@ Extension <use>: placement TOOL_RAW fell back to a secondary anchor (primary anc
 
 `AgentScope` is a flag: `LEAD`, `SUBAGENT`, or `BOTH` (the default). The host builds each chain separately and includes a contribution only when its scope overlaps the chain being built. To differ by chain, either return two placements with different scopes or branch on `ctx.scope`.
 
-Middleware configured through `create_deerflow_agent(extra_middleware=...)` or `DeerFlowClient(middlewares=...)` does not reach subagents. Extension middleware with `SUBAGENT` scope does.
+Middleware configured through `create_deerflow_agent(extra_middleware=...)` or `BerkshireAgentClient(middlewares=...)` does not reach subagents. Extension middleware with `SUBAGENT` scope does.
 
 ## Ordering
 

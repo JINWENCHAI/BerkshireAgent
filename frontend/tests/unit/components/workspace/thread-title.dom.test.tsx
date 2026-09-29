@@ -10,7 +10,7 @@ rs.mock("@/core/i18n/hooks", () => ({
   useI18n: () => ({
     t: {
       pages: {
-        appName: "DeerFlow",
+        appName: "BerkshireAgent",
         newChat: "New chat",
         untitled: "Untitled",
       },
@@ -48,7 +48,7 @@ test("prefers the canonical metadata title over a stale stream title", () => {
   );
 
   expect(container.textContent).toBe("Renamed title");
-  expect(document.title).toBe("Renamed title - DeerFlow");
+  expect(document.title).toBe("Renamed title - BerkshireAgent");
 });
 
 test("falls back to the stream title when metadata is unavailable", () => {
@@ -57,7 +57,7 @@ test("falls back to the stream title when metadata is unavailable", () => {
   );
 
   expect(container.textContent).toBe("Stream title");
-  expect(document.title).toBe("Stream title - DeerFlow");
+  expect(document.title).toBe("Stream title - BerkshireAgent");
 });
 
 test("falls back to the stream title when metadata title is empty", () => {
@@ -70,5 +70,5 @@ test("falls back to the stream title when metadata title is empty", () => {
   );
 
   expect(container.textContent).toBe("Stream title");
-  expect(document.title).toBe("Stream title - DeerFlow");
+  expect(document.title).toBe("Stream title - BerkshireAgent");
 });

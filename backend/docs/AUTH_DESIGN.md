@@ -1,10 +1,10 @@
 # 用户认证与隔离设计
 
-本文档描述 DeerFlow 当前内置认证模块的设计，而不是历史 RFC。它覆盖浏览器登录、OIDC/SSO、平台信任接入（IM Channel 与 Internal Auth）、API 认证、CSRF、用户隔离、首次初始化、密码重置和升级迁移。
+本文档描述 BerkshireAgent 当前内置认证模块的设计，而不是历史 RFC。它覆盖浏览器登录、OIDC/SSO、平台信任接入（IM Channel 与 Internal Auth）、API 认证、CSRF、用户隔离、首次初始化、密码重置和升级迁移。
 
 ## 设计目标
 
-认证模块的核心目标是把 DeerFlow 从“本地单用户工具”提升为“可多用户部署的 agent runtime”，并让用户身份贯穿 HTTP API、LangGraph-compatible runtime、文件系统、memory、自定义 agent 和反馈数据。
+认证模块的核心目标是把 BerkshireAgent 从“本地单用户工具”提升为“可多用户部署的 agent runtime”，并让用户身份贯穿 HTTP API、LangGraph-compatible runtime、文件系统、memory、自定义 agent 和反馈数据。
 
 设计约束：
 
@@ -135,7 +135,7 @@ enum UserScope:
 - 更新密码 hash。
 - `token_version += 1`。
 - 设置 `needs_setup=true`。
-- 写入 `.deer-flow/admin_initial_credentials.txt`，权限 `0600`。
+- 写入 `.berkshire-agent/admin_initial_credentials.txt`，权限 `0600`。
 
 命令行只输出凭据文件路径，不输出明文密码。
 
@@ -167,7 +167,7 @@ enum UserScope:
 
 ## CSRF 设计
 
-DeerFlow 使用 Double Submit Cookie：
+BerkshireAgent 使用 Double Submit Cookie：
 
 - 服务端设置 `csrf_token` cookie。
 - 前端 state-changing 请求发送同值 `X-CSRF-Token` header。
@@ -226,7 +226,7 @@ agent 在 sandbox 内看到统一虚拟路径：
 `configurable.langgraph_auth_user_id`；Gateway 内嵌路径在没有 Agent Server
 认证身份时使用认证后注入的 `runtime.context.user_id`。LangGraph 允许
 `BaseUser.identity` 使用邮箱等任意非空字符串，因此 server-owned auth
-身份会先通过 `make_safe_user_id` 转换为稳定、抗碰撞且目录安全的 DeerFlow
+身份会先通过 `make_safe_user_id` 转换为稳定、抗碰撞且目录安全的 BerkshireAgent
 storage ID；Agent Server 自身用于 metadata 授权过滤的原始 identity 不变。
 这些通道都缺失时才回落到请求 ContextVar 和 `default` 用户桶，最后一级
 主要用于内部调用、嵌入式 client 或无 HTTP 的本地执行路径。
@@ -261,14 +261,14 @@ lead-agent 工厂使用同一身份边界：Agent Server 的保留 auth 字段�
 
 ## 认证方式总览
 
-DeerFlow 支持四类彼此独立的 HTTP 身份来源。它们共享同一套 **thread / run 隔离语义**（`threads_meta.user_id`、`runs.user_id`、`.deer-flow/users/{user_id}/threads/...`），但在 **是否写入 `users` 表** 和 **外部身份如何映射** 上不同。
+BerkshireAgent 支持四类彼此独立的 HTTP 身份来源。它们共享同一套 **thread / run 隔离语义**（`threads_meta.user_id`、`runs.user_id`、`.berkshire-agent/users/{user_id}/threads/...`），但在 **是否写入 `users` 表** 和 **外部身份如何映射** 上不同。
 
 | 方式 | 典型入口 | 写入 `users` 表 | 外部身份映射 | 用户 / thread 隔离 |
 |---|---|---|---|---|
-| **浏览器本地账号** | `POST /api/v1/auth/login/local` 或 `/register` → `access_token` cookie | 是 | 邮箱即 DeerFlow `users.id` | `threads_meta.user_id = users.id` |
+| **浏览器本地账号** | `POST /api/v1/auth/login/local` 或 `/register` → `access_token` cookie | 是 | 邮箱即 BerkshireAgent `users.id` | `threads_meta.user_id = users.id` |
 | **OIDC / SSO** | `GET /api/v1/auth/oauth/{provider}` → callback → cookie | 是（自动创建或关联） | IdP `sub` → `users.oauth_id` | 同上 |
-| **IM Channel 绑定** | Settings 里 Connect + 平台侧 `/connect <code>` | 绑定到**已注册** DeerFlow 用户 | `channel_connections` / `channel_conversations` | `owner_user_id` → `users.id` |
-| **Internal Auth（直接 HTTP）** | `X-DeerFlow-Internal-Token` + `X-DeerFlow-Owner-User-Id` | **否**（合成 internal 用户） | 平台在 header 中自声明 owner 字符串 | `threads_meta.user_id = owner`（经 `make_safe_user_id` 规范化） |
+| **IM Channel 绑定** | Settings 里 Connect + 平台侧 `/connect <code>` | 绑定到**已注册** BerkshireAgent 用户 | `channel_connections` / `channel_conversations` | `owner_user_id` → `users.id` |
+| **Internal Auth（直接 HTTP）** | `X-BerkshireAgent-Internal-Token` + `X-BerkshireAgent-Owner-User-Id` | **否**（合成 internal 用户） | 平台在 header 中自声明 owner 字符串 | `threads_meta.user_id = owner`（经 `make_safe_user_id` 规范化） |
 
 ```mermaid
 graph TB
@@ -295,23 +295,23 @@ OIDC 细节见 [SSO.md](SSO.md)。IM 绑定细节见 [IM_CHANNEL_CONNECTIONS.md]
 
 ## 平台信任接入
 
-**IM Channel 绑定** 与 **Internal Auth** 可归为同一大类：**平台信任模型**——DeerFlow 把渠道/合作平台视为已认证边界，由平台把“自己的用户”映射到 DeerFlow 的运行时身份，而不是让每个终端用户再走 DeerFlow 注册登录。
+**IM Channel 绑定** 与 **Internal Auth** 可归为同一大类：**平台信任模型**——BerkshireAgent 把渠道/合作平台视为已认证边界，由平台把“自己的用户”映射到 BerkshireAgent 的运行时身份，而不是让每个终端用户再走 BerkshireAgent 注册登录。
 
 | 维度 | IM Channel 绑定（子类 A） | Internal Auth 直接 HTTP（子类 B） |
 |---|---|---|
 | 平台凭证 | `channels.*` 机器人配置 + Gateway 内部调用 | 部署级 `DEER_FLOW_INTERNAL_AUTH_TOKEN` |
-| DeerFlow 用户来源 | 必须绑定到 `users` 表中的真实账号 | **不创建** `users` 行；使用合成 `system_role=internal` 用户 |
-| 外部身份登记 | `channel_connections` + `channel_conversations`（可审计、可撤销） | 请求头 `X-DeerFlow-Owner-User-Id`（平台自声明，如 `feishu_ou_alice`） |
-| 典型调用方 | DeerFlow 内置 IM worker（飞书 / 企业微信 / Slack / Telegram …） | 合作方后端（如飞书或企业微信自建应用网关） |
+| BerkshireAgent 用户来源 | 必须绑定到 `users` 表中的真实账号 | **不创建** `users` 行；使用合成 `system_role=internal` 用户 |
+| 外部身份登记 | `channel_connections` + `channel_conversations`（可审计、可撤销） | 请求头 `X-BerkshireAgent-Owner-User-Id`（平台自声明，如 `feishu_ou_alice`） |
+| 典型调用方 | BerkshireAgent 内置 IM worker（飞书 / 企业微信 / Slack / Telegram …） | 合作方后端（如飞书或企业微信自建应用网关） |
 | 身份可信度 | Connect code 一次性绑定，DB 唯一约束保证单 owner | 完全信任平台对 `Owner-User-Id` 的正确性 |
 | 用户 / thread 隔离 | 有（按绑定的 `owner_user_id`） | 有（按 header 中的 owner 字符串） |
-| 本地文件布局 | `.deer-flow/users/{owner}/threads/{thread_id}/...` | 同上 |
+| 本地文件布局 | `.berkshire-agent/users/{owner}/threads/{thread_id}/...` | 同上 |
 
 两类接入在 run 生命周期上共用同一持久化面：`threads_meta`、`runs`、`run_events`、`checkpoints`、`checkpoint_blobs` 都按解析后的 `user_id` 做隔离；差异只在 owner 是否来自 `users.id` 还是平台声明的字符串。
 
 ### Internal Auth (direct HTTP)
 
-适用于“平台后端代替终端用户调用 DeerFlow API”的集成：平台持有共享密钥，替每个业务用户附带 owner 标识。类似飞书或企业微信机器人网关把已认证用户代理到 DeerFlow，但**不经过** IM connect-code 绑定表。
+适用于“平台后端代替终端用户调用 BerkshireAgent API”的集成：平台持有共享密钥，替每个业务用户附带 owner 标识。类似飞书或企业微信机器人网关把已认证用户代理到 BerkshireAgent，但**不经过** IM connect-code 绑定表。
 
 #### 配置
 
@@ -327,10 +327,10 @@ export DEER_FLOW_INTERNAL_AUTH_TOKEN="<long-random-secret>"
 
 | Header | 必填 | 说明 |
 |---|---|---|
-| `X-DeerFlow-Internal-Token` | 是 | 必须等于 Gateway 的 `DEER_FLOW_INTERNAL_AUTH_TOKEN`；缺失或错误 → `401` |
-| `X-DeerFlow-Owner-User-Id` | 需要用户隔离时必填 | 平台侧用户标识，如 `feishu_ou_alice`（飞书 `open_id`）或 `wecom_user_bob`（企业微信成员 id）；同一用户的建 thread / 续聊应保持一致。缺失时落到 `default` 用户桶 |
+| `X-BerkshireAgent-Internal-Token` | 是 | 必须等于 Gateway 的 `DEER_FLOW_INTERNAL_AUTH_TOKEN`；缺失或错误 → `401` |
+| `X-BerkshireAgent-Owner-User-Id` | 需要用户隔离时必填 | 平台侧用户标识，如 `feishu_ou_alice`（飞书 `open_id`）或 `wecom_user_bob`（企业微信成员 id）；同一用户的建 thread / 续聊应保持一致。缺失时落到 `default` 用户桶 |
 
-Internal Auth **不使用**浏览器 `access_token` cookie，也**不参与**前端 CSRF double-submit cookie 流程。DeerFlow 内置 IM worker 在进程内同时附带 Internal Token 与 CSRF cookie/header；第三方平台做 server-to-server HTTP 集成时通常只发送 Internal 相关 header。
+Internal Auth **不使用**浏览器 `access_token` cookie，也**不参与**前端 CSRF double-submit cookie 流程。BerkshireAgent 内置 IM worker 在进程内同时附带 Internal Token 与 CSRF cookie/header；第三方平台做 server-to-server HTTP 集成时通常只发送 Internal 相关 header。
 
 合成用户由 `get_internal_user()` 构造：`system_role="internal"`，`id` 为 `make_safe_user_id(owner)` 或 `default`。**不会**向 `users` 表插入记录。
 
@@ -339,46 +339,46 @@ Internal Auth **不使用**浏览器 `access_token` cookie，也**不参与**前
 | 存储 | Internal Auth 行为 |
 |---|---|
 | `users` | 不写入 |
-| `threads_meta.user_id` | `X-DeerFlow-Owner-User-Id`（规范化后） |
+| `threads_meta.user_id` | `X-BerkshireAgent-Owner-User-Id`（规范化后） |
 | `runs.user_id` | 同上 |
 | `run_events` / `checkpoints` / `checkpoint_blobs` | 随 thread / run 归属，与浏览器用户相同隔离规则 |
-| 本地目录 | `.deer-flow/users/{owner}/threads/{thread_id}/user-data/...` |
+| 本地目录 | `.berkshire-agent/users/{owner}/threads/{thread_id}/user-data/...` |
 
 `threads/search`、thread owner check、文件路径解析均按上述 `user_id` 过滤；不同 owner 之间 thread 互不可见。
 
-#### 信任边界与 DeerFlow 职责
+#### 信任边界与 BerkshireAgent 职责
 
 Internal Auth 是**平台信任模型**，不是终端用户认证：
 
-- DeerFlow **只校验**调用方是否持有有效的 `X-DeerFlow-Internal-Token`（平台级共享密钥）。
-- DeerFlow **不校验** `X-DeerFlow-Owner-User-Id` 是否对应真实、活跃、已授权的业务用户；该字段仅作为运行时隔离键使用。
-- DeerFlow **不管理**这类用户的注册、登录、登出、密码、禁用或吊销；终端用户的有效性、会话与权限**全部由渠道/平台自行维护**。
-- DeerFlow **不写入** `users` 表，不为 Internal Auth 用户签发 JWT，也不提供面向终端的账号生命周期 API。
+- BerkshireAgent **只校验**调用方是否持有有效的 `X-BerkshireAgent-Internal-Token`（平台级共享密钥）。
+- BerkshireAgent **不校验** `X-BerkshireAgent-Owner-User-Id` 是否对应真实、活跃、已授权的业务用户；该字段仅作为运行时隔离键使用。
+- BerkshireAgent **不管理**这类用户的注册、登录、登出、密码、禁用或吊销；终端用户的有效性、会话与权限**全部由渠道/平台自行维护**。
+- BerkshireAgent **不写入** `users` 表，不为 Internal Auth 用户签发 JWT，也不提供面向终端的账号生命周期 API。
 
-因此，DeerFlow 与渠道之间的契约是：**信任渠道已经替终端用户完成认证，并诚实地在每次请求中标注 owner**。若共享 token 泄露给终端，或平台未校验用户身份就转发请求，DeerFlow 无法阻止 `Owner-User-Id` 被伪造。
+因此，BerkshireAgent 与渠道之间的契约是：**信任渠道已经替终端用户完成认证，并诚实地在每次请求中标注 owner**。若共享 token 泄露给终端，或平台未校验用户身份就转发请求，BerkshireAgent 无法阻止 `Owner-User-Id` 被伪造。
 
 #### 对接方式
 
 接入方使用与普通 Gateway API **相同的** thread / run 端点，在每次请求中附带 Internal 相关 header 即可，例如：
 
 1. `POST /api/threads` — 创建会话（`thread_id`、`metadata` 等 body 字段语义不变）
-2. `POST /api/threads/{thread_id}/runs/stream` — 流式对话；续聊时保持同一 `thread_id` 与同一 `X-DeerFlow-Owner-User-Id`
+2. `POST /api/threads/{thread_id}/runs/stream` — 流式对话；续聊时保持同一 `thread_id` 与同一 `X-BerkshireAgent-Owner-User-Id`
 
 具体路径、请求体与 `stream_mode` 等参数见 [API.md](API.md) 与 [STREAMING.md](STREAMING.md)。本文档不展开 curl 测试用例。
 
 #### 安全建议
 
-- **推荐**：平台后端持有 `DEER_FLOW_INTERNAL_AUTH_TOKEN`，按已认证业务用户设置 `X-DeerFlow-Owner-User-Id`。
-- **不推荐**：把共享 token 直接发给每个终端用户自行调用——此时终端用户只需伪造 `Owner-User-Id` 即可冒充他人，DeerFlow 无法验证平台侧身份。
+- **推荐**：平台后端持有 `DEER_FLOW_INTERNAL_AUTH_TOKEN`，按已认证业务用户设置 `X-BerkshireAgent-Owner-User-Id`。
+- **不推荐**：把共享 token 直接发给每个终端用户自行调用——此时终端用户只需伪造 `Owner-User-Id` 即可冒充他人，BerkshireAgent 无法验证平台侧身份。
 - Token 应视为部署密钥：不进 git、不写入前端、仅通过内网或 mTLS 保护的后端链路传输。
 
 ### IM Channel 绑定（子类 A）
 
 IM worker 通过 Gateway 内部 HTTP 调用 agent runtime，并携带：
 
-- `X-DeerFlow-Internal-Token`
+- `X-BerkshireAgent-Internal-Token`
 - 匹配的 CSRF cookie / `X-CSRF-Token`（进程内生成，供 worker 使用）
-- 绑定成功后附带 `X-DeerFlow-Owner-User-Id`（来自 `channel_connections.owner_user_id`，对应 `users.id`）
+- 绑定成功后附带 `X-BerkshireAgent-Owner-User-Id`（来自 `channel_connections.owner_user_id`，对应 `users.id`）
 
 与 Internal Auth 直接 HTTP 相比，IM 路径多了 **connect-code 绑定** 与 **`users` 表关联**，外部身份可追溯、可撤销。配置与运维见 [IM_CHANNEL_CONNECTIONS.md](IM_CHANNEL_CONNECTIONS.md)。
 
@@ -469,6 +469,6 @@ PYTHONPATH=. python scripts/migrate_user_isolation.py --user-id <target-user-id>
 | `app/channels/manager.py` | IM channel 内部认证调用与 owner header |
 | `app/gateway/internal_auth.py` | Internal Auth header 常量、token 校验、合成用户 |
 | `scripts/migrate_user_isolation.py` | legacy 数据迁移到 per-user layout |
-| `.deer-flow/data/deerflow.db` | 统一 SQLite 数据库，包含 users / threads_meta / runs / feedback 等表 |
-| `.deer-flow/users/{user_id}/agents/{agent_name}/` | 用户自定义 agent 配置、SOUL 和 agent memory |
-| `.deer-flow/admin_initial_credentials.txt` | `reset_admin` 生成的新凭据文件（0600，读完应删除） |
+| `.berkshire-agent/data/deerflow.db` | 统一 SQLite 数据库，包含 users / threads_meta / runs / feedback 等表 |
+| `.berkshire-agent/users/{user_id}/agents/{agent_name}/` | 用户自定义 agent 配置、SOUL 和 agent memory |
+| `.berkshire-agent/admin_initial_credentials.txt` | `reset_admin` 生成的新凭据文件（0600，读完应删除） |

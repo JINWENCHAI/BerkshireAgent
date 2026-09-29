@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "deer-flow.fullname" . }}-nginx
-  namespace: {{ include "deer-flow.namespace" . }}
+  name: {{ include "berkshire-agent.fullname" . }}-nginx
+  namespace: {{ include "berkshire-agent.namespace" . }}
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
     app.kubernetes.io/component: nginx
 spec:
   replicas: {{ .Values.nginx.replicas }}
   selector:
     matchLabels:
-      {{- include "deer-flow.selectorLabels" . | nindent 6 }}
+      {{- include "berkshire-agent.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: nginx
   template:
     metadata:
       labels:
-        {{- include "deer-flow.selectorLabels" . | nindent 8 }}
+        {{- include "berkshire-agent.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: nginx
       annotations:
         # Roll pods when the nginx ConfigMap changes (subPath mount).
-        checksum/nginx: {{ include "deer-flow.nginxChecksum" . }}
+        checksum/nginx: {{ include "berkshire-agent.nginxChecksum" . }}
     spec:
       securityContext:
         # Non-root: nginx:alpine ships a `nginx` user (uid 101). /etc/nginx and
@@ -33,7 +33,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: nginx
-          image: {{ include "deer-flow.nginxImage" . }}
+          image: {{ include "berkshire-agent.nginxImage" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
@@ -80,6 +80,6 @@ spec:
       volumes:
         - name: nginx-config
           configMap:
-            name: {{ include "deer-flow.fullname" . }}-nginx
+            name: {{ include "berkshire-agent.fullname" . }}-nginx
         - name: nginx-cache
           emptyDir: {}

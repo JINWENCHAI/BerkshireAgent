@@ -119,7 +119,7 @@ Your config.yaml (version %d) is outdated — the latest version is %d. Run `mak
 | `DEFAULT_CHECKPOINT_SNAPSHOT_FREQUENCY` | `10` | `deerflow.config.database_config` | `dbcfg:61` |
 | `INTERNAL_CHECKPOINT_MODE_KEY` | `"__deerflow_checkpoint_channel_mode"`（`RunnableConfig` 的 `configurable` 键） | `deerflow.runtime.checkpoint_mode` | `cmode:18` |
 | `CHECKPOINT_MODE_METADATA_KEY` | `"deerflow_checkpoint_channel_mode"`（检查点 metadata 键；写入的值为 `"delta"`） | `deerflow.runtime.checkpoint_mode` | `cmode:19`、`cmode:86` |
-| `counters_since_delta_snapshot` | LangGraph 自有的 metadata 键；只要其值是含 `"messages"` 的 dict，即使没有 DeerFlow 标记也按 delta 处理 | 上游 `langgraph-checkpoint`；检测位于 `deerflow.runtime.checkpoint_mode` | `cmode:97-98` |
+| `counters_since_delta_snapshot` | LangGraph 自有的 metadata 键；只要其值是含 `"messages"` 的 dict，即使没有 BerkshireAgent 标记也按 delta 处理 | 上游 `langgraph-checkpoint`；检测位于 `deerflow.runtime.checkpoint_mode` | `cmode:97-98` |
 
 标记语义集中在一处：`inject_checkpoint_mode(config, mode)` 总是写入 `config["configurable"]["__deerflow_checkpoint_channel_mode"]`；delta 模式下还会写入 `config["metadata"]["deerflow_checkpoint_channel_mode"] = "delta"`，而 full 模式下会**移除**该 metadata 键，所以缺失即 full，特性上线前的检查点无需迁移（`cmode:81-88`）。快照节奏被刻意**不**写进检查点 metadata，因为模式标记契约与 full→delta 迁移语义都不随频率取值改变（`cmode:53-60`）。
 
@@ -140,7 +140,7 @@ Your config.yaml (version %d) is outdated — the latest version is %d. Run `mak
 | `Thread requires delta mode; materialize and convert its checkpoints before using full mode.` | `CheckpointModeMismatchError`，由 `raise_if_snapshot_incompatible` 与 `raise_if_checkpoint_tuple_incompatible` 抛出，并在降级网关访问器中重复 | `cmode:123`、`cmode:129`、`services:1229` |
 | `database.checkpoint_cache.type 'redis' is not supported on the sync checkpointer path (TUI/embedded); use 'memory'.` | `_wrap_sync_if_delta` 中的 `ValueError` | `syncprov:181-182` |
 | `f"Unknown checkpoint cache type: {config.type!r}"` | `make_checkpoint_cache` 中的 `ValueError` | `cacheprov:102` |
-| `create_deerflow_agent does not support checkpoint_channel_mode='delta' with a checkpointer: persisted graphs built here bypass checkpoint mode marker injection and the fail-closed compatibility gate (see deerflow.runtime.checkpoint_mode), so a mixed-mode store would silently corrupt thread state.  Use the guarded application paths (make_lead_agent or DeerFlowClient) for delta persistence; delta without a checkpointer is ephemeral and allowed.` | `create_deerflow_agent` 中的 `ValueError` | `factory:135-141` |
+| `create_deerflow_agent does not support checkpoint_channel_mode='delta' with a checkpointer: persisted graphs built here bypass checkpoint mode marker injection and the fail-closed compatibility gate (see deerflow.runtime.checkpoint_mode), so a mixed-mode store would silently corrupt thread state.  Use the guarded application paths (make_lead_agent or BerkshireAgentClient) for delta persistence; delta without a checkpointer is ephemeral and allowed.` | `create_deerflow_agent` 中的 `ValueError` | `factory:135-141` |
 
 ### HTTP 状态映射
 
@@ -353,14 +353,14 @@ Your config.yaml (version %d) is outdated — the latest version is %d. Run `mak
 
 | 编号 | 种类 / 状态 | 触发场景 | 本地应对 | 固定版本 | 证据 |
 | --- | --- | --- | --- | --- | --- |
-| `#4380` | DeerFlow issue；已在本地打补丁 | 向空的 Union 类型 `BinaryOperatorAggregate` 通道做替换式写入会把 `Overwrite` 包装器持久化；下一次读取以 `TypeError: 'Overwrite' object is not subscriptable` 崩溃 | `checkpoint_patches.py` 中的探针守卫补丁；补丁测试；`test_threads_router.py` 中的分支/状态更新锚点 | `langgraph 1.2.9` | `checkpoint_patches:91-107`、`backend/tests/test_checkpoint_patches.py:31-95` |
+| `#4380` | BerkshireAgent issue；已在本地打补丁 | 向空的 Union 类型 `BinaryOperatorAggregate` 通道做替换式写入会把 `Overwrite` 包装器持久化；下一次读取以 `TypeError: 'Overwrite' object is not subscriptable` 崩溃 | `checkpoint_patches.py` 中的探针守卫补丁；补丁测试；`test_threads_router.py` 中的分支/状态更新锚点 | `langgraph 1.2.9` | `checkpoint_patches:91-107`、`backend/tests/test_checkpoint_patches.py:31-95` |
 | `#8526`（修复上游 `#8384`），以及 postgres `#8535` | 上游 langgraph PR；2026-08-07 合并；`langgraph-checkpoint` 4.2.0 修复 | 线程从 `BinaryOperatorAggregate` 切换到 `DeltaChannel` 后，迁移后的第一次写入能从实时 `invoke` 返回值中看到，却从之后每次读取中消失；postgres 侧在没有 seed 时走到根并重放全部内容 | 删除本地 `InMemorySaver` 补丁；依赖下限 `langgraph-checkpoint>=4.2.0,<5.0`；回归门禁 `test_delta_channel_checkpointers.py::test_full_to_delta_migration_replays_on_same_thread`；禁止再引入版本守卫式 saver 补丁 | `langgraph-checkpoint 4.2.0` | `checkpoint_patches:11-17`、`backend/packages/harness/pyproject.toml:49-56`、`CHANGELOG.md:3040-3048` |
 | `#8382` | 上游 langgraph issue；**open**；修复 PR `#8544` 未合并，无发布版本 | 并行 super-step 写入的 delta 重放顺序与实时执行顺序不一致：实时 `invoke` 返回按路径排序的 `[a..h]`，`get_state` 重放为 `[f,b,g,h,a,c,d,e]`（纯置换）；在 memory、sqlite、postgres 上均可复现 | 触发 skip 并点名该 issue；`test_delta_channel_checkpointers.py::test_parallel_superstep_replay_matches_live_write_order` | `langgraph-checkpoint 4.2.0` | `test_delta_channel_checkpointers.py:419,440-460` |
 | `#8448` | 上游 langgraph issue；**open**；修复 PR `#8556` 未合并 | 目标检查点不在第一页分页结果中时，`PostgresSaver.get_delta_channel_history` 会永久污染游标，导致老检查点物化为空；只有 Postgres 会对 stage-1 扫描分页 | memory/sqlite 上断言保持生效（与 `InMemorySaver` 预言机做差分）；Postgres 触发 skip；`test_delta_channel_checkpointers.py::test_long_chain_history_survives_pagination` | `langgraph-checkpoint-postgres 3.1.2` | `test_delta_channel_checkpointers.py:459` |
 | `#8548` | 上游 langgraph PR；**open**；修复上游 `#8443`，相关 issue `#8551` 仍在等它 | 不把被放弃的分支重放进 `DeltaChannel` 分叉 | 未合并期间本地线性化不能移除：保留 `_linearize_delta_checkpoint_resume` | `langgraph 1.2.9` | `worker:2267-2279`、`test_run_worker_delta_resume.py::test_linearizes_a_delta_resume_onto_the_head` |
-| `#4458` | DeerFlow issue；分叉缺陷对用户可见的症状 | 在分叉线程中重新生成后，重载时旧助手消息会与新回答并排复活；在 postgres、sqlite 与内存 saver 上均可复现，且当种子行共用一个 run id 时还会破坏分支历史 | 线性化加按轮次播种的 run id；`test_run_worker_delta_resume.py::test_regenerating_in_a_branched_thread_does_not_resurrect_the_old_answer` | `langgraph 1.2.9` | `worker:2267-2289`、`test_run_worker_delta_resume.py:204` |
-| `#4189` 第 3 项 | DeerFlow 设计讨论 | 检查点行的保留与删除；哪些内容可以被删除 | `backend/docs/checkpoint-retention-contract.md`、`backend/tests/test_checkpoint_retention_contract.py`、`backend/app/gateway/checkpoint_retention.py`；目前没有接入生产触发点 | — | `checkpoint_retention.py:1-40`、`backend/docs/checkpoint-retention-contract.md:31-77` |
-| `#3859`（评审） | DeerFlow 评审参考 | 被中断的标题写入必须递增 `channel_versions["title"]` 并在 `new_versions` 中声明，否则数据库 saver 会丢弃该 blob | `backend/tests/test_run_worker_rollback.py:3501-3504` 固定了这一形状 | — | `backend/tests/test_run_worker_rollback.py:3501-3504` |
+| `#4458` | BerkshireAgent issue；分叉缺陷对用户可见的症状 | 在分叉线程中重新生成后，重载时旧助手消息会与新回答并排复活；在 postgres、sqlite 与内存 saver 上均可复现，且当种子行共用一个 run id 时还会破坏分支历史 | 线性化加按轮次播种的 run id；`test_run_worker_delta_resume.py::test_regenerating_in_a_branched_thread_does_not_resurrect_the_old_answer` | `langgraph 1.2.9` | `worker:2267-2289`、`test_run_worker_delta_resume.py:204` |
+| `#4189` 第 3 项 | BerkshireAgent 设计讨论 | 检查点行的保留与删除；哪些内容可以被删除 | `backend/docs/checkpoint-retention-contract.md`、`backend/tests/test_checkpoint_retention_contract.py`、`backend/app/gateway/checkpoint_retention.py`；目前没有接入生产触发点 | — | `checkpoint_retention.py:1-40`、`backend/docs/checkpoint-retention-contract.md:31-77` |
+| `#3859`（评审） | BerkshireAgent 评审参考 | 被中断的标题写入必须递增 `channel_versions["title"]` 并在 `new_versions` 中声明，否则数据库 saver 会丢弃该 blob | `backend/tests/test_run_worker_rollback.py:3501-3504` 固定了这一形状 | — | `backend/tests/test_run_worker_rollback.py:3501-3504` |
 
 补丁的内容与依赖下限的执行方式见[运维检查点](/docs/harness/checkpoints/operations)，每个缺陷对用户表现出的症状见[故障排查](/docs/harness/checkpoints/troubleshooting)。
 
@@ -370,18 +370,18 @@ Your config.yaml (version %d) is outdated — the latest version is %d. Run `mak
 
 | PR | 变更记录小节 | 变更内容 |
 | --- | --- | --- |
-| [#4516](https://github.com/bytedance/deer-flow/pull/4516) | `### ⚠ 不兼容变更（Breaking Changes）` | 配置键从 `database.checkpoint_delta_snapshot_frequency` 迁移到 `database.checkpoint_delta.snapshot_frequency`，默认值从 `1000` 改为 `10`。旧顶层键仍被接受并给出弃用警告，显式设置的嵌套键胜出。delta 模式下快照频率提高 100 倍；要保留原节奏请显式设置 `…snapshot_frequency: 1000`。 |
-| [#4292](https://github.com/bytedance/deer-flow/pull/4292) | `### 新增` | 基于 LangGraph `DeltaChannel` 的双模检查点存储，把长研究/编码任务的线程存储从 O(N²) 降到近线性。 |
-| [#4638](https://github.com/bytedance/deer-flow/pull/4638) | `### 新增` | delta 模式的检查点历史缓存（memory/redis），用 O(1) 增量组合，通过 `database.checkpoint_cache` 配置。 |
-| [#4437](https://github.com/bytedance/deer-flow/pull/4437)、[#4460](https://github.com/bytedance/deer-flow/pull/4460)、[#4468](https://github.com/bytedance/deer-flow/pull/4468) | `### 修复` | 让检查点写入与活跃 run 串行化、线性化 delta 模式的检查点恢复，并接受 SDK 默认的 `stream_resumable=false` 以避免恢复竞态。 |
-| [#4383](https://github.com/bytedance/deer-flow/pull/4383) | `### 修复` | **checkpoint：** 把写入空通道的首个 `Overwrite` 解包。 |
-| [#5255](https://github.com/bytedance/deer-flow/pull/5255) | `### 修复` | 检查点保留契约测试套件：为 full 与 delta 两种 schema 建立按步的增长基线，删除分支祖先会以 `CheckpointLineageError` 明确失败，pending writes 被视为保留状态。 |
-| [#4140](https://github.com/bytedance/deer-flow/pull/4140) | `### 安全` | **storage：** 不再把 base64 图片数据持久化进检查点状态。属于相邻改动，不针对模式。 |
-| [#5734](https://github.com/bytedance/deer-flow/pull/5734) | `### 内部改进` | 将 `langgraph-checkpoint` 提升到 `>=4.2.0,<5.0`、`langgraph-checkpoint-postgres` 提升到 `>=3.1.2,<3.2`，并删除 `InMemorySaver` 的 delta 历史补丁：上游 4.2.0 修复了 full→delta 后首次写入丢失（`langgraph#8526`），postgres 也能定位普通值种子（`#8535`）。迁移契约测试仍是门禁。 |
-| [#4395](https://github.com/bytedance/deer-flow/pull/4395) | `### 内部改进` | **bench：** 新增隔离的检查点通道模式基准，在延迟、存储与重放指标上比较 `full` 与 `delta`。 |
-| [#5051](https://github.com/bytedance/deer-flow/pull/5051) | `### 内部改进` | **bench：** 在检查点基准中与 memory、SQLite 一并测量 Postgres 的检查点/块/写入存储增长。 |
-| [#2582](https://github.com/bytedance/deer-flow/pull/2582) | `## [2.0.0]` → `### 修复` → `#### 运行时、网关与持久化` | 回滚恢复检查点现在会取代更新的检查点。 |
-| [#3559](https://github.com/bytedance/deer-flow/pull/3559) | `## [2.0.0]` → `### 修复` | **subagent：** 让子 Agent 与父 run 的 checkpointer 隔离。 |
+| [#4516](https://github.com/bytedance/berkshire-agent/pull/4516) | `### ⚠ 不兼容变更（Breaking Changes）` | 配置键从 `database.checkpoint_delta_snapshot_frequency` 迁移到 `database.checkpoint_delta.snapshot_frequency`，默认值从 `1000` 改为 `10`。旧顶层键仍被接受并给出弃用警告，显式设置的嵌套键胜出。delta 模式下快照频率提高 100 倍；要保留原节奏请显式设置 `…snapshot_frequency: 1000`。 |
+| [#4292](https://github.com/bytedance/berkshire-agent/pull/4292) | `### 新增` | 基于 LangGraph `DeltaChannel` 的双模检查点存储，把长研究/编码任务的线程存储从 O(N²) 降到近线性。 |
+| [#4638](https://github.com/bytedance/berkshire-agent/pull/4638) | `### 新增` | delta 模式的检查点历史缓存（memory/redis），用 O(1) 增量组合，通过 `database.checkpoint_cache` 配置。 |
+| [#4437](https://github.com/bytedance/berkshire-agent/pull/4437)、[#4460](https://github.com/bytedance/berkshire-agent/pull/4460)、[#4468](https://github.com/bytedance/berkshire-agent/pull/4468) | `### 修复` | 让检查点写入与活跃 run 串行化、线性化 delta 模式的检查点恢复，并接受 SDK 默认的 `stream_resumable=false` 以避免恢复竞态。 |
+| [#4383](https://github.com/bytedance/berkshire-agent/pull/4383) | `### 修复` | **checkpoint：** 把写入空通道的首个 `Overwrite` 解包。 |
+| [#5255](https://github.com/bytedance/berkshire-agent/pull/5255) | `### 修复` | 检查点保留契约测试套件：为 full 与 delta 两种 schema 建立按步的增长基线，删除分支祖先会以 `CheckpointLineageError` 明确失败，pending writes 被视为保留状态。 |
+| [#4140](https://github.com/bytedance/berkshire-agent/pull/4140) | `### 安全` | **storage：** 不再把 base64 图片数据持久化进检查点状态。属于相邻改动，不针对模式。 |
+| [#5734](https://github.com/bytedance/berkshire-agent/pull/5734) | `### 内部改进` | 将 `langgraph-checkpoint` 提升到 `>=4.2.0,<5.0`、`langgraph-checkpoint-postgres` 提升到 `>=3.1.2,<3.2`，并删除 `InMemorySaver` 的 delta 历史补丁：上游 4.2.0 修复了 full→delta 后首次写入丢失（`langgraph#8526`），postgres 也能定位普通值种子（`#8535`）。迁移契约测试仍是门禁。 |
+| [#4395](https://github.com/bytedance/berkshire-agent/pull/4395) | `### 内部改进` | **bench：** 新增隔离的检查点通道模式基准，在延迟、存储与重放指标上比较 `full` 与 `delta`。 |
+| [#5051](https://github.com/bytedance/berkshire-agent/pull/5051) | `### 内部改进` | **bench：** 在检查点基准中与 memory、SQLite 一并测量 Postgres 的检查点/块/写入存储增长。 |
+| [#2582](https://github.com/bytedance/berkshire-agent/pull/2582) | `## [2.0.0]` → `### 修复` → `#### 运行时、网关与持久化` | 回滚恢复检查点现在会取代更新的检查点。 |
+| [#3559](https://github.com/bytedance/berkshire-agent/pull/3559) | `## [2.0.0]` → `### 修复` | **subagent：** 让子 Agent 与父 run 的 checkpointer 隔离。 |
 
 本列表没有任何条目改动过模式默认值，它一直是 `full`。
 

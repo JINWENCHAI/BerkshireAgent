@@ -582,9 +582,9 @@ def test_authorize_model_name_custom_provider_no_usable_fallback_fail_open(monke
     assert result == "gpt-4"
 
 
-# ── DeerFlowClient._ensure_agent path ─────────────────────────────────
+# ── BerkshireAgentClient._ensure_agent path ─────────────────────────────────
 # Regression for willem-bd's Round 4 coverage observation: the embedded/library
-# lead-agent construction path (``DeerFlowClient._ensure_agent``) must enforce
+# lead-agent construction path (``BerkshireAgentClient._ensure_agent``) must enforce
 # ``model:use`` too, not just the Gateway runtime path (``_make_lead_agent``).
 # Otherwise a consumer that enables ``authorization`` with role-scoped model
 # policies gets tools filtered yet can still run a model the role is denied
@@ -681,7 +681,7 @@ def _stub_client_assembly(monkeypatch) -> dict[str, str]:
     )
     monkeypatch.setattr("deerflow.client.create_agent", lambda **kwargs: object())
     monkeypatch.setattr("deerflow.client.build_middlewares", lambda *args, **kwargs: [])
-    monkeypatch.setattr("deerflow.client.DeerFlowClient._get_tools", staticmethod(lambda *, model_name, subagent_enabled, mcp_plugins=None: []))  # noqa: ARG005
+    monkeypatch.setattr("deerflow.client.BerkshireAgentClient._get_tools", staticmethod(lambda *, model_name, subagent_enabled, mcp_plugins=None: []))  # noqa: ARG005
     monkeypatch.setattr("deerflow.client.get_enabled_skills_for_config", lambda app_config: [])  # noqa: ARG005
     monkeypatch.setattr(
         "deerflow.client.build_skill_search_setup",
@@ -708,10 +708,10 @@ def _stub_client_assembly(monkeypatch) -> dict[str, str]:
 
 
 def _bare_client(app_config):
-    """Construct a ``DeerFlowClient`` without running ``__init__``."""
-    from deerflow.client import DeerFlowClient
+    """Construct a ``BerkshireAgentClient`` without running ``__init__``."""
+    from deerflow.client import BerkshireAgentClient
 
-    client = DeerFlowClient.__new__(DeerFlowClient)
+    client = BerkshireAgentClient.__new__(BerkshireAgentClient)
     client._app_config = app_config
     client._agent_name = "default"
     client._available_skills = None

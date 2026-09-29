@@ -1,6 +1,6 @@
 ---
 name: skill-reviewer
-description: Reviews DeerFlow skill packages for readiness, triggers, safety boundaries, resources, and evidence. Invoke when users ask to audit, grade, or production-check an existing skill.
+description: Reviews BerkshireAgent skill packages for readiness, triggers, safety boundaries, resources, and evidence. Invoke when users ask to audit, grade, or production-check an existing skill.
 allowed-tools:
   - review_skill_package
 ---

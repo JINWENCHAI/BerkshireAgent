@@ -24,7 +24,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.runtime import Runtime
 
 from deerflow.agents.middlewares.durable_context_middleware import DurableContextMiddleware
-from deerflow.client import DeerFlowClient, StreamEvent
+from deerflow.client import BerkshireAgentClient, StreamEvent
 from deerflow.config.app_config import reload_app_config, reset_app_config, set_app_config
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -155,7 +155,7 @@ def live_client(live_config_path, real_subagent_executor, monkeypatch):
         return updated
 
     monkeypatch.setattr(DurableContextMiddleware, "_inject", recording_inject)
-    client = DeerFlowClient(
+    client = BerkshireAgentClient(
         checkpointer=InMemorySaver(),
         thinking_enabled=False,
         subagent_enabled=True,
@@ -179,7 +179,7 @@ def _message_text(message: BaseMessage) -> str:
     return str(content)
 
 
-def _stream_events(client: DeerFlowClient, thread_id: str, prompt: str) -> list[StreamEvent]:
+def _stream_events(client: BerkshireAgentClient, thread_id: str, prompt: str) -> list[StreamEvent]:
     events: list[StreamEvent] = []
     for event in client.stream(
         prompt,
@@ -225,7 +225,7 @@ def _task_ids_in_state(values: dict[str, Any], task_ids: set[str]) -> set[str]:
     return present
 
 
-def _state_values(client: DeerFlowClient, thread_id: str) -> dict[str, Any]:
+def _state_values(client: BerkshireAgentClient, thread_id: str) -> dict[str, Any]:
     assert client._agent is not None
     config = client._get_runnable_config(
         thread_id,

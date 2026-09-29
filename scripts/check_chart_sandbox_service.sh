@@ -25,7 +25,7 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CHART="$ROOT/deploy/helm/deer-flow"
+CHART="$ROOT/deploy/helm/berkshire-agent"
 
 if ! command -v helm >/dev/null 2>&1; then
   echo "::error::helm is required to run this check" >&2
@@ -35,16 +35,16 @@ fi
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-if ! helm template deer-flow "$CHART" --include-crds >"$TMP/default.yaml"; then
+if ! helm template berkshire-agent "$CHART" --include-crds >"$TMP/default.yaml"; then
   echo "::error::default chart render failed" >&2
   exit 1
 fi
-if ! helm template deer-flow "$CHART" --include-crds \
+if ! helm template berkshire-agent "$CHART" --include-crds \
   --set provisioner.sandboxServiceType=NodePort >"$TMP/nodeport.yaml"; then
   echo "::error::NodePort chart render failed" >&2
   exit 1
 fi
-if ! helm template deer-flow "$CHART" --include-crds \
+if ! helm template berkshire-agent "$CHART" --include-crds \
   --set provisioner.sandboxServiceType=NodePort \
   --set provisioner.nodeHost=192.168.1.10 >"$TMP/nodeport-host.yaml"; then
   echo "::error::NodePort+nodeHost chart render failed" >&2

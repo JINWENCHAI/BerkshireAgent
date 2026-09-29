@@ -89,7 +89,7 @@ export const enUS: Translations = {
       notice:
         "Discover integrations for your team. Connect accounts and configure access when you need them.",
       configured: "Configured",
-      nativeHint: "Supported by DeerFlow · requires deployment configuration",
+      nativeHint: "Supported by BerkshireAgent · requires deployment configuration",
       guideHint: "Setup reference · not connected",
       unknownStatus: "Status unavailable",
       notConnected: "Not connected",
@@ -97,7 +97,7 @@ export const enUS: Translations = {
     integrationSkills: "From plugins",
     sharedSkills: "Shared skills",
     title: "Capability Center",
-    description: "Add tools and skills that help DeerFlow work your way.",
+    description: "Add tools and skills that help BerkshireAgent work your way.",
     plugins: "Plugins",
     skills: "Skills",
     searchPlugins: "Search plugins by name or purpose",
@@ -221,11 +221,11 @@ export const enUS: Translations = {
   welcome: {
     greeting: "Hello, again!",
     description:
-      "Welcome to 🦌 DeerFlow, an open source super agent. With built-in and custom skills, DeerFlow helps you search on the web, analyze data, and generate artifacts like slides, web pages and do almost anything.",
+      "Welcome to 🦌 BerkshireAgent, an open source super agent. With built-in and custom skills, BerkshireAgent helps you search on the web, analyze data, and generate artifacts like slides, web pages and do almost anything.",
 
     createYourOwnSkill: "Create Your Own Skill",
     createYourOwnSkillDescription:
-      "Create your own skill to release the power of DeerFlow. With customized skills,\nDeerFlow can help you search on the web, analyze data, and generate\n artifacts like slides, web pages and do almost anything.",
+      "Create your own skill to release the power of BerkshireAgent. With customized skills,\nBerkshireAgent can help you search on the web, analyze data, and generate\n artifacts like slides, web pages and do almost anything.",
   },
 
   // Clipboard
@@ -348,7 +348,7 @@ export const enUS: Translations = {
   // Input Box
   inputBox: {
     placeholder: "How can I assist you today?",
-    disclaimer: "DeerFlow is AI and can make mistakes",
+    disclaimer: "BerkshireAgent is AI and can make mistakes",
     createSkillPrompt:
       "We're going to build a new skill step by step with `skill-creator`. To start, what do you want this skill to do?",
     addAttachments: "Add attachments",
@@ -370,7 +370,7 @@ export const enUS: Translations = {
     voiceInputStartLabel: "Dictate with voice",
     voiceInputStopLabel: "Stop voice input",
     voiceInputStart:
-      "Dictate with voice. DeerFlow receives only transcribed text; audio is handled by your browser or system speech service.",
+      "Dictate with voice. BerkshireAgent receives only transcribed text; audio is handled by your browser or system speech service.",
     voiceInputStop: "Stop voice input",
     voiceInputListening: "Listening... Click to stop voice input.",
     voiceInputUnsupported:
@@ -680,12 +680,12 @@ export const enUS: Translations = {
     cancelling: "Cancelling…",
     cancelFailed: "Failed to cancel task",
     cancellationRetrying: (attempt) =>
-      `Cancellation attempt ${attempt} failed; DeerFlow will keep retrying.`,
+      `Cancellation attempt ${attempt} failed; BerkshireAgent will keep retrying.`,
     notificationRetrying: (attempt) =>
-      `Chat notification attempt ${attempt} failed; DeerFlow will retry with backoff.`,
+      `Chat notification attempt ${attempt} failed; BerkshireAgent will retry with backoff.`,
     notificationStopped:
       "Chat notification delivery stopped after repeated or permanent failures.",
-    trackingDegraded: "Status checks are delayed; DeerFlow is still retrying.",
+    trackingDegraded: "Status checks are delayed; BerkshireAgent is still retrying.",
     viewDetails: "View details",
     hideDetails: "Hide details",
     detailsFailed: "Couldn't load task details",
@@ -796,7 +796,7 @@ export const enUS: Translations = {
       threadIdPlaceholder: "Thread ID",
       reuseNoticeTitle: "Uses this thread's conversation history",
       reuseNoticeDescription:
-        "If this thread has an active run at the scheduled time, DeerFlow queues this occurrence and starts it when the thread is available. It fails if the configured queue wait limit is exceeded.",
+        "If this thread has an active run at the scheduled time, BerkshireAgent queues this occurrence and starts it when the thread is available. It fails if the configured queue wait limit is exceeded.",
     },
     search: {
       placeholder: "Search task titles or prompts",
@@ -947,13 +947,13 @@ export const enUS: Translations = {
     save: "Save agent",
     saving: "Saving agent...",
     saveRequested:
-      "Save requested. DeerFlow is generating and saving an initial version now.",
+      "Save requested. BerkshireAgent is generating and saving an initial version now.",
     saveHint:
       "You can save this agent at any time from the top-right menu, even if this is only a first draft.",
     saveCommandMessage:
       "Please save this custom agent now based on everything we have discussed so far. Treat this as my explicit confirmation to save. If some details are still missing, make reasonable assumptions, generate a concise first SOUL.md in English, and call setup_agent immediately without asking me for more confirmation.",
     agentCreatedPendingRefresh:
-      "The agent was created, but DeerFlow could not load it yet. Please refresh this page in a moment.",
+      "The agent was created, but BerkshireAgent could not load it yet. Please refresh this page in a moment.",
     more: "More actions",
     agentCreated: "Agent created!",
     startChatting: "Start chatting",
@@ -996,13 +996,13 @@ export const enUS: Translations = {
 
   // Workspace
   workspace: {
-    officialWebsite: "DeerFlow's official website",
-    githubTooltip: "DeerFlow on GitHub",
+    officialWebsite: "BerkshireAgent's official website",
+    githubTooltip: "BerkshireAgent on GitHub",
     settingsAndMore: "Settings and more",
-    visitGithub: "DeerFlow on GitHub",
+    visitGithub: "BerkshireAgent on GitHub",
     reportIssue: "Report an issue",
     contactUs: "Contact us",
-    about: "About DeerFlow",
+    about: "About BerkshireAgent",
     logout: "Log out",
     gatewayUnavailable: "Gateway is temporarily unavailable.",
     gatewayUnavailableRetrying: "Retrying in the background…",
@@ -1122,10 +1122,10 @@ export const enUS: Translations = {
         "WeChat says this bot is already linked. Close this dialog and check its connection, or choose a different bot on your phone.",
       saved: "Token saved securely",
       savedDescription:
-        "DeerFlow has saved your token on the server and started the WeChat channel.",
+        "BerkshireAgent has saved your token on the server and started the WeChat channel.",
       bindTitle: "One more step: link your account",
       bindDescription:
-        "Send this command to the bot in WeChat to link it to your DeerFlow account.",
+        "Send this command to the bot in WeChat to link it to your BerkshireAgent account.",
       bindWaiting: "Waiting for your message in WeChat…",
       bindLoading: "Preparing your account connection…",
       bindFailed:
@@ -1142,7 +1142,7 @@ export const enUS: Translations = {
 
       login: "Scan QR code",
       manual: "Use token",
-      description: "Connect WeChat to your DeerFlow workspace.",
+      description: "Connect WeChat to your BerkshireAgent workspace.",
       loading: "Generating QR code…",
       imageTitle: "WeChat login QR code",
       scan: "Scan this code with WeChat, then confirm on your phone.",
@@ -1169,21 +1169,21 @@ export const enUS: Translations = {
     saveAndConnect: "Save and connect",
     saveChanges: "Save changes",
     descriptions: {
-      buzz: "Buzz channels and direct messages through your DeerFlow agent.",
-      telegram: "Telegram direct messages through your DeerFlow bot.",
+      buzz: "Buzz channels and direct messages through your BerkshireAgent agent.",
+      telegram: "Telegram direct messages through your BerkshireAgent bot.",
       slack: "Slack workspace messages and mentions.",
-      discord: "Discord server messages through your DeerFlow bot.",
-      feishu: "Feishu and Lark messages through your DeerFlow app.",
-      dingtalk: "DingTalk Stream Push messages through your DeerFlow bot.",
-      wechat: "WeChat iLink messages through your DeerFlow bot.",
-      wecom: "WeCom messages through your DeerFlow AI bot.",
+      discord: "Discord server messages through your BerkshireAgent bot.",
+      feishu: "Feishu and Lark messages through your BerkshireAgent app.",
+      dingtalk: "DingTalk Stream Push messages through your BerkshireAgent bot.",
+      wechat: "WeChat iLink messages through your BerkshireAgent bot.",
+      wecom: "WeCom messages through your BerkshireAgent AI bot.",
     },
     connectedAs: (name: string) => `Connected as ${name}.`,
   },
 
   // Page titles (document title)
   pages: {
-    appName: "DeerFlow",
+    appName: "BerkshireAgent",
     chats: "Chats",
     newChat: "New chat",
     untitled: "Untitled",
@@ -1219,7 +1219,7 @@ export const enUS: Translations = {
     writeFile: "Write file",
     clickToViewContent: "Click to view file content",
     writeTodos: "Update to-do list",
-    skillInstallTooltip: "Install skill and make it available to DeerFlow",
+    skillInstallTooltip: "Install skill and make it available to BerkshireAgent",
     browserNavigate: (url: string) => `Open ${url} in browser`,
     browserNavigateGeneric: "Open page in browser",
     browserClick: "Click element in browser",
@@ -1318,7 +1318,7 @@ export const enUS: Translations = {
     actions: "Actions",
     keyboardShortcuts: "Keyboard Shortcuts",
     keyboardShortcutsDescription:
-      "Navigate DeerFlow faster with keyboard shortcuts.",
+      "Navigate BerkshireAgent faster with keyboard shortcuts.",
     openCommandPalette: "Open Command Palette",
     toggleSidebar: "Toggle Sidebar",
   },
@@ -1326,7 +1326,7 @@ export const enUS: Translations = {
   // Settings
   settings: {
     title: "Settings",
-    description: "Adjust how DeerFlow looks and behaves for you.",
+    description: "Adjust how BerkshireAgent looks and behaves for you.",
     models: {
       title: "Models",
       description:
@@ -1382,7 +1382,7 @@ export const enUS: Translations = {
     memory: {
       title: "Memory",
       description:
-        "DeerFlow automatically learns from your conversations in the background. These memories help DeerFlow understand you better and deliver a more personalized experience.",
+        "BerkshireAgent automatically learns from your conversations in the background. These memories help BerkshireAgent understand you better and deliver a more personalized experience.",
       empty: "No memory data to display.",
       rawJson: "Raw JSON",
       exportButton: "Export memory",
@@ -1556,7 +1556,7 @@ export const enUS: Translations = {
     channels: {
       title: "Channels",
       description:
-        "Connect IM accounts that can send messages to DeerFlow from outside the browser.",
+        "Connect IM accounts that can send messages to BerkshireAgent from outside the browser.",
       disabled:
         "Channel connections are not enabled on this server. Ask an administrator to enable channel_connections.",
     },
@@ -1610,7 +1610,7 @@ export const enUS: Translations = {
         changeAppButton: "Change Lark app",
         changeAppTitle: "Switch to a different Lark app",
         changeAppDescription:
-          "Point your DeerFlow account at a different Lark/Feishu app. This only affects your account; other users are not changed.",
+          "Point your BerkshireAgent account at a different Lark/Feishu app. This only affects your account; other users are not changed.",
         changeAppIdLabel: "App ID",
         changeAppSecretLabel: "App Secret",
         changeAppAuthResetNote:
@@ -1624,12 +1624,12 @@ export const enUS: Translations = {
         connectionStarted: "Connection link opened",
         connectionReady: "Connection is ready. Opening authorization...",
         authStarted:
-          "Authorization page opened. DeerFlow will detect completion automatically.",
+          "Authorization page opened. BerkshireAgent will detect completion automatically.",
         authorizationStillPending:
-          'Authorization is not complete yet. Finish it in the browser; DeerFlow keeps checking automatically. You can click "I completed authorization" if the page does not update.',
+          'Authorization is not complete yet. Finish it in the browser; BerkshireAgent keeps checking automatically. You can click "I completed authorization" if the page does not update.',
         permissionTitle: "Authorization scope",
         permissionDescription:
-          "By default, DeerFlow only completes the base sign-in and does not request any business permissions. Select the domains you need here; connected users can re-authorize to add more (scopes accumulate).",
+          "By default, BerkshireAgent only completes the base sign-in and does not request any business permissions. Select the domains you need here; connected users can re-authorize to add more (scopes accumulate).",
         authDomains: {
           calendar: {
             label: "Calendar",
@@ -1740,10 +1740,10 @@ export const enUS: Translations = {
           "The first connection needs one browser confirmation from Lark. Open the link below and finish the prompt, then return here to continue authorization.",
         openAuthLinkTitle: "Authorize Lark in your browser",
         openAuthLinkDescription:
-          "Open the link below to authorize. DeerFlow keeps checking automatically and will save the connection after approval.",
+          "Open the link below to authorize. BerkshireAgent keeps checking automatically and will save the connection after approval.",
         waitingAuthTitle: "Waiting for Lark authorization",
         waitingAuthDescription:
-          "Finish authorization in the browser page that just opened. DeerFlow will update this panel automatically; the button below is only a fallback.",
+          "Finish authorization in the browser page that just opened. BerkshireAgent will update this panel automatically; the button below is only a fallback.",
         openAuthLink: "Open link",
         copyAuthLink: "Copy link",
         completeAuth: "I completed authorization",
@@ -1769,7 +1769,7 @@ export const enUS: Translations = {
           "The current user's authorization was verified with Lark during this connection flow. Reconnect whenever you need to refresh it or add permissions.",
         authNextTitle: "Complete browser authorization next",
         authNextDescription:
-          "Click “Connect Lark”; DeerFlow checks the current status first and opens browser authorization only when disconnected or expired.",
+          "Click “Connect Lark”; BerkshireAgent checks the current status first and opens browser authorization only when disconnected or expired.",
       },
     },
     skills: {
@@ -1835,7 +1835,7 @@ export const enUS: Translations = {
       createSkill: "Create skill",
       emptyTitle: "No agent skill yet",
       emptyDescription:
-        "Put your agent skill folders under the `/skills/custom` folder under the root folder of DeerFlow.",
+        "Put your agent skill folders under the `/skills/custom` folder under the root folder of BerkshireAgent.",
       emptyButton: "Create Your First Skill",
       adminRequired: "Admin privileges are required to manage agent skills.",
       installAdminRequired:
@@ -1849,12 +1849,12 @@ export const enUS: Translations = {
     notification: {
       title: "Notification",
       description:
-        "DeerFlow only sends a completion notification when the window is not active. This is especially useful for long-running tasks so you can switch to other work and get notified when done.",
+        "BerkshireAgent only sends a completion notification when the window is not active. This is especially useful for long-running tasks so you can switch to other work and get notified when done.",
       requestPermission: "Request notification permission",
       deniedHint:
         "Notification permission was denied. You can enable it in your browser's site settings to receive completion alerts.",
       testButton: "Send test notification",
-      testTitle: "DeerFlow",
+      testTitle: "BerkshireAgent",
       testBody: "This is a test notification.",
       notSupported: "Your browser does not support notifications.",
       disableNotification: "Disable notification",
@@ -1868,7 +1868,7 @@ export const enUS: Translations = {
       changePasswordDescription: "Update your account password.",
       ssoPasswordDescription: "Password is managed by your SSO provider.",
       ssoPasswordMessage:
-        "This account signs in with {provider}, so DeerFlow cannot manage or change its password here. Use your SSO provider's account settings instead.",
+        "This account signs in with {provider}, so BerkshireAgent cannot manage or change its password here. Use your SSO provider's account settings instead.",
       currentPassword: "Current password",
       newPassword: "New password",
       confirmNewPassword: "Confirm new password",
@@ -1894,14 +1894,14 @@ export const enUS: Translations = {
     passwordPlaceholder: "•••••••",
     rememberMe: "Keep me signed in",
     rememberMeDescription:
-      "Keep this browser session when possible. DeerFlow stores only your email, never your password.",
+      "Keep this browser session when possible. BerkshireAgent stores only your email, never your password.",
     pleaseWait: "Please wait...",
     signIn: "Sign In",
     createAccount: "Create Account",
     createAdminAccount: "Create admin account",
     adminSetupRequiredTitle: "Administrator setup is required",
     adminSetupRequiredDescription:
-      "DeerFlow needs an administrator account before new regular accounts can be created.",
+      "BerkshireAgent needs an administrator account before new regular accounts can be created.",
     orContinueWith: "Or continue with",
     ssoHint:
       "If your account uses single sign-on, sign in with the option below instead.",

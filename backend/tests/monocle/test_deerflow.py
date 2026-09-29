@@ -1,17 +1,17 @@
-"""Trace-based behavioural tests for DeerFlow, using Monocle Test Tools.
+"""Trace-based behavioural tests for BerkshireAgent, using Monocle Test Tools.
 
 Two layers:
 
 * One **offline example** (``test_assertion_api_example``) loads a recorded
   trace from file and shows the full fluent vocabulary in one place. It needs no
   keys and no network, but because it asserts against frozen JSON it guards the
-  trace format and the asserter wiring, not DeerFlow's behaviour. Treat it as the
+  trace format and the asserter wiring, not BerkshireAgent's behaviour. Treat it as the
   worked example for writing your own assertions.
 * Two **live tests** drive the agent end-to-end through ``run_agent`` and assert
   on the trace the real run emits. These are the behavioural guards: a change
   that alters routing, tool selection, or token cost is caught here. They are
   **explicit opt-in** via ``MONOCLE_LIVE_TESTS=1`` (default off, so a plain run
-  never spends tokens or hits the network) and need the DeerFlow app plus the
+  never spends tokens or hits the network) and need the BerkshireAgent app plus the
   configured model's credentials.
 
 The whole module is skipped when ``monocle_test_tools`` is not installed (see the

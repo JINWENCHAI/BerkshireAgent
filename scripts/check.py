@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cross-platform dependency checker for DeerFlow."""
+"""Cross-platform dependency checker for BerkshireAgent."""
 
 from __future__ import annotations
 

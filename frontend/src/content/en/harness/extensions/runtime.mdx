@@ -84,7 +84,7 @@ The host excludes tables with that prefix from `alembic revision --autogenerate`
 
 `LoadedExtensions` is immutable. Each lead run resolves it once when the run starts and uses that same object for its task store, its lifecycle notifications, and agent construction. The run also publishes the snapshot on its runtime context, and the `task` tool reads it back, so every subagent the run delegates to is built from the same extension generation as the Lead Agent. A caller-supplied value under that host-internal key is never trusted.
 
-Callers that do not publish a snapshot, such as the embedded `DeerFlowClient` or a standalone LangGraph Server, fall back to the process-wide set.
+Callers that do not publish a snapshot, such as the embedded `BerkshireAgentClient` or a standalone LangGraph Server, fall back to the process-wide set.
 
 Because loading is startup-only, the process-wide set does not change while a Gateway runs. The per-run binding matters for hosts and tests that replace it, and it guarantees that one run never mixes two generations.
 
@@ -123,7 +123,7 @@ class ExtensionData:
 - **Keyed by type.** `set(value)` stores under `type(value)` exactly; subclasses are separate keys. Define a small class for each value you keep. Two extensions cannot collide unless they share a class.
 - **Thread-safe.** Every method holds a re-entrant lock, so the same store can be used from middleware, lifecycle hooks, and observers on different threads.
 - **`init` runs under the lock.** `get_or_init` calls `init()` while holding the lock, so two concurrent callers never create two values. Keep `init` cheap: construct an empty container and do heavy lazy work inside it.
-- **Values are yours to synchronize.** The store protects its own map, not the objects in it. A counter updated from concurrent tool calls needs its own lock, as the [bundled example](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-example) does.
+- **Values are yours to synchronize.** The store protects its own map, not the objects in it. A counter updated from concurrent tool calls needs its own lock, as the [bundled example](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-example) does.
 
 ```python
 from dataclasses import dataclass, field

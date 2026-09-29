@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 r"""Local SystemMessage PoC / fix verification (Python standard library only).
 
-中文速览：PAT 是 DeerFlow 的个人访问令牌，不是模型 API Key；下面的浏览器
+中文速览：PAT 是 BerkshireAgent 的个人访问令牌，不是模型 API Key；下面的浏览器
 代码通过正常登录创建它。DEERFLOW_THREAD_ID 是新测试聊天地址最后一段 ID。
 同一脚本修复前用 --expect vulnerable，修复后用 --expect blocked；每次换新
 测试会话。脚本会追加消息，旧版本可能留下持续指令；不会删除历史或关闭认证。
@@ -13,9 +13,9 @@ SETUP / 使用说明
    send messages in the browser while the script is running. The PoC uses
    DEERFLOW_ASSISTANT_ID (default: lead_agent); set it to the Agent/assistant ID
    used by that chat when the deployment uses a different ID.
-2. PAT means DeerFlow Personal Access Token, NOT a model provider API key.
+2. PAT means BerkshireAgent Personal Access Token, NOT a model provider API key.
    Create one with the logged-in browser session using the existing auth API.
-   In Chrome DevTools Console on your local DeerFlow page, run:
+   In Chrome DevTools Console on your local BerkshireAgent page, run:
 
    const csrf = document.cookie.split('; ').find(x => x.startsWith('csrf_token='))?.slice(11);
    if (!csrf) throw new Error('Log in / reload first; csrf_token is missing');
@@ -35,7 +35,7 @@ SETUP / 使用说明
    and X-CSRF-Token header. Do not paste credentials into issues or PRs.
 3. From the repository's backend/tests directory, in macOS zsh:
 
-   read -rs "DEERFLOW_PAT?Paste DeerFlow PAT: "; export DEERFLOW_PAT; printf '\n'
+   read -rs "DEERFLOW_PAT?Paste BerkshireAgent PAT: "; export DEERFLOW_PAT; printf '\n'
    read "DEERFLOW_THREAD_ID?Paste NEW test chat ID: "; export DEERFLOW_THREAD_ID
    DEERFLOW_BASE_URL='http://localhost:2026' DEERFLOW_ASSISTANT_ID='lead_agent' \
    DEERFLOW_TIMEOUT_SECONDS='600' DEERFLOW_CONFIRM_APPEND='YES' \
@@ -148,7 +148,7 @@ def auth_headers() -> dict[str, str]:
 
 
 def configured_assistant_id() -> str:
-    """Return the Agent ID used for PoC runs, defaulting to DeerFlow's lead agent."""
+    """Return the Agent ID used for PoC runs, defaulting to BerkshireAgent's lead agent."""
     assistant_id = os.environ.get("DEERFLOW_ASSISTANT_ID", DEFAULT_ASSISTANT_ID).strip()
     if not assistant_id or any(char in assistant_id for char in "\r\n"):
         raise PocError("DEERFLOW_ASSISTANT_ID must be a non-empty Agent/assistant ID without newlines")

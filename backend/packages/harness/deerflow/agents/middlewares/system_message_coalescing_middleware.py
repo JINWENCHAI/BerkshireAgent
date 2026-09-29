@@ -6,7 +6,7 @@ beginning" or "Received multiple non-consecutive system messages". The
 official OpenAI API tolerates mid-conversation system messages, so the issue
 only surfaces on strict backends.
 
-DeerFlow's lead agent accumulates multiple SystemMessages because
+BerkshireAgent's lead agent accumulates multiple SystemMessages because
 DynamicContextMiddleware uses the ID-swap technique to replace the first or
 last HumanMessage with a triplet whose first element is a SystemMessage
 reminder (framework-owned date/metadata must not masquerade as user input,
@@ -43,7 +43,7 @@ def _flatten_content(content) -> str:
     """Convert message content to a plain string, handling both str and list types.
 
     langchain messages support list-type content for multimodal (e.g.
-    ``[{"type": "text", "text": "..."}]``). SystemMessages in DeerFlow are always
+    ``[{"type": "text", "text": "..."}]``). SystemMessages in BerkshireAgent are always
     plain strings, but this helper ensures robustness for any content shape.
     """
     if isinstance(content, str):

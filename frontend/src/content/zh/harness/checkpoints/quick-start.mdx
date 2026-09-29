@@ -1,6 +1,6 @@
 ---
 title: 快速上手
-description: 把 DeerFlow 的检查点存储切换到增量模式：两个配置键及其默认值、为什么需要重启、新装默认拿到什么、如何确认切换已生效，以及受支持的迁移方向。
+description: 把 BerkshireAgent 的检查点存储切换到增量模式：两个配置键及其默认值、为什么需要重启、新装默认拿到什么、如何确认切换已生效，以及受支持的迁移方向。
 ---
 
 import { Callout } from "nextra/components";
@@ -32,13 +32,13 @@ database:
 
 节奏和模式一起被冻结，因为它并不存在检查点里：它在图被编译时就已经编进每张图的 channel table。用不同节奏启动的进程会把那个节奏施加到同一批线程上，而节奏又刻意不写入检查点元数据，读取时没有任何东西可以用来发现这种不一致。同样的推理让模式成为一个跨进程不变量：共享同一个检查点数据库的所有进程都必须使用同一个值。
 
-冻结发生在编译图之前，覆盖每一条会构建图的路径：Gateway 的 lifespan、Lead Agent 装配，以及 `DeerFlowClient.__init__`。两个值都没有热重载。
+冻结发生在编译图之前，覆盖每一条会构建图的路径：Gateway 的 lifespan、Lead Agent 装配，以及 `BerkshireAgentClient.__init__`。两个值都没有热重载。
 
 ## 新装默认拿到什么
 
 | 配置项 | 全新安装的取值 |
 | --- | --- |
-| `database.backend` | 缺少 `database:` 段或该键时为 `sqlite`，`sqlite_dir: .deer-flow/data` |
+| `database.backend` | 缺少 `database:` 段或该键时为 `sqlite`，`sqlite_dir: .berkshire-agent/data` |
 | `database.checkpoint_channel_mode` | `full` |
 | `database.checkpoint_delta.snapshot_frequency` | `10` |
 | `database.checkpoint_graph_cache.accessor_graph_max` | `64` |

@@ -157,7 +157,7 @@ async def batch_task(
     max_live_items: int | None = None,
     max_running_items: int | None = None,
 ) -> Command:
-    """Submit many independent items to DeerFlow's explicit durable batch mode.
+    """Submit many independent items to BerkshireAgent's explicit durable batch mode.
 
     Use this only when every item is independent, idempotent or read-only, and
     can be completed without another item's output. This tool returns a batch

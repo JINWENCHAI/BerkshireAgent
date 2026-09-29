@@ -1,10 +1,10 @@
 """Surface provider length-capped responses and block truncated tool calls.
 
-Background — see issue bytedance/deer-flow#4271.
+Background — see issue bytedance/berkshire-agent#4271.
 
 Some providers stop generation because the output budget is exhausted and
 surface that through ``finish_reason='length'`` while still returning assistant
-content. DeerFlow preserves visible content, adds a deterministic notice
+content. BerkshireAgent preserves visible content, adds a deterministic notice
 whenever tool calls were suppressed (even when partial text survived), and
 drops tool calls that may have been truncated at the output boundary before
 they can execute. The stamped ``model_length_termination`` marker tells

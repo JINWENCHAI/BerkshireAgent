@@ -65,7 +65,7 @@ class _Transport:
 
     def find_files(self, *, path: str, glob: str):
         self.check(path)
-        # Python's filesystem glob is independent of DeerFlow's path_matches.
+        # Python's filesystem glob is independent of BerkshireAgent's path_matches.
         matches = sorted(p for p in filesystem_glob.glob(filesystem_glob.escape(str(Path(path))) + "/" + glob, recursive=True) if Path(p).is_file())
         return SimpleNamespace(data=SimpleNamespace(files=matches))
 

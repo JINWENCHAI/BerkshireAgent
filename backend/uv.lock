@@ -12,7 +12,7 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "deer-flow",
+    "berkshire-agent",
     "deerflow-extension-api",
     "deerflow-harness",
 ]
@@ -802,7 +802,7 @@ wheels = [
 ]
 
 [[package]]
-name = "deer-flow"
+name = "berkshire-agent"
 version = "2.2.0dev"
 source = { virtual = "." }
 dependencies = [

@@ -65,9 +65,9 @@ $(printf '%s\n' "$port_2026_usage" | awk 'NR > 1 {print $2}')
 EOF
 
     if [ "$deerflow_process_found" -eq 1 ]; then
-        echo "✓ Port 2026 is occupied by DeerFlow"
+        echo "✓ Port 2026 is occupied by BerkshireAgent"
     else
-        echo "✗ Port 2026 must be free before starting DeerFlow"
+        echo "✗ Port 2026 must be free before starting BerkshireAgent"
         exit 1
     fi
 else

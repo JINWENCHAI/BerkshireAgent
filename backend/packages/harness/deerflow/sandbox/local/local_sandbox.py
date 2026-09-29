@@ -125,7 +125,7 @@ class LocalSandbox(Sandbox):
         The blanket conversion disable introduced for #2765 also affects child
         processes launched by Git Bash, including Windows-native CLI shims that
         need normal MSYS path conversion for their own installation paths.
-        Excluding only the configured virtual roots preserves DeerFlow path
+        Excluding only the configured virtual roots preserves BerkshireAgent path
         arguments without changing unrelated child-process behavior. Root and
         values containing MSYS exclusion syntax are omitted because they would
         broaden the exclusion beyond one virtual path prefix.

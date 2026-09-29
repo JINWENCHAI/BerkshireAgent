@@ -1,4 +1,4 @@
-DEER_FLOW_HOME ?= $(CURDIR)/.deer-flow
+DEER_FLOW_HOME ?= $(CURDIR)/.berkshire-agent
 DEER_FLOW_HOME := $(abspath $(DEER_FLOW_HOME))
 BACKEND_SANDBOX_HOME := $(abspath $(CURDIR)/sandbox)
 
@@ -58,7 +58,7 @@ format:
 	uv run ruff check . --fix && uv run ruff format .
 
 detect-blocking-io:
-	@PYTHONPATH=. PYTHONIOENCODING=utf-8 PYTHONUTF8=1 uv run python ../scripts/detect_blocking_io_static.py --output ../.deer-flow/blocking-io-findings.json
+	@PYTHONPATH=. PYTHONIOENCODING=utf-8 PYTHONUTF8=1 uv run python ../scripts/detect_blocking_io_static.py --output ../.berkshire-agent/blocking-io-findings.json
 
 # Generate a new alembic revision by autogenerating the diff against the live
 # ORM models. Usage: make migrate-rev MSG="add foo column to runs"

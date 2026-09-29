@@ -196,7 +196,7 @@ LLM_PROVIDERS: list[LLMProvider] = [
             # Declarative reasoning contract (issue #5073). GLM-5.3-Flash cannot
             # disable thinking and only accepts low/high/max effort, so the
             # contract keeps thinking on for every foreground and background
-            # call, maps DeerFlow's generic minimal/medium presets onto the
+            # call, maps BerkshireAgent's generic minimal/medium presets onto the
             # provider vocabulary, and serializes clear_thinking=true so the
             # model does not require exact reasoning replay after summarization.
             # `default` also governs callers that never choose an effort

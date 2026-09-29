@@ -23,7 +23,7 @@ from urllib.parse import urlsplit
 
 MAX_HEADER_BYTES = 65_536
 POLICY_DB = Path(os.environ.get("DEERFLOW_POLICY_DB", "/tmp/deerflow-network-policy.sqlite3"))
-RELAY_AUTH_HEADER = "X-DeerFlow-Relay-Token"
+RELAY_AUTH_HEADER = "X-BerkshireAgent-Relay-Token"
 RELAY_TOKEN_ENV = "DEERFLOW_RELAY_TOKEN"
 
 

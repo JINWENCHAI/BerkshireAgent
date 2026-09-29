@@ -1,6 +1,6 @@
 # Langfuse Tracing Implementation Plan
 
-**Goal:** Add optional Langfuse observability support to DeerFlow while preserving existing LangSmith tracing and allowing both providers to be enabled at the same time.
+**Goal:** Add optional Langfuse observability support to BerkshireAgent while preserving existing LangSmith tracing and allowing both providers to be enabled at the same time.
 
 **Architecture:** Extend tracing configuration from a single LangSmith-only shape to a multi-provider config, add a tracing callback factory that builds zero, one, or two callbacks based on environment variables, and update model creation to attach those callbacks. If a provider is explicitly enabled but misconfigured or fails to initialize, tracing initialization during model creation should fail with a clear error naming that provider.
 

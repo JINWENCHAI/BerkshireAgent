@@ -355,7 +355,7 @@ class McpUserScopedAuthConfigResponse(BaseModel):
 
     enabled: bool = Field(default=True, description="Whether user-scoped credential injection is enabled")
     header: str = Field(default="Authorization", description="HTTP header to set with the resolved user credential")
-    users: dict[str, str] = Field(default_factory=dict, description="Map of DeerFlow user id to credential header value")
+    users: dict[str, str] = Field(default_factory=dict, description="Map of BerkshireAgent user id to credential header value")
     on_missing: Literal["deny", "passthrough"] = Field(default="deny", description="Behavior when the calling user has no mapped credential")
     # Mirror the harness-side McpUserScopedAuthConfig (extra="allow"): without
     # this, an operator's unknown key inside user_auth would be silently

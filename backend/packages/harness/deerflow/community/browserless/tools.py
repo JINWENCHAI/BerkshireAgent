@@ -313,7 +313,7 @@ async def web_capture_tool(
     """Capture a rendered webpage screenshot and present it as an artifact.
 
     Use this tool when you need a visual capture of a public webpage, especially JavaScript-heavy pages, UI states, dashboards, or visual evidence for a report.
-    Only capture exact URLs provided by the user or discovered through other tools. Do not use this for private pages behind login unless the user has explicitly configured Browserless outside DeerFlow.
+    Only capture exact URLs provided by the user or discovered through other tools. Do not use this for private pages behind login unless the user has explicitly configured Browserless outside BerkshireAgent.
     URLs must include the schema: https://example.com is valid while example.com is invalid.
 
     Args:

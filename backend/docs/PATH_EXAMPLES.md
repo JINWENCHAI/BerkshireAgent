@@ -2,7 +2,7 @@
 
 ## 三种路径类型
 
-DeerFlow 的文件上传系统返回三种不同的路径，每种路径用于不同的场景：
+BerkshireAgent 的文件上传系统返回三种不同的路径，每种路径用于不同的场景：
 
 ### 1. 实际文件系统路径 (path)
 
@@ -10,7 +10,7 @@ DeerFlow 的文件上传系统返回三种不同的路径，每种路径用于�
 {DEER_FLOW_HOME}/users/{user_id}/threads/{thread_id}/user-data/uploads/document.pdf
 ```
 
-API 返回的是**绝对路径**，且上传文件按用户分桶。`{DEER_FLOW_HOME}` 表示实际的运行时数据根目录：优先使用 `DEER_FLOW_HOME`；未设置时使用 `DEER_FLOW_PROJECT_ROOT/.deer-flow/`；两个环境变量都未设置时，才使用当前启动目录下的 `.deer-flow/`。
+API 返回的是**绝对路径**，且上传文件按用户分桶。`{DEER_FLOW_HOME}` 表示实际的运行时数据根目录：优先使用 `DEER_FLOW_HOME`；未设置时使用 `DEER_FLOW_PROJECT_ROOT/.berkshire-agent/`；两个环境变量都未设置时，才使用当前启动目录下的 `.berkshire-agent/`。
 
 **用途：**
 - 文件在服务器文件系统中的实际位置
@@ -101,12 +101,12 @@ async function uploadAndProcess(threadId: string, file: File) {
   console.log('文件信息：', fileInfo);
   // {
   //   filename: "report.pdf",
-  //   // path / markdown_path 是绝对路径；下面按默认数据目录 backend/.deer-flow 示例
-  //   path: "/srv/deer-flow/backend/.deer-flow/users/default/threads/abc123/user-data/uploads/report.pdf",
+  //   // path / markdown_path 是绝对路径；下面按默认数据目录 backend/.berkshire-agent 示例
+  //   path: "/srv/berkshire-agent/backend/.berkshire-agent/users/default/threads/abc123/user-data/uploads/report.pdf",
   //   virtual_path: "/mnt/user-data/uploads/report.pdf",
   //   artifact_url: "/api/threads/abc123/artifacts/mnt/user-data/uploads/report.pdf",
   //   markdown_file: "report.md",
-  //   markdown_path: "/srv/deer-flow/backend/.deer-flow/users/default/threads/abc123/user-data/uploads/report.md",
+  //   markdown_path: "/srv/berkshire-agent/backend/.berkshire-agent/users/default/threads/abc123/user-data/uploads/report.md",
   //   markdown_virtual_path: "/mnt/user-data/uploads/report.md",
   //   markdown_artifact_url: "/api/threads/abc123/artifacts/mnt/user-data/uploads/report.md"
   // }
@@ -141,7 +141,7 @@ async function uploadAndProcess(threadId: string, file: File) {
 | 备份脚本 | `path` | `{DEER_FLOW_HOME}/users/default/threads/abc123/user-data/uploads/file.pdf` |
 | 日志记录 | `path` | `{DEER_FLOW_HOME}/users/default/threads/abc123/user-data/uploads/file.pdf` |
 
-`path` 是绝对路径。上表中的 `{DEER_FLOW_HOME}` 优先取 `DEER_FLOW_HOME`；未设置时取 `DEER_FLOW_PROJECT_ROOT/.deer-flow/`；两个环境变量都未设置时，才取当前启动目录下的 `.deer-flow/`。其中的 `users/default/` 是上传所属用户，换用户时该段会变，所以后端代码请用 `get_uploads_dir(thread_id)` 解析，不要按上表拼字符串。
+`path` 是绝对路径。上表中的 `{DEER_FLOW_HOME}` 优先取 `DEER_FLOW_HOME`；未设置时取 `DEER_FLOW_PROJECT_ROOT/.berkshire-agent/`；两个环境变量都未设置时，才取当前启动目录下的 `.berkshire-agent/`。其中的 `users/default/` 是上传所属用户，换用户时该段会变，所以后端代码请用 `get_uploads_dir(thread_id)` 解析，不要按上表拼字符串。
 
 ## 代码示例集合
 
@@ -152,7 +152,7 @@ from deerflow.uploads.manager import get_uploads_dir
 
 def process_uploaded_file(thread_id: str, filename: str):
     # 使用实际路径：Gateway 的上传落在解析后用户的桶里，
-    # 即 .deer-flow/users/{user_id}/threads/{thread_id}/user-data/uploads/
+    # 即 .berkshire-agent/users/{user_id}/threads/{thread_id}/user-data/uploads/
     base_dir = get_uploads_dir(thread_id)
     file_path = base_dir / filename
 

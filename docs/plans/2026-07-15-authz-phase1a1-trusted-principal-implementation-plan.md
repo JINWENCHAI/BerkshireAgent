@@ -461,7 +461,7 @@ backend/packages/harness/deerflow/client.py
 - RBAC provider 和 provider factory（Phase 1A-2）。
 - Layer 1 工具过滤和 deferred catalog 防提升（Phase 1B）。
 - Layer 2 自动接线及与显式 guardrail 的组合顺序（Phase 1B）。
-- DeerFlowClient skill filter gap（独立 bugfix PR）。
+- BerkshireAgentClient skill filter gap（独立 bugfix PR）。
 - route、model、skill、sandbox、MCP server 授权。
 - RBAC 配置示例和配置版本变更。
 

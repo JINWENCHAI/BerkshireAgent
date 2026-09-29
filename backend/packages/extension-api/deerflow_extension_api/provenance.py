@@ -1,6 +1,6 @@
 """Who produced a message, declared by the producer.
 
-DeerFlow's middleware chain injects and rewrites messages: a date reminder, a
+BerkshireAgent's middleware chain injects and rewrites messages: a date reminder, a
 recalled-memory block, a compaction summary, a durable-context data block, an
 image payload, an activated skill body. By the time any of those reach the
 model-call boundary, the component that produced them is no longer recoverable

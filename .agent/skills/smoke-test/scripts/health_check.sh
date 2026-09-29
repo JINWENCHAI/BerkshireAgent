@@ -53,7 +53,7 @@ detect_mode() {
             ;;
     esac
 
-    if docker_available && docker ps --format "{{.Names}}" | grep -q "deer-flow"; then
+    if docker_available && docker ps --format "{{.Names}}" | grep -q "berkshire-agent"; then
         echo "docker"
     else
         echo "local"
@@ -68,11 +68,11 @@ echo ""
 if [ "$mode" = "docker" ]; then
     summary_hint="make docker-logs"
     print_step "1. Checking container status..."
-    if docker ps --format "{{.Names}}" | grep -q "deer-flow"; then
+    if docker ps --format "{{.Names}}" | grep -q "berkshire-agent"; then
         echo "✓ Containers are running:"
         docker ps --format "  - {{.Names}} ({{.Status}})"
     else
-        echo "✗ No DeerFlow-related containers are running"
+        echo "✗ No BerkshireAgent-related containers are running"
         all_passed=false
     fi
 else

@@ -376,7 +376,7 @@ def test_sqlite_round_trip_new_fields():
     """needs_setup and token_version survive create → read round-trip.
 
     Uses the shared persistence engine (same one threads_meta, runs,
-    run_events, and feedback use). The old separate .deer-flow/users.db
+    run_events, and feedback use). The old separate .berkshire-agent/users.db
     file is gone.
     """
     import asyncio
@@ -1056,7 +1056,7 @@ def test_oidc_login_blocked_by_existing_local_account_across_case(tmp_path):
             provider = LocalAuthProvider(SQLiteUserRepository(get_session_factory()))
             await provider.create_user(email="Victim@x.com", password="pw-abc-123!", system_role="user")
 
-            cfg = OIDCProviderConfig(display_name="Test SSO", issuer="https://issuer.example.com", client_id="deer-flow", auto_create_users=True)
+            cfg = OIDCProviderConfig(display_name="Test SSO", issuer="https://issuer.example.com", client_id="berkshire-agent", auto_create_users=True)
             identity = OIDCIdentity(provider="keycloak", subject="sub-1", email="Victim@x.com", email_verified=True, name="Victim", claims={})
 
             with pytest.raises(HTTPException) as exc_info:

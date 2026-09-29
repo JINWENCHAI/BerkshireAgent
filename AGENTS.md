@@ -12,9 +12,9 @@ guide rather than expecting full detail here:
 - **[frontend/AGENTS.md](frontend/AGENTS.md)** — frontend depth: Next.js App Router layout,
   thread/streaming data flow, code style, commands.
 
-## What is DeerFlow
+## What is BerkshireAgent
 
-DeerFlow is a LangGraph-based AI super-agent system with a full-stack architecture. The
+BerkshireAgent is a LangGraph-based AI super-agent system with a full-stack architecture. The
 backend runs a "super agent" with sandboxed execution, persistent memory, subagent
 delegation, and extensible tools (built-in, MCP, community), all per-thread isolated. The
 frontend is a Next.js chat UI. External IM platforms (Feishu, Slack, Telegram, Discord,
@@ -50,7 +50,7 @@ both compose files.
 ## Repository Map
 
 ```
-deer-flow/
+berkshire-agent/
 ├── Makefile                        # Root orchestration: drives the full stack (dev/start/stop, docker, setup)
 ├── config.example.yaml             # Template → copy to config.yaml (gitignored) at repo root
 ├── extensions_config.example.json  # Template → copy to extensions_config.json (gitignored): MCP servers + skills
@@ -63,7 +63,7 @@ deer-flow/
 ├── frontend/                       # Next.js frontend (pnpm) — see frontend/AGENTS.md
 ├── docker/                         # docker-compose files, nginx config, provisioner
 ├── skills/                         # Agent skills: public/ (committed), custom/ (gitignored)
-│                                    # Managed integration skill packs are global at .deer-flow/integrations/skills/{provider}/
+│                                    # Managed integration skill packs are global at .berkshire-agent/integrations/skills/{provider}/
 │                                    # Integration credentials and enabled state remain per-user
 ├── contracts/                      # Cross-component JSON contracts (e.g. subagent status, skill review)
 ├── examples/                       # Extension examples: deerflow-extension-{example,bookmarks}
@@ -230,7 +230,7 @@ These apply repo-wide; module guides own the module-specific detail.
   Python utilities that read or write them must pass `encoding="utf-8"` rather than
   relying on the platform locale.
 - **Version sources must stay in lockstep** — a release version must match identically in
-  `backend/pyproject.toml`, `frontend/package.json`, and `deploy/helm/deer-flow/Chart.yaml`
+  `backend/pyproject.toml`, `frontend/package.json`, and `deploy/helm/berkshire-agent/Chart.yaml`
   (`version` + `appVersion`), and `backend/uv.lock` must record the same version for the root
   package (uv stores its PEP 440 form, e.g. `2.1.0rc0`). Pushing a `v*` git tag triggers CI
   that runs `scripts/verify_versions.sh` and **blocks all publishing** if any source drifts.

@@ -24,7 +24,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import InMemorySaver
 
 from deerflow.agents.middlewares.durable_context_middleware import DurableContextMiddleware
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 from deerflow.agents.task_continuity import archive
 from deerflow.agents.task_continuity.tools import history_read, history_search, task_note
 from deerflow.agents.thread_state import ThreadState
@@ -55,7 +55,7 @@ async def run(args):
                 saver = InMemorySaver()
                 context = {"thread_id": f"live-{index}", "user_id": "continuity-check"}
                 config = {"configurable": {"thread_id": context["thread_id"]}, "recursion_limit": 30}
-                middleware = DeerFlowSummarizationMiddleware(
+                middleware = BerkshireAgentSummarizationMiddleware(
                     model=model,
                     trigger=("messages", 4),
                     keep=("messages", 2),

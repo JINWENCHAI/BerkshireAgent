@@ -1,4 +1,4 @@
-# DeerFlow Deep Research Report
+# BerkshireAgent Deep Research Report
 
 - **Research Date:** 2026-02-01
 - **Timestamp:** 2026-02-01, Sunday
@@ -9,9 +9,9 @@
 
 ## Repository Information
 
-- **Name:** bytedance/deer-flow
-- **Description:** DeerFlow is a community-driven Deep Research framework, combining language models with tools like web search, crawling, and Python execution, while contributing back to the open-source community [DeerFlow GitHub Repository](https://github.com/bytedance/deer-flow)
-- **URL:** https://github.com/bytedance/deer-flow
+- **Name:** bytedance/berkshire-agent
+- **Description:** BerkshireAgent is a community-driven Deep Research framework, combining language models with tools like web search, crawling, and Python execution, while contributing back to the open-source community [BerkshireAgent GitHub Repository](https://github.com/bytedance/berkshire-agent)
+- **URL:** https://github.com/bytedance/berkshire-agent
 - **Stars:** 19,531
 - **Forks:** 2,452
 - **Open Issues:** 196
@@ -26,7 +26,7 @@
 
 ## Executive Summary
 
-DeerFlow (Deep Exploration and Efficient Research Flow) is an open-source multi-agent research automation framework developed by ByteDance and released under the MIT license in May 2025 [Create Your Own Deep Research Agent with DeerFlow](https://thesequence.substack.com/p/the-sequence-engineering-661-create). The framework implements a graph-based orchestration of specialized agents that automate research pipelines end-to-end, combining language models with tools like web search engines, crawlers, and Python execution. With 19,531 stars and 2,452 forks on GitHub, DeerFlow has established itself as a significant player in the deep research automation space, offering both console and web UI options with support for local LLM deployment and extensive tool integrations [DeerFlow: A Game-Changer for Automated Research and Content Creation](https://medium.com/@mingyang.heaven/deerflow-a-game-changer-for-automated-research-and-content-creation-83612f683e7a).
+BerkshireAgent (Deep Exploration and Efficient Research Flow) is an open-source multi-agent research automation framework developed by ByteDance and released under the MIT license in May 2025 [Create Your Own Deep Research Agent with BerkshireAgent](https://thesequence.substack.com/p/the-sequence-engineering-661-create). The framework implements a graph-based orchestration of specialized agents that automate research pipelines end-to-end, combining language models with tools like web search engines, crawlers, and Python execution. With 19,531 stars and 2,452 forks on GitHub, BerkshireAgent has established itself as a significant player in the deep research automation space, offering both console and web UI options with support for local LLM deployment and extensive tool integrations [BerkshireAgent: A Game-Changer for Automated Research and Content Creation](https://medium.com/@mingyang.heaven/deerflow-a-game-changer-for-automated-research-and-content-creation-83612f683e7a).
 
 ---
 
@@ -36,19 +36,19 @@ DeerFlow (Deep Exploration and Efficient Research Flow) is an open-source multi-
 
 #### May 2025 - July 2025
 
-DeerFlow was created by ByteDance and open-sourced on May 7, 2025, with the initial commit establishing the core multi-agent architecture built on LangGraph and LangChain frameworks [DeerFlow GitHub Repository](https://github.com/bytedance/deer-flow). The project quickly gained traction in the AI community due to its comprehensive approach to research automation, combining web search, crawling, and code execution capabilities. Early development focused on establishing the modular agent system with specialized roles including Coordinator, Planner, Researcher, Coder, and Reporter components.
+BerkshireAgent was created by ByteDance and open-sourced on May 7, 2025, with the initial commit establishing the core multi-agent architecture built on LangGraph and LangChain frameworks [BerkshireAgent GitHub Repository](https://github.com/bytedance/berkshire-agent). The project quickly gained traction in the AI community due to its comprehensive approach to research automation, combining web search, crawling, and code execution capabilities. Early development focused on establishing the modular agent system with specialized roles including Coordinator, Planner, Researcher, Coder, and Reporter components.
 
 ### PHASE 2: Feature Expansion and Community Growth
 
 #### August 2025 - December 2025
 
-During this period, DeerFlow underwent significant feature expansion including MCP (Model Context Protocol) integration, text-to-speech capabilities, podcast generation, and support for multiple search engines (Tavily, InfoQuest, Brave Search, DuckDuckGo, Arxiv) [DeerFlow: Multi-Agent AI For Research Automation 2025](https://firexcore.com/blog/what-is-deerflow/). The framework gained attention for its human-in-the-loop collaboration features, allowing users to review and edit research plans before execution. Community contributions grew substantially, with 88 contributors participating in the project by early 2026, and the framework was integrated into the FaaS Application Center of Volcengine for cloud deployment.
+During this period, BerkshireAgent underwent significant feature expansion including MCP (Model Context Protocol) integration, text-to-speech capabilities, podcast generation, and support for multiple search engines (Tavily, InfoQuest, Brave Search, DuckDuckGo, Arxiv) [BerkshireAgent: Multi-Agent AI For Research Automation 2025](https://firexcore.com/blog/what-is-deerflow/). The framework gained attention for its human-in-the-loop collaboration features, allowing users to review and edit research plans before execution. Community contributions grew substantially, with 88 contributors participating in the project by early 2026, and the framework was integrated into the FaaS Application Center of Volcengine for cloud deployment.
 
-### PHASE 3: Maturity and DeerFlow 2.0 Transition
+### PHASE 3: Maturity and BerkshireAgent 2.0 Transition
 
 #### January 2026 - Present
 
-As of February 2026, DeerFlow has entered a transition phase to DeerFlow 2.0, with active development continuing on the main branch [DeerFlow Official Website](https://deerflow.tech/). Recent commits show ongoing improvements to JSON repair handling, MCP tool integration, and fallback report generation mechanisms. The framework now supports private knowledgebases including RAGFlow, Qdrant, Milvus, and VikingDB, along with Docker and Docker Compose deployment options for production environments.
+As of February 2026, BerkshireAgent has entered a transition phase to BerkshireAgent 2.0, with active development continuing on the main branch [BerkshireAgent Official Website](https://berkshireagent.dev/). Recent commits show ongoing improvements to JSON repair handling, MCP tool integration, and fallback report generation mechanisms. The framework now supports private knowledgebases including RAGFlow, Qdrant, Milvus, and VikingDB, along with Docker and Docker Compose deployment options for production environments.
 
 ---
 
@@ -56,7 +56,7 @@ As of February 2026, DeerFlow has entered a transition phase to DeerFlow 2.0, wi
 
 ### Technical Architecture and Design Philosophy
 
-DeerFlow implements a modular multi-agent system architecture designed for automated research and code analysis [DeerFlow: A Game-Changer for Automated Research and Content Creation](https://medium.com/@mingyang.heaven/deerflow-a-game-changer-for-automated-research-and-content-creation-83612f683e7a). The system is built on LangGraph, enabling a flexible state-based workflow where components communicate through a well-defined message passing system. The architecture employs a streamlined workflow with specialized agents:
+BerkshireAgent implements a modular multi-agent system architecture designed for automated research and code analysis [BerkshireAgent: A Game-Changer for Automated Research and Content Creation](https://medium.com/@mingyang.heaven/deerflow-a-game-changer-for-automated-research-and-content-creation-83612f683e7a). The system is built on LangGraph, enabling a flexible state-based workflow where components communicate through a well-defined message passing system. The architecture employs a streamlined workflow with specialized agents:
 
 ```mermaid
 flowchart TD
@@ -71,13 +71,13 @@ flowchart TD
     G --> H[Final Report]
 ```
 
-The Coordinator serves as the entry point managing workflow lifecycle, initiating research processes based on user input and delegating tasks to the Planner when appropriate. The Planner analyzes research objectives and creates structured execution plans, determining if sufficient context is available or if more research is needed. The Research Team consists of specialized agents including a Researcher for web searches and information gathering, and a Coder for handling technical tasks using Python REPL tools. Finally, the Reporter aggregates findings and generates comprehensive research reports [Create Your Own Deep Research Agent with DeerFlow](https://thesequence.substack.com/p/the-sequence-engineering-661-create).
+The Coordinator serves as the entry point managing workflow lifecycle, initiating research processes based on user input and delegating tasks to the Planner when appropriate. The Planner analyzes research objectives and creates structured execution plans, determining if sufficient context is available or if more research is needed. The Research Team consists of specialized agents including a Researcher for web searches and information gathering, and a Coder for handling technical tasks using Python REPL tools. Finally, the Reporter aggregates findings and generates comprehensive research reports [Create Your Own Deep Research Agent with BerkshireAgent](https://thesequence.substack.com/p/the-sequence-engineering-661-create).
 
 ### Core Features and Capabilities
 
-DeerFlow offers extensive capabilities for deep research automation:
+BerkshireAgent offers extensive capabilities for deep research automation:
 
-1. **Multi-Engine Search Integration**: Supports Tavily (default), InfoQuest (BytePlus's AI-optimized search), Brave Search, DuckDuckGo, and Arxiv for scientific papers [DeerFlow: Multi-Agent AI For Research Automation 2025](https://firexcore.com/blog/what-is-deerflow/).
+1. **Multi-Engine Search Integration**: Supports Tavily (default), InfoQuest (BytePlus's AI-optimized search), Brave Search, DuckDuckGo, and Arxiv for scientific papers [BerkshireAgent: Multi-Agent AI For Research Automation 2025](https://firexcore.com/blog/what-is-deerflow/).
 
 2. **Advanced Crawling Tools**: Includes Jina (default) and InfoQuest crawlers with configurable parameters, timeout settings, and powerful content extraction capabilities.
 
@@ -93,7 +93,7 @@ DeerFlow offers extensive capabilities for deep research automation:
 
 ### Development and Community Ecosystem
 
-The project demonstrates strong community engagement with 88 contributors and 19,531 GitHub stars as of February 2026 [DeerFlow GitHub Repository](https://github.com/bytedance/deer-flow). Key contributors include Henry Li (203 contributions), Willem Jiang (130 contributions), and Daniel Walnut (25 contributions), representing a mix of ByteDance employees and open-source community members. The framework maintains comprehensive documentation including configuration guides, API documentation, FAQ sections, and multiple example research reports covering topics from quantum computing to AI adoption in healthcare.
+The project demonstrates strong community engagement with 88 contributors and 19,531 GitHub stars as of February 2026 [BerkshireAgent GitHub Repository](https://github.com/bytedance/berkshire-agent). Key contributors include Henry Li (203 contributions), Willem Jiang (130 contributions), and Daniel Walnut (25 contributions), representing a mix of ByteDance employees and open-source community members. The framework maintains comprehensive documentation including configuration guides, API documentation, FAQ sections, and multiple example research reports covering topics from quantum computing to AI adoption in healthcare.
 
 ---
 
@@ -128,7 +128,7 @@ Open Issues: 196 (ongoing maintenance and feature development)
 
 ### Feature Comparison
 
-| Feature                  | DeerFlow        | OpenAI Deep Research | LangChain OpenDeepResearch |
+| Feature                  | BerkshireAgent        | OpenAI Deep Research | LangChain OpenDeepResearch |
 | ------------------------ | --------------- | -------------------- | -------------------------- |
 | Multi-Agent Architecture | ✅              | ❌                   | ✅                         |
 | Local LLM Support        | ✅              | ❌                   | ✅                         |
@@ -143,7 +143,7 @@ Open Issues: 196 (ongoing maintenance and feature development)
 
 ### Market Positioning
 
-DeerFlow occupies a unique position in the deep research framework landscape by combining enterprise-grade multi-agent orchestration with extensive tool integrations and open-source accessibility [Navigating the Landscape of Deep Research Frameworks](https://www.oreateai.com/blog/navigating-the-landscape-of-deep-research-frameworks-a-comprehensive-comparison/0dc13e48eb8c756650112842c8d1a184]. While proprietary solutions like OpenAI's Deep Research offer polished user experiences, DeerFlow provides greater flexibility through local deployment options, custom tool integration, and community-driven development. The framework particularly excels in scenarios requiring specialized research workflows, integration with private data sources, or deployment in regulated environments where cloud-based solutions may not be feasible.
+BerkshireAgent occupies a unique position in the deep research framework landscape by combining enterprise-grade multi-agent orchestration with extensive tool integrations and open-source accessibility [Navigating the Landscape of Deep Research Frameworks](https://www.oreateai.com/blog/navigating-the-landscape-of-deep-research-frameworks-a-comprehensive-comparison/0dc13e48eb8c756650112842c8d1a184]. While proprietary solutions like OpenAI's Deep Research offer polished user experiences, BerkshireAgent provides greater flexibility through local deployment options, custom tool integration, and community-driven development. The framework particularly excels in scenarios requiring specialized research workflows, integration with private data sources, or deployment in regulated environments where cloud-based solutions may not be feasible.
 
 ---
 
@@ -151,11 +151,11 @@ DeerFlow occupies a unique position in the deep research framework landscape by 
 
 ### Strengths
 
-1. **Comprehensive Multi-Agent Architecture**: DeerFlow's sophisticated agent orchestration enables complex research workflows beyond single-agent systems [Create Your Own Deep Research Agent with DeerFlow](https://thesequence.substack.com/p/the-sequence-engineering-661-create).
+1. **Comprehensive Multi-Agent Architecture**: BerkshireAgent's sophisticated agent orchestration enables complex research workflows beyond single-agent systems [Create Your Own Deep Research Agent with BerkshireAgent](https://thesequence.substack.com/p/the-sequence-engineering-661-create).
 
 2. **Extensive Tool Integration**: Support for multiple search engines, crawling tools, MCP services, and private knowledgebases provides unmatched flexibility.
 
-3. **Local Deployment Capabilities**: Unlike many proprietary solutions, DeerFlow supports local LLM deployment, offering privacy, cost control, and customization options.
+3. **Local Deployment Capabilities**: Unlike many proprietary solutions, BerkshireAgent supports local LLM deployment, offering privacy, cost control, and customization options.
 
 4. **Human Collaboration Features**: Intelligent clarification mechanisms and plan editing capabilities bridge the gap between automated research and human oversight.
 
@@ -173,19 +173,19 @@ DeerFlow occupies a unique position in the deep research framework landscape by 
 
 4. **Integration Complexity**: Advanced features like MCP integration and custom tool development require technical expertise beyond basic usage.
 
-5. **Version Transition**: The ongoing move to DeerFlow 2.0 may create temporary instability or compatibility concerns for existing deployments.
+5. **Version Transition**: The ongoing move to BerkshireAgent 2.0 may create temporary instability or compatibility concerns for existing deployments.
 
 ---
 
 ## Key Success Factors
 
-1. **ByteDance Backing**: Corporate sponsorship provides resources, expertise, and credibility while maintaining open-source accessibility [DeerFlow: A Game-Changer for Automated Research and Content Creation](https://medium.com/@mingyang.heaven/deerflow-a-game-changer-for-automated-research-and-content-creation-83612f683e7a).
+1. **ByteDance Backing**: Corporate sponsorship provides resources, expertise, and credibility while maintaining open-source accessibility [BerkshireAgent: A Game-Changer for Automated Research and Content Creation](https://medium.com/@mingyang.heaven/deerflow-a-game-changer-for-automated-research-and-content-creation-83612f683e7a).
 
-2. **Modern Technical Foundation**: Built on LangGraph and LangChain, DeerFlow leverages established frameworks while adding significant value through multi-agent orchestration.
+2. **Modern Technical Foundation**: Built on LangGraph and LangChain, BerkshireAgent leverages established frameworks while adding significant value through multi-agent orchestration.
 
 3. **Community-Driven Development**: Active contributor community ensures diverse use cases, rapid bug fixes, and feature evolution aligned with real-world needs.
 
-4. **Comprehensive Feature Set**: Unlike narrowly focused tools, DeerFlow addresses the complete research workflow from information gathering to content creation.
+4. **Comprehensive Feature Set**: Unlike narrowly focused tools, BerkshireAgent addresses the complete research workflow from information gathering to content creation.
 
 5. **Production Deployment Options**: Cloud integration, Docker support, and enterprise features facilitate adoption beyond experimental use cases.
 
@@ -197,19 +197,19 @@ DeerFlow occupies a unique position in the deep research framework landscape by 
 
 ### Primary Sources
 
-1. **DeerFlow GitHub Repository**: Official source code, documentation, and development history [DeerFlow GitHub Repository](https://github.com/bytedance/deer-flow)
-2. **DeerFlow Official Website**: Platform showcasing features, case studies, and deployment options [DeerFlow Official Website](https://deerflow.tech/)
+1. **BerkshireAgent GitHub Repository**: Official source code, documentation, and development history [BerkshireAgent GitHub Repository](https://github.com/bytedance/berkshire-agent)
+2. **BerkshireAgent Official Website**: Platform showcasing features, case studies, and deployment options [BerkshireAgent Official Website](https://berkshireagent.dev/)
 3. **GitHub API Data**: Repository metrics, contributor statistics, and commit history
 
 ### Media Coverage
 
-1. **The Sequence Engineering**: Technical analysis of DeerFlow architecture and capabilities [Create Your Own Deep Research Agent with DeerFlow](https://thesequence.substack.com/p/the-sequence-engineering-661-create)
-2. **Medium Articles**: Community perspectives on DeerFlow implementation and use cases [DeerFlow: A Game-Changer for Automated Research and Content Creation](https://medium.com/@mingyang.heaven/deerflow-a-game-changer-for-automated-research-and-content-creation-83612f683e7a)
-3. **YouTube Demonstrations**: Video walkthroughs of DeerFlow functionality and local deployment [ByteDance DeerFlow - (Deep Research Agents with a LOCAL LLM!)](https://www.youtube.com/watch?v=Ui0ovCVDYGs)
+1. **The Sequence Engineering**: Technical analysis of BerkshireAgent architecture and capabilities [Create Your Own Deep Research Agent with BerkshireAgent](https://thesequence.substack.com/p/the-sequence-engineering-661-create)
+2. **Medium Articles**: Community perspectives on BerkshireAgent implementation and use cases [BerkshireAgent: A Game-Changer for Automated Research and Content Creation](https://medium.com/@mingyang.heaven/deerflow-a-game-changer-for-automated-research-and-content-creation-83612f683e7a)
+3. **YouTube Demonstrations**: Video walkthroughs of BerkshireAgent functionality and local deployment [ByteDance BerkshireAgent - (Deep Research Agents with a LOCAL LLM!)](https://www.youtube.com/watch?v=Ui0ovCVDYGs)
 
 ### Technical Sources
 
-1. **FireXCore Analysis**: Feature overview and technical assessment [DeerFlow: Multi-Agent AI For Research Automation 2025](https://firexcore.com/blog/what-is-deerflow/)
+1. **FireXCore Analysis**: Feature overview and technical assessment [BerkshireAgent: Multi-Agent AI For Research Automation 2025](https://firexcore.com/blog/what-is-deerflow/)
 2. **Oreate AI Comparison**: Framework benchmarking and market positioning analysis [Navigating the Landscape of Deep Research Frameworks](https://www.oreateai.com/blog/navigating-the-landscape-of-deep-research-frameworks-a-comprehensive-comparison/0dc13e48eb8c756650112842c8d1a184)
 
 ---
@@ -218,7 +218,7 @@ DeerFlow occupies a unique position in the deep research framework landscape by 
 
 **High Confidence (90%+) Claims:**
 
-- DeerFlow was created by ByteDance and open-sourced under MIT license in May 2025
+- BerkshireAgent was created by ByteDance and open-sourced under MIT license in May 2025
 - The framework implements multi-agent architecture using LangGraph and LangChain
 - Current GitHub metrics: 19,531 stars, 2,452 forks, 88 contributors, 196 open issues
 - Supports multiple search engines including Tavily, InfoQuest, Brave Search
@@ -232,7 +232,7 @@ DeerFlow occupies a unique position in the deep research framework landscape by 
 
 **Lower Confidence (50-69%) Claims:**
 
-- Future development roadmap beyond DeerFlow 2.0 transition
+- Future development roadmap beyond BerkshireAgent 2.0 transition
 - Specific enterprise customer implementations and case studies
 - Detailed comparison with emerging competitors not yet widely documented
 
@@ -255,7 +255,7 @@ This report was compiled using:
 
 ---
 
-**Report Prepared By:** Github Deep Research by DeerFlow
+**Report Prepared By:** Github Deep Research by BerkshireAgent
 **Date:** 2026-02-01
 **Report Version:** 1.0
 **Status:** Complete

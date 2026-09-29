@@ -22,7 +22,7 @@ class Mem0AuthError(Mem0APIError):
 
 
 class Mem0Client:
-    """Thin wrapper over the mem0 endpoints DeerFlow uses."""
+    """Thin wrapper over the mem0 endpoints BerkshireAgent uses."""
 
     def __init__(
         self,

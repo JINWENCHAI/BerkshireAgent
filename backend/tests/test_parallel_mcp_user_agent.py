@@ -1,4 +1,4 @@
-"""Capture real HTTP requests through DeerFlow's MCP discovery and tool calls."""
+"""Capture real HTTP requests through BerkshireAgent's MCP discovery and tool calls."""
 
 import asyncio
 import json
@@ -69,7 +69,7 @@ async def test_parallel_example_user_agent_reaches_tool_requests(tmp_path, monke
         assert [request["params"]["name"] for request, _ in parallel_requests if request["method"] == "tools/call"] == ["web_search", "web_fetch", "web_search"]
         for _, headers in parallel_requests:
             headers = {name.lower(): value for name, value in headers.items()}
-            assert headers["user-agent"] == "deer-flow"
+            assert headers["user-agent"] == "berkshire-agent"
             if authenticated:
                 assert headers["authorization"] == "Bearer test-only"
                 assert headers["x-caller"] == "test-caller"

@@ -182,9 +182,9 @@ def make_report():
             "continuation_known_info":kc_info,"evaluation_finished":complete,"public_operational_failures":sorted(unresolved_failures),
             "public_initial_failure_ids":sorted(public_failed_ids)}
     write_json(ROOT/"results/summary.json",result)
-    lines=["# DeerFlow 任务接续增强：真实模型对照实验", "", "作者：Aari", "",
+    lines=["# BerkshireAgent 任务接续增强：真实模型对照实验", "", "作者：Aari", "",
            "**状态：实验仍在运行，本文件为进度快照，不能当最终成绩。**" if not complete else "**状态：实验及预算续跑已结束；运行失败与模型质量分开列示。**", "",
-           "本报告评估一个独立的回放与接续原型，未修改或部署 DeerFlow 生产运行时。A 沿用本地指定 commit 所安装 LangChain 的默认摘要提示词；压缩阈值、输出预算和保留范围按本实验设置，不能把其分数称为生产 DeerFlow 的默认性能。",
+           "本报告评估一个独立的回放与接续原型，未修改或部署 BerkshireAgent 生产运行时。A 沿用本地指定 commit 所安装 LangChain 的默认摘要提示词；压缩阈值、输出预算和保留范围按本实验设置，不能把其分数称为生产 BerkshireAgent 的默认性能。",
            "",f"完成度：公开样本 {len(public)}/{p_total}；受控执行任务 {len(tasks)}/{t_total}。质量统计使用完成样本；另列以全部选定样本为分母、将运行失败计为未成功的保守值。缺失 ID 另见 JSON。", "",
            "## 1. 公开历史问答", "", "固定版本的 LongMemEval-S cleaned，七个分层各六例，开发样本与测试样本不重叠。按数据集给定的 session 顺序处理历史，保留原日期，最后揭示问题；笔记和摘要均不能访问考题、答案、has_answer 或证据标签。", "",
            "公开测试集中 16/42 例的给定 session 顺序并非日期单调递增；本实验保持数据集原顺序，没有事后重排。它是历史问答回放，不能直接视为按真实时间产生的任务轨迹；受控任务另用三阶段顺序历史。", ""]

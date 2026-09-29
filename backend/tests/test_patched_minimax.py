@@ -24,7 +24,7 @@ def test_get_request_payload_preserves_thinking_and_forces_reasoning_split():
 def test_get_request_payload_strips_inconsistent_user_message_names():
     """MiniMax rejects user messages whose `name` fields differ (error 2013).
 
-    DeerFlow middlewares tag user messages with internal provenance names
+    BerkshireAgent middlewares tag user messages with internal provenance names
     (e.g. "summary", "user-input", "loop_warning"). langchain serializes those
     into the OpenAI-compatible payload, and MiniMax requires every user-role
     name to be consistent. Strip them so the request is accepted.

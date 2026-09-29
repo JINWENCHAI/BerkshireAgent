@@ -79,7 +79,7 @@ database:
 
 ## 默认值变更：1000 改为 10
 
-节奏原本位于扁平键 `database.checkpoint_delta_snapshot_frequency`，默认值 `1000`。现在它迁到嵌套键 `database.checkpoint_delta.snapshot_frequency`，默认值 `10`——同一个字段，但默认情况下线程落快照的频率提高了 **100 倍**。上游 `DeltaChannel` 的参数默认值仍是 1000；DeerFlow 始终显式传值，因此由 DeerFlow 构建的线程不会使用上游默认值。想恢复旧节奏，显式写出该值即可：
+节奏原本位于扁平键 `database.checkpoint_delta_snapshot_frequency`，默认值 `1000`。现在它迁到嵌套键 `database.checkpoint_delta.snapshot_frequency`，默认值 `10`——同一个字段，但默认情况下线程落快照的频率提高了 **100 倍**。上游 `DeltaChannel` 的参数默认值仍是 1000；BerkshireAgent 始终显式传值，因此由 BerkshireAgent 构建的线程不会使用上游默认值。想恢复旧节奏，显式写出该值即可：
 
 ```yaml
 database:

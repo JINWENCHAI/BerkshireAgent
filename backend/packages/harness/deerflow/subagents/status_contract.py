@@ -15,7 +15,7 @@ consumers read the structured facts carried inside
   backend recorded.
 - ``subagent_result_brief`` / ``subagent_result_sha256`` (optional):
   bounded completed-result metadata plus a digest of the full result.
-- ``subagent_model_name`` (optional): effective DeerFlow model identifier used
+- ``subagent_model_name`` (optional): effective BerkshireAgent model identifier used
   by this delegated run.
 - ``subagent_token_usage`` (optional): final cumulative ``input_tokens`` /
   ``output_tokens`` / ``total_tokens`` snapshot when the provider reported it.

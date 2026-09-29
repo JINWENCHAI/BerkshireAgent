@@ -139,7 +139,7 @@ def render_palette(items, index: int, limit: int = 8) -> RenderableType:
 
 def render_header(*, model: str, thread_label: str, cwd: str, skills: int = 0) -> Text:
     text = Text(no_wrap=True, overflow="ellipsis")
-    text.append(" DeerFlow ", style=f"bold {THEME.bg} on {THEME.primary}")
+    text.append(" BerkshireAgent ", style=f"bold {THEME.bg} on {THEME.primary}")
     text.append("  ")
     text.append(model or "default", style=f"bold {THEME.primary}")
     text.append("  ·  ", style=THEME.dim)

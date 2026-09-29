@@ -1,7 +1,7 @@
 [project]
 name = "deerflow-harness"
 version = "2.1.0"
-description = "DeerFlow agent harness framework"
+description = "BerkshireAgent agent harness framework"
 requires-python = ">=3.12"
 dependencies = [
     "agent-client-protocol>=0.4.0",

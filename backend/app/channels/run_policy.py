@@ -66,7 +66,7 @@ class ChannelRunPolicy:
             on. Webhook-authenticated channels (GitHub) have no
             per-sender ``/connect`` handshake — authenticity is enforced
             by HMAC at the webhook route, and the binding from "sender"
-            to DeerFlow user is encoded in the agent's ``config.yaml``
+            to BerkshireAgent user is encoded in the agent's ``config.yaml``
             ownership, not in the channel-connections table. Defaults to
             True (the safe default for an interactive IM channel).
         fire_and_forget: When True, the manager schedules the run with
@@ -87,7 +87,7 @@ class ChannelRunPolicy:
             surfacing the runtime's generic busy-thread error. This is
             useful for chat surfaces like Feishu topics where rapid
             follow-up messages should queue behind the active turn while
-            unrelated DeerFlow threads continue concurrently. Defaults
+            unrelated BerkshireAgent threads continue concurrently. Defaults
             to False so existing channels keep the runtime's native
             multitask behavior unless they opt in explicitly.
         buffer_followups_on_busy: When True, a ``ConflictError`` on the

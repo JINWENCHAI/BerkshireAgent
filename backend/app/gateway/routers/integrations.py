@@ -52,7 +52,7 @@ async def _is_admin_user(request: Request) -> bool:
 
 
 class LarkCliProbeResponse(BaseModel):
-    available: bool = Field(..., description="Whether lark-cli is available to the Gateway, either managed by DeerFlow or on PATH")
+    available: bool = Field(..., description="Whether lark-cli is available to the Gateway, either managed by BerkshireAgent or on PATH")
     path: str | None = Field(None, description="Resolved lark-cli executable path")
     version: str | None = Field(None, description="lark-cli --version output")
     error: str | None = Field(None, description="Probe failure message")

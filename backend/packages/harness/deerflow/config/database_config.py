@@ -1,6 +1,6 @@
 """Unified database backend configuration.
 
-Controls BOTH the LangGraph checkpointer and the DeerFlow application
+Controls BOTH the LangGraph checkpointer and the BerkshireAgent application
 persistence layer (runs, threads metadata, users, etc.). The user
 configures one backend; the system handles physical separation details.
 
@@ -166,7 +166,7 @@ class DatabaseConfig(BaseModel):
         description="Delta-mode checkpoint history cache. Performance-only; safe to differ across workers.",
     )
     sqlite_dir: str = Field(
-        default=".deer-flow/data",
+        default=".berkshire-agent/data",
         description=("Directory for the SQLite database file. Both checkpointer and application data share {sqlite_dir}/deerflow.db."),
     )
     postgres_url: str = Field(

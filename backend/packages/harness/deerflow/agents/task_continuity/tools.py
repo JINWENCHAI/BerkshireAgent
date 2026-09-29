@@ -96,7 +96,7 @@ async def _atask_note(runtime: Runtime, key: str, content: str, source_ids: list
 
 
 # Both execution modes are required: Gateway runs asynchronously, while
-# DeerFlowClient.stream drives a synchronous graph.
+# BerkshireAgentClient.stream drives a synchronous graph.
 history_search = StructuredTool.from_function(_history_search, coroutine=_ahistory_search, name="history_search")
 history_read = StructuredTool.from_function(_history_read, coroutine=_ahistory_read, name="history_read")
 task_note = StructuredTool.from_function(_task_note, coroutine=_atask_note, name="task_note")

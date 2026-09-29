@@ -45,7 +45,7 @@ shipped profiles keep it below the provider's deepest level.
 immutable `ReasoningContract`, `resolve_reasoning_request` applies a caller's
 generic `thinking_enabled` / `reasoning_effort` to it, and
 `reasoning_capabilities_payload` projects it for `/api/models` and
-`DeerFlowClient` (`reasoning` object, `source: legacy|contract`).
+`BerkshireAgentClient` (`reasoning` object, `source: legacy|contract`).
 `create_chat_model` is the single enforcement point for every caller (lead agent,
 subagents, summarization, title, one-shot utilities): a required-thinking model
 never enters the disable branch, effort is mapped through aliases or the default

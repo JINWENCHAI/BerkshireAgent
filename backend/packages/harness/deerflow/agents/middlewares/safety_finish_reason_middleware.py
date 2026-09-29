@@ -1,7 +1,7 @@
 """Repair AIMessages the provider safety-terminated so they are neither
 executed nor persisted empty.
 
-Background — see issues bytedance/deer-flow#3028 (truncated tool calls) and
+Background — see issues bytedance/berkshire-agent#3028 (truncated tool calls) and
 #4393 (empty response poisons the thread).
 
 Some providers (OpenAI ``finish_reason='content_filter'``, Anthropic

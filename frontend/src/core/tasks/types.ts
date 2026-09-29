@@ -9,7 +9,7 @@ export interface Subtask {
   status: "in_progress" | "completed" | "failed";
   subagent_type: string;
   description: string;
-  /** Effective DeerFlow model selected for this subagent run. */
+  /** Effective BerkshireAgent model selected for this subagent run. */
   modelName?: string;
   /** Latest cumulative token snapshot reported while the subagent runs. */
   usage?: TokenUsage;

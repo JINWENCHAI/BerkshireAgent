@@ -1,4 +1,4 @@
-"""Native deterministic safety scanner for DeerFlow skills."""
+"""Native deterministic safety scanner for BerkshireAgent skills."""
 
 from deerflow.skills.skillscan.models import (
     FindingSeverity,

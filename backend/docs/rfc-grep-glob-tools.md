@@ -1,10 +1,10 @@
-# [RFC] 在 DeerFlow 中增加 `grep` 与 `glob` 文件搜索工具
+# [RFC] 在 BerkshireAgent 中增加 `grep` 与 `glob` 文件搜索工具
 
 ## Summary
 
 我认为这个方向是对的，而且值得做。
 
-如果 DeerFlow 想更接近 Claude Code 这类 coding agent 的实际工作流，仅有 `ls` / `read_file` / `write_file` / `str_replace` 还不够。模型在进入修改前，通常还需要两类能力：
+如果 BerkshireAgent 想更接近 Claude Code 这类 coding agent 的实际工作流，仅有 `ls` / `read_file` / `write_file` / `str_replace` 还不够。模型在进入修改前，通常还需要两类能力：
 
 - `glob`: 快速按路径模式找文件
 - `grep`: 快速按内容模式找候选位置
@@ -15,7 +15,7 @@
 
 ## Problem
 
-当前 DeerFlow 的文件工具层主要覆盖：
+当前 BerkshireAgent 的文件工具层主要覆盖：
 
 - `ls`: 浏览目录结构
 - `read_file`: 读取文件内容
@@ -32,7 +32,7 @@
 3. 一旦退回 `bash`，工具调用就失去结构化输出，结果也更难做裁剪、分页、审计和跨 sandbox 一致化
 4. 对没有开启 host bash 的本地模式，`bash` 甚至可能不可用，此时缺少足够强的只读检索能力
 
-结论：DeerFlow 现在缺的不是“再多一个 shell 命令”，而是**文件系统检索层**。
+结论：BerkshireAgent 现在缺的不是“再多一个 shell 命令”，而是**文件系统检索层**。
 
 ## Goals
 
@@ -47,7 +47,7 @@
 - 不做通用 shell 兼容层
 - 不暴露完整 grep/find/rg CLI 语法
 - 不在第一版支持二进制检索、复杂 PCRE 特性、上下文窗口高亮渲染等重功能
-- 不把它做成“任意磁盘搜索”，仍然只允许在 DeerFlow 已授权的路径内执行
+- 不把它做成“任意磁盘搜索”，仍然只允许在 BerkshireAgent 已授权的路径内执行
 
 ## Why This Is Worth Doing
 
@@ -68,7 +68,7 @@
    `grep` 返回的是命中摘要而不是整段文件，模型只对少数候选路径再调用 `read_file`。
 
 5. **对 `tool_search` 友好**
-   当 DeerFlow 持续扩展工具集时，`grep` / `glob` 会成为非常高频的基础工具，值得保留为 built-in，而不是让模型总是退回通用 bash。
+   当 BerkshireAgent 持续扩展工具集时，`grep` / `glob` 会成为非常高频的基础工具，值得保留为 built-in，而不是让模型总是退回通用 bash。
 
 ## Proposal
 
@@ -192,11 +192,11 @@ subprocess.run("grep ...")
 
 - `glob` 使用 Python 标准库路径遍历
 - `grep` 使用 Python 逐文件扫描
-- 输出由 DeerFlow 自己格式化
+- 输出由 BerkshireAgent 自己格式化
 
 如果未来为了性能考虑要优先调用 `rg`，也应该封装在 provider 内部，并保证外部语义不变，而不是把 CLI 暴露给模型。
 
-### B. 继续沿用 DeerFlow 的路径权限模型
+### B. 继续沿用 BerkshireAgent 的路径权限模型
 
 这两个工具必须复用当前 `ls` / `read_file` 的路径校验逻辑：
 
@@ -253,7 +253,7 @@ Found more than 100 matches, showing first 100. Narrow the path or add a glob fi
 
 - 在 `sandbox/tools.py` 新增 `glob_tool` 与 `grep_tool`
 - 在 local sandbox 场景直接使用 Python 文件系统 API
-- 在非 local sandbox 场景，优先也通过 DeerFlow 自己控制的路径访问层实现
+- 在非 local sandbox 场景，优先也通过 BerkshireAgent 自己控制的路径访问层实现
 
 优点：
 
@@ -381,7 +381,7 @@ class Sandbox(ABC):
 
 不推荐。
 
-这会让 DeerFlow 在代码探索体验上持续落后，也削弱无 bash 或受限 bash 场景下的能力。
+这会让 BerkshireAgent 在代码探索体验上持续落后，也削弱无 bash 或受限 bash 场景下的能力。
 
 ### B. 只加 `glob`，不加 `grep`
 
@@ -399,7 +399,7 @@ class Sandbox(ABC):
 
 短期不推荐作为主路径。
 
-MCP 可以是补充，但 `glob` / `grep` 作为 DeerFlow 的基础 coding tool，最好仍然是 built-in，这样才能在默认安装中稳定可用。
+MCP 可以是补充，但 `glob` / `grep` 作为 BerkshireAgent 的基础 coding tool，最好仍然是 built-in，这样才能在默认安装中稳定可用。
 
 ## Acceptance Criteria
 
@@ -443,4 +443,4 @@ tools:
 2. 第一版不要做 shell wrapper，不要把 CLI 方言直接暴露给模型
 3. 先在 `sandbox/tools.py` 验证价值，再考虑是否下沉到 `Sandbox` provider 抽象
 
-如果按这个方向做，它会明显提升 DeerFlow 在 coding / repo exploration 场景下的可用性，而且风险可控。
+如果按这个方向做，它会明显提升 BerkshireAgent 在 coding / repo exploration 场景下的可用性，而且风险可控。

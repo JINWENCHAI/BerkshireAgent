@@ -1,7 +1,7 @@
 """Shared SKILL.md frontmatter parsing helpers.
 
 The runtime parser, install-time validator, and review core all use this module
-as the schema source for DeerFlow SKILL.md metadata.
+as the schema source for BerkshireAgent SKILL.md metadata.
 """
 
 from __future__ import annotations

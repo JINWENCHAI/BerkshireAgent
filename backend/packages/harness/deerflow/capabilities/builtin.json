@@ -327,10 +327,10 @@
     },
     "kind": "native",
     "setup": {
-      "en-US": "This capability is supported by DeerFlow. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
-      "zh-CN": "DeerFlow 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
+      "en-US": "This capability is supported by BerkshireAgent. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
+      "zh-CN": "BerkshireAgent 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
     },
-    "source": "https://github.com/bytedance/deer-flow/blob/main/config.example.yaml",
+    "source": "https://github.com/bytedance/berkshire-agent/blob/main/config.example.yaml",
     "aliases": [
       "web-search",
       "duckduckgo",
@@ -369,10 +369,10 @@
     },
     "kind": "native",
     "setup": {
-      "en-US": "This capability is supported by DeerFlow. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
-      "zh-CN": "DeerFlow 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
+      "en-US": "This capability is supported by BerkshireAgent. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
+      "zh-CN": "BerkshireAgent 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
     },
-    "source": "https://github.com/bytedance/deer-flow/tree/main/backend/packages/harness/deerflow/community/jina_ai",
+    "source": "https://github.com/bytedance/berkshire-agent/tree/main/backend/packages/harness/deerflow/community/jina_ai",
     "aliases": [
       "web-fetch",
       "jina"
@@ -407,10 +407,10 @@
     },
     "kind": "native",
     "setup": {
-      "en-US": "This capability is supported by DeerFlow. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
-      "zh-CN": "DeerFlow 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
+      "en-US": "This capability is supported by BerkshireAgent. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
+      "zh-CN": "BerkshireAgent 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
     },
-    "source": "https://github.com/bytedance/deer-flow/tree/main/backend/packages/harness/deerflow/community/exa",
+    "source": "https://github.com/bytedance/berkshire-agent/tree/main/backend/packages/harness/deerflow/community/exa",
     "aliases": [
       "exa"
     ],
@@ -444,10 +444,10 @@
     },
     "kind": "native",
     "setup": {
-      "en-US": "This capability is supported by DeerFlow. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
-      "zh-CN": "DeerFlow 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
+      "en-US": "This capability is supported by BerkshireAgent. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
+      "zh-CN": "BerkshireAgent 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
     },
-    "source": "https://github.com/bytedance/deer-flow/tree/main/backend/packages/harness/deerflow/community/firecrawl",
+    "source": "https://github.com/bytedance/berkshire-agent/tree/main/backend/packages/harness/deerflow/community/firecrawl",
     "aliases": [
       "firecrawl"
     ],
@@ -704,10 +704,10 @@
     },
     "kind": "native",
     "setup": {
-      "en-US": "This capability is supported by DeerFlow. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
-      "zh-CN": "DeerFlow 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
+      "en-US": "This capability is supported by BerkshireAgent. Ask your administrator to select a provider and configure its credentials in config.yaml. Availability depends on this deployment; this directory does not check its runtime status.",
+      "zh-CN": "BerkshireAgent 已支持此能力。请由管理员在 config.yaml 中选择服务并配置所需凭据；能否使用取决于当前部署，本目录尚未检测运行状态。"
     },
-    "source": "https://github.com/bytedance/deer-flow/tree/main/backend/packages/harness/deerflow/community/browser_automation",
+    "source": "https://github.com/bytedance/berkshire-agent/tree/main/backend/packages/harness/deerflow/community/browser_automation",
     "aliases": [
       "browser",
       "playwright"

@@ -737,7 +737,7 @@ class TestLoopDetection:
         ``SubagentExecutor`` sets ``context["run_id"] = self.run_id``
         unconditionally (no truthiness guard), so an embedded/TUI-dispatched
         subagent — whose ``run_id`` is never assigned per ``AGENTS.md``'s
-        description of the embedded ``DeerFlowClient`` — runs with a context
+        description of the embedded ``BerkshireAgentClient`` — runs with a context
         that legitimately carries ``run_id=None`` (the key is *present*, not
         absent). The executor later reads the reason back with the raw
         attribute: ``consume_stop_reason(self.run_id)``, i.e.

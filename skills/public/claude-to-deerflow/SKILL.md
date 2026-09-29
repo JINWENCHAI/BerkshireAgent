@@ -1,16 +1,16 @@
 ---
 name: claude-to-deerflow
-description: "Interact with DeerFlow AI agent platform via its HTTP API. Use this skill when the user wants to send messages or questions to DeerFlow for research/analysis, start a DeerFlow conversation thread, check DeerFlow status or health, list available models/skills/agents in DeerFlow, manage DeerFlow memory, upload files to DeerFlow threads, or delegate complex research tasks to DeerFlow. Also use when the user mentions deerflow, deer flow, or wants to run a deep research task that DeerFlow can handle."
+description: "Interact with BerkshireAgent AI agent platform via its HTTP API. Use this skill when the user wants to send messages or questions to BerkshireAgent for research/analysis, start a BerkshireAgent conversation thread, check BerkshireAgent status or health, list available models/skills/agents in BerkshireAgent, manage BerkshireAgent memory, upload files to BerkshireAgent threads, or delegate complex research tasks to BerkshireAgent. Also use when the user mentions deerflow, deer flow, or wants to run a deep research task that BerkshireAgent can handle."
 ---
 
-# DeerFlow Skill
+# BerkshireAgent Skill
 
-Communicate with a running DeerFlow instance via its HTTP API. DeerFlow is an AI agent platform
+Communicate with a running BerkshireAgent instance via its HTTP API. BerkshireAgent is an AI agent platform
 built on LangGraph that orchestrates sub-agents for research, code execution, web browsing, and more.
 
 ## Architecture
 
-DeerFlow exposes two API surfaces behind an Nginx reverse proxy:
+BerkshireAgent exposes two API surfaces behind an Nginx reverse proxy:
 
 | Service        | Direct Port | Via Proxy                        | Purpose                          |
 |----------------|-------------|----------------------------------|----------------------------------|
@@ -40,7 +40,7 @@ DEERFLOW_LANGGRAPH_URL="${DEERFLOW_LANGGRAPH_URL:-$DEERFLOW_URL/api/langgraph}"
 
 ### 1. Health Check
 
-Verify DeerFlow is running:
+Verify BerkshireAgent is running:
 
 ```bash
 curl -s "$DEERFLOW_GATEWAY_URL/health"
@@ -205,7 +205,7 @@ The stream returns SSE events. To extract the final AI response from a `values` 
 
 ## Error Handling
 
-- If health check fails, DeerFlow is not running. Inform the user they need to start it.
+- If health check fails, BerkshireAgent is not running. Inform the user they need to start it.
 - If the stream returns an error event, extract and display the error message.
 - Common issues: port not open, services still starting up, config errors.
 

@@ -690,7 +690,7 @@ def test_config_upgrade_targets_checkout_config_over_legacy_backend_copy(tmp_pat
 
 
 @pytest.mark.skipif(SCRIPT_BASH is None, reason="repo shell-script tests need Git Bash on Windows")
-def test_config_upgrade_honors_deer_flow_project_root(tmp_path):
+def test_config_upgrade_honors_berkshire_agent_project_root(tmp_path):
     """An exported DEER_FLOW_PROJECT_ROOT decides the file, as it does for the Gateway."""
     checkout = tmp_path / "checkout"
     project_root = tmp_path / "project"
@@ -706,7 +706,7 @@ def test_config_upgrade_honors_deer_flow_project_root(tmp_path):
 
 
 @pytest.mark.skipif(SCRIPT_BASH is None, reason="repo shell-script tests need Git Bash on Windows")
-def test_config_upgrade_fails_on_missing_deer_flow_config_path(tmp_path):
+def test_config_upgrade_fails_on_missing_berkshire_agent_config_path(tmp_path):
     """A missing explicit config stops the Gateway, so no fallback file is upgraded instead."""
     checkout = tmp_path / "checkout"
     checkout_text = _write_outdated_config(checkout / "config.yaml")
@@ -721,7 +721,7 @@ def test_config_upgrade_fails_on_missing_deer_flow_config_path(tmp_path):
 
 
 @pytest.mark.skipif(SCRIPT_BASH is None, reason="repo shell-script tests need Git Bash on Windows")
-def test_config_upgrade_reports_invalid_deer_flow_project_root(tmp_path):
+def test_config_upgrade_reports_invalid_berkshire_agent_project_root(tmp_path):
     """A project root the Gateway rejects fails with its message, not a traceback."""
     checkout = tmp_path / "checkout"
     checkout_text = _write_outdated_config(checkout / "config.yaml")
@@ -734,7 +734,7 @@ def test_config_upgrade_reports_invalid_deer_flow_project_root(tmp_path):
 
 
 @pytest.mark.skipif(SCRIPT_BASH is None, reason="repo shell-script tests need Git Bash on Windows")
-def test_config_upgrade_honors_deer_flow_config_path_from_dotenv(tmp_path):
+def test_config_upgrade_honors_berkshire_agent_config_path_from_dotenv(tmp_path):
     """`make config-upgrade` does not source .env, but the Gateway loads it; follow the Gateway."""
     checkout = tmp_path / "checkout"
     live = tmp_path / "live" / "config.yaml"
@@ -750,7 +750,7 @@ def test_config_upgrade_honors_deer_flow_config_path_from_dotenv(tmp_path):
 
 
 @pytest.mark.skipif(SCRIPT_BASH is None, reason="repo shell-script tests need Git Bash on Windows")
-def test_config_upgrade_resolves_relative_deer_flow_config_path_from_backend(tmp_path):
+def test_config_upgrade_resolves_relative_berkshire_agent_config_path_from_backend(tmp_path):
     """The Gateway runs from backend/, so a relative DEER_FLOW_CONFIG_PATH is relative to it."""
     checkout = tmp_path / "checkout"
     checkout_text = _write_outdated_config(checkout / "config.yaml")

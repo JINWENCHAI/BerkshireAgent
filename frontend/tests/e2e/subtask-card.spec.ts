@@ -12,7 +12,7 @@ import {
 const STOPPED_TASK_PROMPT =
   "Investigate why the stopped subtask card should not remain running after reload.";
 const LONG_TASK_PROMPT =
-  "你的任务：分析 bytedance/deer-flow 前端核心线程同步文件 `frontend/src/core/threads/hooks.ts`（约 108KB），提取其消息流同步机制的关键信息。背景：用户在 DeerFlow 前端发现子代理任务卡片标题过长，需要确认截断行为。请重点关注消息合并、流式节流与本地排序逻辑，并输出结构化结论。";
+  "你的任务：分析 bytedance/berkshire-agent 前端核心线程同步文件 `frontend/src/core/threads/hooks.ts`（约 108KB），提取其消息流同步机制的关键信息。背景：用户在 BerkshireAgent 前端发现子代理任务卡片标题过长，需要确认截断行为。请重点关注消息合并、流式节流与本地排序逻辑，并输出结构化结论。";
 const LONG_RUNNING_STATUS =
   "Writing the quarterly infrastructure cost breakdown report to workspace/reports/q3-infra-cost-breakdown-final-v2.md";
 const LONG_TASK_USER_TEXT =

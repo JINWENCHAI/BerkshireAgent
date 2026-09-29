@@ -1,19 +1,19 @@
 ---
-title: DeerFlow App
-description: DeerFlow App is the reference implementation of what a production DeerFlow experience looks like. It assembles the Harness runtime, a web-based conversation workspace, an API gateway, and a reverse proxy into a single deployable system.
+title: BerkshireAgent App
+description: BerkshireAgent App is the reference implementation of what a production BerkshireAgent experience looks like. It assembles the Harness runtime, a web-based conversation workspace, an API gateway, and a reverse proxy into a single deployable system.
 ---
 
 import { Callout } from "nextra/components";
 
-# DeerFlow App
+# BerkshireAgent App
 
 <Callout type="info" emoji="🚀">
-  DeerFlow App is a complete Super Agent application built on top of DeerFlow
+  BerkshireAgent App is a complete Super Agent application built on top of BerkshireAgent
   Harness. It packages the runtime capabilities into a ready-to-deploy product
   with a web UI, API gateway, and operational tooling.
 </Callout>
 
-DeerFlow App is the reference implementation of what a production DeerFlow experience looks like. It assembles the Harness runtime, a web-based conversation workspace, an API gateway, and a reverse proxy into a single deployable system.
+BerkshireAgent App is the reference implementation of what a production BerkshireAgent experience looks like. It assembles the Harness runtime, a web-based conversation workspace, an API gateway, and a reverse proxy into a single deployable system.
 
 ## What the App provides
 
@@ -29,7 +29,7 @@ DeerFlow App is the reference implementation of what a production DeerFlow exper
 
 ## Architecture
 
-The DeerFlow App runs behind a single nginx reverse proxy:
+The BerkshireAgent App runs behind a single nginx reverse proxy:
 
 ```
                 ┌──────────────────┐
@@ -54,7 +54,7 @@ The DeerFlow App runs behind a single nginx reverse proxy:
 | ----------------- | -------------------------------------------------------------------- |
 | Frontend          | Next.js 16, React 19, TypeScript, pnpm                               |
 | Gateway           | FastAPI, Python 3.12, uvicorn                                        |
-| Agent runtime     | LangGraph, LangChain, DeerFlow Harness                               |
+| Agent runtime     | LangGraph, LangChain, BerkshireAgent Harness                               |
 | Reverse proxy     | nginx                                                                |
 | State persistence | Gateway runtime + optional SQLite/PostgreSQL checkpointer             |
 

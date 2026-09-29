@@ -1,6 +1,6 @@
 # Run Event Stream
 
-The run event stream is DeerFlow's append-only record of what happened during
+The run event stream is BerkshireAgent's append-only record of what happened during
 an agent run. Producers write through `RunEventStore`; history, debug, subtask,
 memory-audit, and workspace-review consumers read projections of the same rows.
 

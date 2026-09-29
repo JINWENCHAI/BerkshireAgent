@@ -11,7 +11,7 @@ This chapter is for operators. It describes what the extension manager does to a
 
 ## Commands
 
-Run the `make` wrappers from the root of the DeerFlow checkout. Each one calls the same CLI from `backend/`:
+Run the `make` wrappers from the root of the BerkshireAgent checkout. Each one calls the same CLI from `backend/`:
 
 | `make` target                          | CLI (run from `backend/`)                                                      | Effect                                                                  |
 | -------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
@@ -42,11 +42,11 @@ Answering anything other than `y` or `yes` prints `Extension installation cancel
 On success:
 
 ```text
-Installed and enabled hello (deerflow-extension-hello). Restart DeerFlow to load it.
-Upgraded hello (deerflow-extension-hello). Restart DeerFlow to load it.
-Enabled hello. Restart DeerFlow to apply the change.
-Disabled hello. Restart DeerFlow to apply the change.
-Removed hello. Restart DeerFlow to apply the change.
+Installed and enabled hello (deerflow-extension-hello). Restart BerkshireAgent to load it.
+Upgraded hello (deerflow-extension-hello). Restart BerkshireAgent to load it.
+Enabled hello. Restart BerkshireAgent to apply the change.
+Disabled hello. Restart BerkshireAgent to apply the change.
+Removed hello. Restart BerkshireAgent to apply the change.
 ```
 
 `list` prints a tab-separated table. A hand-written record without `name` or `package` shows its `use` value as the name and `-` as the package:
@@ -71,7 +71,7 @@ The checkout root is `DEER_FLOW_PROJECT_ROOT` when set, otherwise the nearest an
 
 The Gateway resolves its config with the same `DEER_FLOW_CONFIG_PATH` override first. If you run the Gateway with a non-default config path, set the same variable when you run the manager, or it will edit a file the Gateway never reads.
 
-The manager validates the file before running any `uv` command. It refuses to continue when the file is missing (`DeerFlow config not found: <path>`), is not valid YAML, has a non-mapping root, has a `plugins` value that is not a list, or contains `plugins:` twice at the top level.
+The manager validates the file before running any `uv` command. It refuses to continue when the file is missing (`BerkshireAgent config not found: <path>`), is not valid YAML, has a non-mapping root, has a `plugins` value that is not a list, or contains `plugins:` twice at the top level.
 
 ## The plugins record
 
@@ -95,7 +95,7 @@ plugins:
 | `enabled`      | `true`   | yes                    | `false` skips the entry without importing it                                                        |
 | `required`     | `false`  | yes (`false` unless `--required`) | `true` aborts Gateway startup when the entry fails to load                               |
 | `config`       | `{}`     | yes (`{}`)             | Private configuration handed to `install()`. Never overwritten by the manager                        |
-| `table_prefix` | none     | no                     | Table-name prefix the extension owns in the DeerFlow database. See [Database tables](#database-tables) |
+| `table_prefix` | none     | no                     | Table-name prefix the extension owns in the BerkshireAgent database. See [Database tables](#database-tables) |
 
 Unknown keys are rejected when the Gateway loads its config, so a typo in a field name stops the Gateway from starting rather than being ignored.
 
@@ -109,9 +109,9 @@ When `install` finds an existing record with the same `use`, it adopts that reco
 
 ### Database tables
 
-An extension that persists data in the DeerFlow database under its own SQLAlchemy metadata and migration chain should declare the prefix of its table names in `table_prefix`. DeerFlow then excludes those tables from `alembic revision --autogenerate`, which would otherwise propose to drop them. The prefix is registered even when the record is disabled, because the tables may already exist.
+An extension that persists data in the BerkshireAgent database under its own SQLAlchemy metadata and migration chain should declare the prefix of its table names in `table_prefix`. BerkshireAgent then excludes those tables from `alembic revision --autogenerate`, which would otherwise propose to drop them. The prefix is registered even when the record is disabled, because the tables may already exist.
 
-A prefix that would hide one of DeerFlow's own tables always aborts startup, whatever `required` says:
+A prefix that would hide one of BerkshireAgent's own tables always aborts startup, whatever `required` says:
 
 ```text
 extension table_prefix 'runs' would hide host-owned table(s) ['runs'] from alembic autogenerate; choose a prefix that is not a prefix of any host table name
@@ -154,11 +154,11 @@ A local directory is not linked. It is copied to `backend/extensions/sources/<no
 
 These checks catch packaging accidents. They are not a malware scan.
 
-Because the snapshot is a copy, edits to your working directory reach DeerFlow only through `make extension-upgrade SOURCE=<same path>` followed by a restart.
+Because the snapshot is a copy, edits to your working directory reach BerkshireAgent only through `make extension-upgrade SOURCE=<same path>` followed by a restart.
 
 ### Plugins with browser assets
 
-A plugin that declares `BrowserAssets` ships a `ui_manifest.json` and the static files it lists inside its Python package. The [bookmarks example](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-bookmarks) keeps them under `deerflow_extension_bookmarks/static/dist/`. For operators this means:
+A plugin that declares `BrowserAssets` ships a `ui_manifest.json` and the static files it lists inside its Python package. The [bookmarks example](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-bookmarks) keeps them under `deerflow_extension_bookmarks/static/dist/`. For operators this means:
 
 - **The files must be in what gets installed.** A local directory is snapshotted as-is, so build any JavaScript bundle before `install` or `upgrade`: the manager runs the Python build backend, not a JavaScript build. For an index or Git source, the files must be inside the built wheel.
 - **The snapshot rules still apply.** A local directory containing symlinks or secret-looking files is rejected by the manager before the Gateway ever reads the manifest.
@@ -201,7 +201,7 @@ Recovery never overwrites someone else's edit. If a dependency file or the confi
 
 ### Locking
 
-All mutating commands for one checkout hold an exclusive lock on `.deer-flow/extension-manager.lock` at the checkout root, so two operators or two CI jobs cannot interleave installs. A second command waits until the first finishes. `list` does not take the lock.
+All mutating commands for one checkout hold an exclusive lock on `.berkshire-agent/extension-manager.lock` at the checkout root, so two operators or two CI jobs cannot interleave installs. A second command waits until the first finishes. `list` does not take the lock.
 
 ### Lock audit
 

@@ -45,8 +45,8 @@ The module imports, but the function after the colon does not exist. Correct `us
 
 The `@extension(api=...)` marker is outside what this host accepts. Before 1.0 the host accepts the same `0.minor` at a patch equal to or lower than its own.
 
-- Declared version **newer** than the host (for example `0.3.0` on a `0.2.1` host): upgrade DeerFlow, or install an extension release built for this host.
-- Declared version with a **newer patch** than the host (for example `0.2.2` on a `0.2.1` host): upgrade DeerFlow, or install the extension release that declares `0.2.1` or lower.
+- Declared version **newer** than the host (for example `0.3.0` on a `0.2.1` host): upgrade BerkshireAgent, or install an extension release built for this host.
+- Declared version with a **newer patch** than the host (for example `0.2.2` on a `0.2.1` host): upgrade BerkshireAgent, or install the extension release that declares `0.2.1` or lower.
 - Declared version on an **older** minor (for example `0.1.0` on a `0.2.1` host): upgrade the extension to a release written against the host's minor.
 
 The message suggests `pip install 'deerflow-extension-api>=<declared>,<...'`. The host's contract version is fixed by its own `uv.lock`, so for an older extension that suggestion does not apply: fix the extension, not the host.
@@ -71,7 +71,7 @@ A record with `required: true` failed. The same message ends in `is not callable
 
 ### `extension table_prefix '<prefix>' would hide host-owned table(s) [...] from alembic autogenerate`
 
-The record's `table_prefix` is a prefix of a DeerFlow table name. This always aborts startup, even for a disabled or optional record. Choose a more specific prefix, such as `acme_audit_`.
+The record's `table_prefix` is a prefix of a BerkshireAgent table name. This always aborts startup, even for a disabled or optional record. Choose a more specific prefix, such as `acme_audit_`.
 
 ### A validation error for `plugins` when loading `config.yaml`
 
@@ -102,11 +102,11 @@ For example `Extra inputs are not permitted` or `String should have at least 1 c
 | `configured extension '<name>' has no managed package metadata`                                            | A hand-written record without `package`; delete it from `config.yaml` yourself                                   |
 | `multiple configured plugins conflict with extension '<name>'`                                             | Another record already uses this `name` or `package` with a different `use`. Remove the stale record. During `upgrade`, this also means the new version changed its entry-point target: remove and reinstall |
 | `config.yaml contains duplicate top-level plugins keys`                                                    | Merge the two `plugins:` blocks                                                                                 |
-| `DeerFlow config not found: <path>`                                                                         | Run `make config`, or point `DEER_FLOW_CONFIG_PATH` at the right file                                           |
+| `BerkshireAgent config not found: <path>`                                                                         | Run `make config`, or point `DEER_FLOW_CONFIG_PATH` at the right file                                           |
 | `extension installation recovery preserved a concurrent dependency-file edit` (or `removal`, `config edit`) | Someone else changed the files mid-operation. Review `git diff` and retry                                       |
 | `extension operation failed and the restored environment could not be synchronized; original failure: ...` | The rollback restored the files but `uv sync` failed. Run `cd backend && uv sync --locked --all-packages`         |
 
-A manager command that seems to hang is usually waiting for another command holding `.deer-flow/extension-manager.lock`.
+A manager command that seems to hang is usually waiting for another command holding `.berkshire-agent/extension-manager.lock`.
 
 ## Middleware problems
 

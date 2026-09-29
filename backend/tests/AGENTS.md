@@ -67,7 +67,7 @@ missing token fence; always drain paused tasks and restore session patches.
 
 - default-executor saturation and queueing;
 - cancellation of an awaiter while an already-started synchronous worker continues;
-- isolation between the asyncio default executor and DeerFlow's dedicated file-I/O executor.
+- isolation between the asyncio default executor and BerkshireAgent's dedicated file-I/O executor.
 
 Use explicit synchronization such as `threading.Event` rather than sleep-based timing thresholds for worker lifecycle assertions. Every test must release blocked workers and restore any process-global monkeypatches so teardown cannot leak threads or state into later tests.
 

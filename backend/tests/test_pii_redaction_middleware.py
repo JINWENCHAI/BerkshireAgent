@@ -608,13 +608,13 @@ class TestDurableContextReinjection:
 
 class TestSummarizationCompactionInput:
     def _middleware(self, pii_config):
-        from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+        from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 
         model = MagicMock()
         model.invoke.return_value = SimpleNamespace(text="compressed")
         model.ainvoke = AsyncMock(return_value=SimpleNamespace(text="compressed"))
         model.with_config.return_value = model
-        return DeerFlowSummarizationMiddleware(
+        return BerkshireAgentSummarizationMiddleware(
             model=model,
             trigger=("messages", 4),
             keep=("messages", 2),
@@ -684,7 +684,7 @@ def test_compiled_graph_keeps_summary_and_retained_pii_distinct(async_mode):
     import asyncio
 
     from deerflow.agents.middlewares.durable_context_middleware import DurableContextMiddleware
-    from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+    from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
     from deerflow.agents.thread_state import ThreadState
 
     pii = PiiRedactionConfig(enabled=True, token_secret=_TOKEN_SECRET)
@@ -698,7 +698,7 @@ def test_compiled_graph_keeps_summary_and_retained_pii_distinct(async_mode):
         middleware=[
             PiiRedactionMiddleware(pii),
             DurableContextMiddleware(pii_redaction_config=pii),
-            DeerFlowSummarizationMiddleware(model=summary, trigger=("messages", 4), keep=("messages", 2), token_counter=len, app_config=config),
+            BerkshireAgentSummarizationMiddleware(model=summary, trigger=("messages", 4), keep=("messages", 2), token_counter=len, app_config=config),
         ],
     )
     messages = [HumanMessage(content="Alice's email is alice@example.com"), AIMessage(content="Noted"), HumanMessage(content="Bob's email is bob@example.com; keep their records separate"), AIMessage(content="Noted")]

@@ -50,10 +50,10 @@ def _source_id(reference: str, request_url: str) -> str:
     parsed = urlsplit(reference)
     origin = urlsplit(request_url)
     if parsed.scheme not in {"http", "https"} or (parsed.scheme, parsed.netloc) != (origin.scheme, origin.netloc) or parsed.query or parsed.fragment:
-        raise ValueError("Use a thread ID or a conversation URL from this DeerFlow origin")
+        raise ValueError("Use a thread ID or a conversation URL from this BerkshireAgent origin")
     match = re.fullmatch(r"/workspace/(?:agents/[^/]+/)?chats/([^/]+)", parsed.path)
     if match is None:
-        raise ValueError("Expected a DeerFlow conversation URL")
+        raise ValueError("Expected a BerkshireAgent conversation URL")
     return validate_thread_id(match.group(1))
 
 

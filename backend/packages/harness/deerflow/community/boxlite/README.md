@@ -1,12 +1,12 @@
 # BoxLite backend
 
-Runs each DeerFlow sandbox as a [BoxLite](https://github.com/boxlite-ai/boxlite)
+Runs each BerkshireAgent sandbox as a [BoxLite](https://github.com/boxlite-ai/boxlite)
 micro-VM — a daemonless, OCI-native VM with its own kernel (libkrun/KVM on Linux,
 Hypervisor.framework on macOS). Motivated by the resource/cold-start pain with
 the default AIO Docker sandbox in
-[#3439](https://github.com/bytedance/deer-flow/issues/3439) and
-[#3213](https://github.com/bytedance/deer-flow/issues/3213); discussion in
-[#3936](https://github.com/bytedance/deer-flow/issues/3936).
+[#3439](https://github.com/bytedance/berkshire-agent/issues/3439) and
+[#3213](https://github.com/bytedance/berkshire-agent/issues/3213); discussion in
+[#3936](https://github.com/bytedance/berkshire-agent/issues/3936).
 
 ## Configuration
 
@@ -31,20 +31,20 @@ Install the optional runtime before selecting this provider:
 pip install "deerflow-harness[boxlite]"
 ```
 
-The `boxlite` package is an optional DeerFlow harness extra, not part of the
+The `boxlite` package is an optional BerkshireAgent harness extra, not part of the
 default install. It is also limited to the host platforms and architectures
 where BoxLite publishes wheels and can boot micro-VMs. Unsupported development
-hosts, such as Windows, should use another sandbox provider or run DeerFlow from
+hosts, such as Windows, should use another sandbox provider or run BerkshireAgent from
 a supported Linux/macOS environment.
 
 **Host requirement:** BoxLite boots micro-VMs, so a Linux host needs KVM — i.e.
-nested virtualization when DeerFlow runs inside a cloud VM. macOS uses
+nested virtualization when BerkshireAgent runs inside a cloud VM. macOS uses
 Hypervisor.framework. This is the main deployment constraint to weigh vs. the
 container-based providers.
 
 ## Design
 
-DeerFlow's `Sandbox` contract is synchronous; BoxLite's SDK is async-native and
+BerkshireAgent's `Sandbox` contract is synchronous; BoxLite's SDK is async-native and
 its box handles are event-loop-affine. The provider owns **one** private asyncio
 loop on a daemon thread and marshals every coroutine onto it via
 `run_coroutine_threadsafe`. BoxLite boxes are named deterministically from
@@ -78,4 +78,4 @@ disables idle reaping. Active boxes are never evicted to satisfy the cap.
 Verified end-to-end against a live box (provider resolution → `execute_command`
 → file ops) on macOS/HVF. Linux/KVM validation and benchmarks vs. the AIO
 sandbox are tracked in
-[#3936](https://github.com/bytedance/deer-flow/issues/3936).
+[#3936](https://github.com/bytedance/berkshire-agent/issues/3936).

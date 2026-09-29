@@ -1,6 +1,6 @@
-"""DeerFlow application persistence layer (SQLAlchemy 2.0 async ORM).
+"""BerkshireAgent application persistence layer (SQLAlchemy 2.0 async ORM).
 
-This module manages DeerFlow's own application data -- runs metadata,
+This module manages BerkshireAgent's own application data -- runs metadata,
 thread ownership, cron jobs, users. It is completely separate from
 LangGraph's checkpointer, which manages graph execution state.
 

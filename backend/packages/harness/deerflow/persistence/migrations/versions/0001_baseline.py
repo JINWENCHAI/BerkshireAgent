@@ -1,4 +1,4 @@
-"""baseline -- chain root for DeerFlow application schema.
+"""baseline -- chain root for BerkshireAgent application schema.
 
 Revision ID: 0001_baseline
 Revises:
@@ -8,7 +8,7 @@ Role of this revision
 =====================
 
 This revision encodes the schema that ``Base.metadata.create_all`` produces for
-every DeerFlow-owned table at the point alembic was wired in. Under the hybrid
+every BerkshireAgent-owned table at the point alembic was wired in. Under the hybrid
 bootstrap strategy (``deerflow.persistence.bootstrap.bootstrap_schema``), the
 ``upgrade()`` here is **almost never executed**:
 

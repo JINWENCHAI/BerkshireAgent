@@ -226,7 +226,7 @@ async def get_memory(request: Request) -> MemoryResponse:
             "version": "1.0",
             "lastUpdated": "2024-01-15T10:30:00Z",
             "user": {
-                "workContext": {"summary": "Working on DeerFlow project", "updatedAt": "..."},
+                "workContext": {"summary": "Working on BerkshireAgent project", "updatedAt": "..."},
                 "personalContext": {"summary": "Prefers concise responses", "updatedAt": "..."},
                 "topOfMind": {"summary": "Building memory API", "updatedAt": "..."}
             },
@@ -476,7 +476,7 @@ async def get_memory_config_endpoint(request: Request) -> MemoryConfigResponse:
             "mode": "middleware",
             "manager_class": "deermem",
             "backend_config": {
-                "storage_path": "/.../.deer-flow",
+                "storage_path": "/.../.berkshire-agent",
                 "debounce_seconds": 30,
                 "max_facts": 100,
                 "fact_confidence_threshold": 0.7,

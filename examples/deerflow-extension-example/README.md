@@ -1,6 +1,6 @@
-# DeerFlow extension example
+# BerkshireAgent extension example
 
-This directory is a compact, standalone Python package showing all five DeerFlow
+This directory is a compact, standalone Python package showing all five BerkshireAgent
 extension contribution kinds. It depends on the public
 `deerflow-extension-api` contract and never imports `deerflow.*` or `app.*`.
 
@@ -14,7 +14,7 @@ depends on FastAPI, LangChain, and LangGraph in `pyproject.toml`.
 | --- | --- |
 | Middleware | Counts tool calls through one `TOOL_VISIBLE` middleware for lead agents and subagents |
 | Task lifecycle | Creates task-scoped stats on start and folds them into app scope on stop |
-| System-model observer | Counts DeerFlow-owned model calls, including failures |
+| System-model observer | Counts BerkshireAgent-owned model calls, including failures |
 | Service | Binds `ExtensionRuntimeDeps` only while the Gateway is running |
 | Router | Eagerly declares `GET /api/extension-example/stats` during `install()` |
 
@@ -40,11 +40,11 @@ uv run --no-project ruff format --check .
 ```
 
 The tests use only the public contract plus this package's declared dependencies;
-the DeerFlow harness and Gateway application are not imported.
+the BerkshireAgent harness and Gateway application are not imported.
 
-## Install and load it in DeerFlow
+## Install and load it in BerkshireAgent
 
-From the DeerFlow checkout root, install this directory through the extension
+From the BerkshireAgent checkout root, install this directory through the extension
 manager. Use an absolute path because the Make wrapper invokes the manager from
 `backend/`:
 
@@ -72,7 +72,7 @@ plugins:
     config: {}
 ```
 
-Start or restart DeerFlow after installation:
+Start or restart BerkshireAgent after installation:
 
 ```bash
 make dev

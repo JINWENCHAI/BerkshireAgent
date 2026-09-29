@@ -13,7 +13,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 
 from deerflow.agents.factory import create_deerflow_agent
 from deerflow.agents.features import Next, Prev, RuntimeFeatures
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 from deerflow.agents.middlewares.view_image_middleware import ViewImageMiddleware
 from deerflow.agents.thread_state import DeltaThreadState, ThreadState
 from deerflow.config.pii_redaction_config import PiiRedactionConfig
@@ -1158,7 +1158,7 @@ def test_subagent_total_per_run_holds_across_model_turns():
 # 44. The model still sees the summary after summarization compacts history
 # ---------------------------------------------------------------------------
 def test_summarization_feature_keeps_the_summary_in_model_requests():
-    summarizer = DeerFlowSummarizationMiddleware(
+    summarizer = BerkshireAgentSummarizationMiddleware(
         model=_FakeModel(responses=[AIMessage(content="compressed summary")]),
         trigger=("messages", 4),
         keep=("messages", 2),

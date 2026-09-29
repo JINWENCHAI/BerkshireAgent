@@ -1,4 +1,4 @@
-# DeerFlow — CLI auth overlay (OPT-IN, NOT loaded by default)
+# BerkshireAgent — CLI auth overlay (OPT-IN, NOT loaded by default)
 #
 # Bind-mounts the host Claude Code / Codex CLI config dirs into the gateway so:
 #   - ClaudeChatModel / Codex model providers can reuse the CLI subscription

@@ -80,7 +80,7 @@ The contract is pinned two ways: non-snapshot checkpoints must not carry `messag
 
 ## Default change: 1000 to 10
 
-The cadence used to live at the flat key `database.checkpoint_delta_snapshot_frequency` with a default of `1000`. It moved to the nested key `database.checkpoint_delta.snapshot_frequency` with a default of `10` — the same field, but threads now snapshot **100x more often** by default. Upstream `DeltaChannel` still defaults its parameter to 1000; DeerFlow always passes an explicit value, so no DeerFlow thread uses upstream's default. The previous cadence is still available by setting the value explicitly:
+The cadence used to live at the flat key `database.checkpoint_delta_snapshot_frequency` with a default of `1000`. It moved to the nested key `database.checkpoint_delta.snapshot_frequency` with a default of `10` — the same field, but threads now snapshot **100x more often** by default. Upstream `DeltaChannel` still defaults its parameter to 1000; BerkshireAgent always passes an explicit value, so no BerkshireAgent thread uses upstream's default. The previous cadence is still available by setting the value explicitly:
 
 ```yaml
 database:

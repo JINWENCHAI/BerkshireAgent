@@ -29,12 +29,12 @@ export async function Header({ className, homeURL, locale }: HeaderProps) {
     >
       <div className="flex min-w-0 items-center gap-6">
         <a
-          href={homeURL ?? "https://github.com/bytedance/deer-flow"}
+          href={homeURL ?? "https://github.com/bytedance/berkshire-agent"}
           target={isExternalHome ? "_blank" : "_self"}
           rel={isExternalHome ? "noopener noreferrer" : undefined}
           className="font-serif text-xl whitespace-nowrap"
         >
-          DeerFlow
+          BerkshireAgent
         </a>
       </div>
       <nav className="ml-auto hidden items-center gap-5 text-sm font-medium sm:flex md:mr-8 md:gap-8">
@@ -66,7 +66,7 @@ export async function Header({ className, homeURL, locale }: HeaderProps) {
           className="group relative z-10"
         >
           <a
-            href="https://github.com/bytedance/deer-flow"
+            href="https://github.com/bytedance/berkshire-agent"
             target="_blank"
             rel="noopener noreferrer"
           >

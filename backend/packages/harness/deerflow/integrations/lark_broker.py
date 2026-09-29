@@ -89,7 +89,7 @@ _LARK_CLI_BROKER_SHIM_PATH_PLACEHOLDER = "@@LARK_CLI_BROKER_SHIM_PATH@@"
 
 LARK_CLI_BROKER_LAUNCHER_TEMPLATE = (
     "#!/bin/sh\n"
-    "# DeerFlow lark-cli broker launcher (Pattern B). Resolves a Python 3\n"
+    "# BerkshireAgent lark-cli broker launcher (Pattern B). Resolves a Python 3\n"
     "# interpreter and execs the forwarding shim. Fails loudly (not with an opaque\n"
     "# ENOEXEC) when the sandbox image ships no python3. Uses only shell built-ins\n"
     "# so it still works when PATH is empty and DEERFLOW_LARK_BROKER_PYTHON pins\n"
@@ -121,7 +121,7 @@ def render_launcher_script(shim_path: str) -> str:
 # ``<python> lark-cli-shim.py <args...>`` by the launcher above (so it does not
 # rely on its own shebang being resolvable), and stdin/argv pass straight through.
 LARK_CLI_BROKER_SHIM_SCRIPT = r'''#!/usr/bin/env python3
-"""DeerFlow lark-cli broker shim (Pattern B). Forwards argv/stdin to the broker.
+"""BerkshireAgent lark-cli broker shim (Pattern B). Forwards argv/stdin to the broker.
 
 Note: the broker runs lark-cli in the *sidecar's* working directory and cannot
 see the sandbox filesystem, so cwd is intentionally not forwarded. Subcommands

@@ -1,13 +1,13 @@
 """Request trace context helpers.
 
-The value stored here is DeerFlow's request-level correlation id. It is
-separate from Langfuse's own trace id and from DeerFlow run ids.
+The value stored here is BerkshireAgent's request-level correlation id. It is
+separate from Langfuse's own trace id and from BerkshireAgent run ids.
 
 **This ContextVar is the only source of a trace id.** Every path that reaches a
 run binds one first: the Gateway ``TraceMiddleware`` for HTTP, and
 :func:`ensure_trace_context` for the entry points that never touch ASGI --
 scheduled occurrences, MCP task notification runs, IM channel messages, and the
-embedded :class:`~deerflow.client.DeerFlowClient`. Downstream code can therefore
+embedded :class:`~deerflow.client.BerkshireAgentClient`. Downstream code can therefore
 treat the trace id as a plain ``str`` and use :func:`ensure_trace_id` or
 :func:`resolve_trace_id` instead of the ``if trace_id:`` guards a nullable id
 used to require.
@@ -122,7 +122,7 @@ def bind_trace_id(trace_id: str | None) -> Token[str | None]:
     """Bind *trace_id* in the current context; ``None`` clears the binding.
 
     The low-level pair for callers that cannot use the context managers: a
-    sync generator that must bind per step (``DeerFlowClient.stream``), and
+    sync generator that must bind per step (``BerkshireAgentClient.stream``), and
     test harnesses restoring an unbound baseline. Values are normalized, and
     an unusable one clears rather than fabricating an id -- every caller here
     has already resolved the value it means to bind.

@@ -1,4 +1,4 @@
-"""Minimal asynchronous client for the RAGFlow APIs DeerFlow consumes."""
+"""Minimal asynchronous client for the RAGFlow APIs BerkshireAgent consumes."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ class RAGFlowProtocolError(RAGFlowError):
 
 
 class RAGFlowClient:
-    """Direct HTTP client for DeerFlow's read-only retrieval tools.
+    """Direct HTTP client for BerkshireAgent's read-only retrieval tools.
 
     The client deliberately owns no cache or persistent state. A fresh HTTP
     session is opened for each method call so callers do not need to manage a

@@ -26,7 +26,7 @@ The backend runs a LangGraph-based super agent with sandbox execution, persisten
 
 **Project Structure**:
 ```
-deer-flow/
+berkshire-agent/
 ├── Makefile                    # Root commands (check, install, dev, stop)
 ├── config.yaml                 # Main application configuration
 ├── extensions_config.json      # MCP servers and skills configuration
@@ -62,7 +62,7 @@ deer-flow/
 │   │           ├── community/         # Community tools (search/fetch/scrape, image search, AIO sandbox)
 │   │           ├── reflection/        # Dynamic module loading (resolve_variable, resolve_class)
 │   │           ├── utils/             # Utilities (network, readability)
-│   │           └── client.py          # Embedded Python client (DeerFlowClient)
+│   │           └── client.py          # Embedded Python client (BerkshireAgentClient)
 │   ├── app/                   # Application layer (import: app.*)
 │   │   ├── gateway/           # FastAPI Gateway API
 │   │   │   ├── app.py         # FastAPI application
@@ -180,7 +180,7 @@ make migrate-rev MSG="..."  # Autogenerate a new alembic revision (see Schema Mi
 ```
 
 The backend `make dev` target pre-creates and excludes `DEER_FLOW_HOME`
-(default: `backend/.deer-flow`) and `backend/sandbox` from Uvicorn's reload
+(default: `backend/.berkshire-agent`) and `backend/sandbox` from Uvicorn's reload
 watcher. Do not replace it with a bare `uvicorn --reload`: agent tasks write
 Python and other runtime files below `DEER_FLOW_HOME`, which would otherwise
 restart the Gateway during an active run.
@@ -362,7 +362,7 @@ Automatic conversation summarization when approaching token limits:
 - Trigger types: tokens, messages, or fraction of max input
 - Keeps recent messages while summarizing older ones
 - Manual compaction uses `POST /api/threads/{id}/compact`, reuses the same
-  `DeerFlowSummarizationMiddleware`, writes a new checkpoint with updated
+  `BerkshireAgentSummarizationMiddleware`, writes a new checkpoint with updated
   `messages` and `summary_text`, and bumps only those channel versions.
   The route uses the shared `reserve_checkpoint_write()` boundary (also used by
   manual state updates). Its short-lived `checkpoint_write` thread operation

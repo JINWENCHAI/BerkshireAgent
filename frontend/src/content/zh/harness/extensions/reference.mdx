@@ -13,7 +13,7 @@ import { Callout } from "nextra/components";
 from deerflow_extension_api import ExtensionRegistry, MiddlewarePlacement, Placement
 ```
 
-这个包没有任何依赖，也从不导入 DeerFlow。下文写成 `Any` 的类型（例如中间件或路由器）由宿主在运行时校验，而不是由契约校验。
+这个包没有任何依赖，也从不导入 BerkshireAgent。下文写成 `Any` 的类型（例如中间件或路由器）由宿主在运行时校验，而不是由契约校验。
 
 ## 入口点与注册表
 
@@ -42,7 +42,7 @@ def install(registry: ExtensionRegistry, config: Mapping[str, Any]) -> None: ...
 | ---------------------------------------------------------- | ------- | ---------------------------------------------------------------------------- |
 | `middlewares(contributor: MiddlewareContributor)`          | `None`  | 一个中间件贡献者                                                             |
 | `task_lifecycle(contributor: TaskLifecycleContributor)`    | `None`  | Lead 运行和子 Agent 的开始、结束钩子                                         |
-| `system_model_observer(observer: SystemModelCallObserver)` | `None`  | DeerFlow 自有模型调用的观察者                                                |
+| `system_model_observer(observer: SystemModelCallObserver)` | `None`  | BerkshireAgent 自有模型调用的观察者                                                |
 | `agent_assembly_observer(observer: AgentAssemblyObserver)` | `None`  | 已组装 Agent 的观察者                                                        |
 | `context_compaction_observer(observer: ContextCompactionObserver)` | `None` | 摘要压缩的观察者                                                     |
 | `service(service: ExtensionService)`                       | `None`  | 与 Gateway 同寿的服务                                                        |
@@ -94,7 +94,7 @@ class MiddlewareContributor(Protocol):
 
 ### `HostPolicySnapshot`
 
-冻结的 dataclass：宿主实际执行的限制，以投影的形式提供，使扩展不依赖 DeerFlow 的配置类型。每个字段都有默认值。
+冻结的 dataclass：宿主实际执行的限制，以投影的形式提供，使扩展不依赖 BerkshireAgent 的配置类型。每个字段都有默认值。
 
 | 字段                    | 类型            | 默认值  |
 | ----------------------- | --------------- | ------- |
@@ -519,13 +519,13 @@ class ReleasePolicyProvider(Protocol):
 
 | 版本  | PR | 新增内容 |
 | ----- | -- | -------- |
-| 0.1.0 | [#4636](https://github.com/bytedance/deer-flow/pull/4636) | 基础部分：`install()` 与 `@extension`、`ExtensionRegistry.middlewares`、`MiddlewareContributor`、`MiddlewarePlacement`、`Placement`、`AgentScope`、`AgentBuildContext`、`HostPolicySnapshot`、`ExtensionData`、`task_store_from_runtime`、`EXTENSION_TASK_STORE_KEY`、`API_VERSION` |
-| 0.1.1 | [#4684](https://github.com/bytedance/deer-flow/pull/4684) | `task_lifecycle` 和 `system_model_observer` 注册，以及 `TaskLifecycleContributor`、`TaskInfo`、`TaskOutcome`、`SystemModelCallObserver`、`SystemModelRequest`、`SystemModelResult`、`SystemOperationKind` |
-| 0.1.2 | [#4780](https://github.com/bytedance/deer-flow/pull/4780) | `service` 和 `routers` 注册，以及 `ExtensionService` 和 `ExtensionRuntimeDeps`；打包扩展管理器 |
-| 0.2.0 | [#4863](https://github.com/bytedance/deer-flow/pull/4863) | `agent_assembly_observer` 和 `context_compaction_observer`，以及 `AgentAssemblyDescriptor`、`ToolDescriptor`、`MiddlewareDescriptor`、`CompactionEvent`；消息来源标记；发布策略与规范哈希；`ExtensionPrincipal`、`resolve_principal`、`require_admin` |
-| 0.2.1 | [#5405](https://github.com/bytedance/deer-flow/pull/5405) | `ExtensionRuntimeDeps.run_evidence_reader`，以及 `RunEvidenceReader`、`RunPage`、`RunEventPage`、`RunStatusView`、`RunEventView`、`InvalidRunEvidenceCursor` |
-| 0.2.2 | [#5647](https://github.com/bytedance/deer-flow/pull/5647) | 实验性的 `registry.plugin()`，以及 `PluginContribution`、`BrowserModule`、`BackendAction`、`ModelTool`、`ActionContext`、`ToolContext`、`SettingsField` |
-| 0.2.3 | [#5727](https://github.com/bytedance/deer-flow/pull/5727)、[#5685](https://github.com/bytedance/deer-flow/pull/5685) | 请求级运行证据：`resolve_run_evidence_reader`、`require_run_evidence_reader`、`RUN_EVIDENCE_READER_RESOLVER_KEY`（#5727）。打包的浏览器资源：`BrowserAssets`，`PluginContribution.frontend` 也接受它（#5685） |
-| 0.2.4 | [#5842](https://github.com/bytedance/deer-flow/pull/5842) | 插件资源授权：`require_plugin_management`、`arequire_plugin_management`、`EXTENSION_PLUGIN_AUTHZ_RESOLVER_KEY`、`EXTENSION_PLUGIN_AUTHZ_RESOLVER_ASYNC_KEY` |
+| 0.1.0 | [#4636](https://github.com/bytedance/berkshire-agent/pull/4636) | 基础部分：`install()` 与 `@extension`、`ExtensionRegistry.middlewares`、`MiddlewareContributor`、`MiddlewarePlacement`、`Placement`、`AgentScope`、`AgentBuildContext`、`HostPolicySnapshot`、`ExtensionData`、`task_store_from_runtime`、`EXTENSION_TASK_STORE_KEY`、`API_VERSION` |
+| 0.1.1 | [#4684](https://github.com/bytedance/berkshire-agent/pull/4684) | `task_lifecycle` 和 `system_model_observer` 注册，以及 `TaskLifecycleContributor`、`TaskInfo`、`TaskOutcome`、`SystemModelCallObserver`、`SystemModelRequest`、`SystemModelResult`、`SystemOperationKind` |
+| 0.1.2 | [#4780](https://github.com/bytedance/berkshire-agent/pull/4780) | `service` 和 `routers` 注册，以及 `ExtensionService` 和 `ExtensionRuntimeDeps`；打包扩展管理器 |
+| 0.2.0 | [#4863](https://github.com/bytedance/berkshire-agent/pull/4863) | `agent_assembly_observer` 和 `context_compaction_observer`，以及 `AgentAssemblyDescriptor`、`ToolDescriptor`、`MiddlewareDescriptor`、`CompactionEvent`；消息来源标记；发布策略与规范哈希；`ExtensionPrincipal`、`resolve_principal`、`require_admin` |
+| 0.2.1 | [#5405](https://github.com/bytedance/berkshire-agent/pull/5405) | `ExtensionRuntimeDeps.run_evidence_reader`，以及 `RunEvidenceReader`、`RunPage`、`RunEventPage`、`RunStatusView`、`RunEventView`、`InvalidRunEvidenceCursor` |
+| 0.2.2 | [#5647](https://github.com/bytedance/berkshire-agent/pull/5647) | 实验性的 `registry.plugin()`，以及 `PluginContribution`、`BrowserModule`、`BackendAction`、`ModelTool`、`ActionContext`、`ToolContext`、`SettingsField` |
+| 0.2.3 | [#5727](https://github.com/bytedance/berkshire-agent/pull/5727)、[#5685](https://github.com/bytedance/berkshire-agent/pull/5685) | 请求级运行证据：`resolve_run_evidence_reader`、`require_run_evidence_reader`、`RUN_EVIDENCE_READER_RESOLVER_KEY`（#5727）。打包的浏览器资源：`BrowserAssets`，`PluginContribution.frontend` 也接受它（#5685） |
+| 0.2.4 | [#5842](https://github.com/bytedance/berkshire-agent/pull/5842) | 插件资源授权：`require_plugin_management`、`arequire_plugin_management`、`EXTENSION_PLUGIN_AUTHZ_RESOLVER_KEY`、`EXTENSION_PLUGIN_AUTHZ_RESOLVER_ASYNC_KEY` |
 
 至今没有任何版本移除过公开名称。

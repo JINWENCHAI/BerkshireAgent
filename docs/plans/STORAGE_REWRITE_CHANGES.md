@@ -198,7 +198,7 @@ PYTHONPATH=. python scripts/migrate_memory_markdown.py --all-users
 
 The command is idempotent, accepts repeated `--user-id`, supports `--storage-path`, continues reporting after one user fails, and exits non-zero if any user failed. It is not required for startup.
 
-This is a one-way application migration: pre-PR code cannot read Markdown facts. Before upgrading a persistent deployment, stop DeerFlow and take a filesystem snapshot or full backup of the configured storage root. Storage also retains each destructive v1 JSON source beside its original path as `{source_filename}.v1.bak` before committing v2 data. Existing backups are immutable; a mismatch or backup-write failure aborts before changing the source. The local backup contains pre-migration data only and does not replace the full snapshot requirement.
+This is a one-way application migration: pre-PR code cannot read Markdown facts. Before upgrading a persistent deployment, stop BerkshireAgent and take a filesystem snapshot or full backup of the configured storage root. Storage also retains each destructive v1 JSON source beside its original path as `{source_filename}.v1.bak` before committing v2 data. Existing backups are immutable; a mismatch or backup-write failure aborts before changing the source. The local backup contains pre-migration data only and does not replace the full snapshot requirement.
 
 ## 11. Configuration changes
 

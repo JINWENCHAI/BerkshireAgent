@@ -1,6 +1,6 @@
 """Classify a list of texts with Jev or an OpenAI-compatible chat endpoint.
 
-Standalone package: no imports from DeerFlow host internals. Each tool call
+Standalone package: no imports from BerkshireAgent host internals. Each tool call
 owns one HTTP client and closes it. Credentials come only from deployment-named
 environment variables. Item text is classifier input: it never enters
 instructions, question keys, results, error messages or logs.

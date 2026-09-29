@@ -838,7 +838,7 @@ class SubagentExecutor:
             oauth_id: Subject id at the external identity provider.
             run_id: Parent run id, so delegated guardrail decisions attribute to
                 the same run as the lead agent.
-            deerflow_trace_id: DeerFlow request-level correlation id propagated
+            deerflow_trace_id: BerkshireAgent request-level correlation id propagated
                 from the parent run for Langfuse metadata correlation. Falls
                 back to the ambient trace so the attribute is always a real
                 id, never ``None``.

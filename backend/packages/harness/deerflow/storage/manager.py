@@ -127,7 +127,7 @@ def _scan_backends() -> dict[str, type[BlobStore]]:
 
 
 def _default_backend_config() -> dict[str, Any]:
-    """Zero-config UX: default the backend root to deer-flow's state dir.
+    """Zero-config UX: default the backend root to berkshire-agent's state dir.
 
     Absolute and CWD-independent, so every gateway instance in a deployment
     that has not configured a shared root still lands in the same logical

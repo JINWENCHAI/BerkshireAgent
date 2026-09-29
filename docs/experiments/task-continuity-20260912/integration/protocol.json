@@ -3,7 +3,7 @@
   "script": "backend/scripts/manual_task_continuity_check.py",
   "script_sha256": "763fdccdffd3bd9c2566638b5f199bb806a01951c48014ea9c63031b7765f548",
   "model": "qwen3.8-flash-next",
-  "scope": "Synthetic controlled integration using the production compaction middleware, checkpoint state and tools; not a full DeerFlow Gateway or deployment benchmark.",
+  "scope": "Synthetic controlled integration using the production compaction middleware, checkpoint state and tools; not a full BerkshireAgent Gateway or deployment benchmark.",
   "summary_condition": "The live summary is explicitly instructed to omit exact batch codes.",
   "acceptance": [
     "source captured after compaction",

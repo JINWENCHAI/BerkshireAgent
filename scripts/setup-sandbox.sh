@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-pull sandbox container image for DeerFlow
+# Pre-pull sandbox container image for BerkshireAgent
 
 set -uo pipefail
 

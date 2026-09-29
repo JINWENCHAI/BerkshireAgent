@@ -1,1 +1,1 @@
-"""Textual widgets for the DeerFlow TUI."""
+"""Textual widgets for the BerkshireAgent TUI."""

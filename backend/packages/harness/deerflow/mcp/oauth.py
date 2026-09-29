@@ -31,7 +31,7 @@ class OAuthTokenManager:
         self._oauth_by_server = oauth_by_server
         self._tokens: dict[str, _OAuthToken] = {}
         # A plain threading.Lock, not asyncio.Lock: the embedded/TUI sync tool-call
-        # path (DeerFlowClient.stream() -> LangGraph ToolNode._func -> a
+        # path (BerkshireAgentClient.stream() -> LangGraph ToolNode._func -> a
         # ThreadPoolExecutor -> deerflow.tools.sync.make_sync_tool_wrapper's
         # per-call asyncio.run()) invokes get_authorization_header from a fresh
         # event loop on a fresh OS thread for every concurrent tool call. An

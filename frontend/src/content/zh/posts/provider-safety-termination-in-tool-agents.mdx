@@ -1,6 +1,6 @@
 ---
 title: 工具型 Agent 需要正确处理模型提供商的安全中止信号
-description: 当模型输出因安全策略被中止时，为什么不能继续执行残留的工具调用，以及如何在 DeerFlow 中配置 provider detector。
+description: 当模型输出因安全策略被中止时，为什么不能继续执行残留的工具调用，以及如何在 BerkshireAgent 中配置 provider detector。
 date: 2026-05-22
 tags:
   - Safety
@@ -14,7 +14,7 @@ tags:
 
 这类半截工具调用不应被当成正常意图执行。一个被截断的 `write_file` 可能写出不完整的报告；一个被截断的 `bash` 调用可能带着残缺参数进入沙箱；Agent 看到失败结果后还可能继续重试，反复触发同一条安全规则。
 
-[对应的实现提交](https://github.com/bytedance/deer-flow/commit/be0eae9825619b63ca0c67b253d40b5eee76a2d6) 处理的就是这个边界：当 provider 用安全信号中止生成，同时响应仍带有工具调用时，DeerFlow 应先压制这些工具调用，再把这一轮作为安全中止事件记录下来。
+[对应的实现提交](https://github.com/bytedance/berkshire-agent/commit/be0eae9825619b63ca0c67b253d40b5eee76a2d6) 处理的就是这个边界：当 provider 用安全信号中止生成，同时响应仍带有工具调用时，BerkshireAgent 应先压制这些工具调用，再把这一轮作为安全中止事件记录下来。
 
 ## 为什么需要单独处理安全中止
 
@@ -58,7 +58,7 @@ DeepSeek 的 API 文档把 `content_filter` 列为 chat completion finish reason
 
 还有一些 provider 会在更早或更外层的位置拦截请求。例如 Azure OpenAI 提醒应用检查 `finish_reason`，因为 `content_filter` 可能让 completion 不完整；Amazon Bedrock Guardrails 可在响应中返回 `stopReason="guardrail_intervened"`；阿里云百炼的安全护栏示例里，输出侧拦截也可能直接表现为 `DataInspectionFailed` 错误。它们共同说明了一点：安全拦截既可能是模型消息里的停止信号，也可能是 API 层错误，应用不能只准备一种处理路径。[Azure OpenAI content filtering](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/content-filter) [Amazon Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-use-converse-api.html)
 
-## DeerFlow 在这条边界上做什么
+## BerkshireAgent 在这条边界上做什么
 
 `SafetyFinishReasonMiddleware` 的职责很窄：它不替代 provider 的内容审核，也不把所有拒答都改写成同一种错误。它只在下面两个条件同时成立时介入：
 
@@ -84,7 +84,7 @@ safety_finish_reason:
   enabled: true
 ```
 
-不显式配置 `detectors` 时，DeerFlow 使用内置 detector 集合：
+不显式配置 `detectors` 时，BerkshireAgent 使用内置 detector 集合：
 
 | Detector | 默认匹配 |
 | --- | --- |
@@ -92,7 +92,7 @@ safety_finish_reason:
 | `AnthropicRefusalDetector` | `stop_reason="refusal"` |
 | `GeminiSafetyDetector` | Gemini 安全相关 `finish_reason`，例如 `SAFETY`、`BLOCKLIST`、`PROHIBITED_CONTENT`、`SPII`、`RECITATION` |
 
-这个默认集合覆盖了 DeerFlow 常见的 OpenAI-compatible provider、Anthropic 和 Gemini 路径。它不会把普通 `finish_reason="tool_calls"` 当成安全中止，也不会把 `length`、`max_tokens` 之类的长度截断混入安全分类。
+这个默认集合覆盖了 BerkshireAgent 常见的 OpenAI-compatible provider、Anthropic 和 Gemini 路径。它不会把普通 `finish_reason="tool_calls"` 当成安全中止，也不会把 `length`、`max_tokens` 之类的长度截断混入安全分类。
 
 ## 例子：为 GLM 扩展流式安全结束信号
 

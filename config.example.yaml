@@ -1,11 +1,11 @@
-# Configuration for the DeerFlow application
+# Configuration for the BerkshireAgent application
 #
 # Guidelines:
 # - Copy this file to `config.yaml` and customize it for your environment
 # - The default path of this configuration file is `config.yaml` in the project root.
 #   You can set `DEER_FLOW_PROJECT_ROOT` to define that root explicitly, or use
 #   `DEER_FLOW_CONFIG_PATH` to point at a specific config file.
-# - Runtime state defaults to `.deer-flow` under the project root. Override it
+# - Runtime state defaults to `.berkshire-agent` under the project root. Override it
 #   with `DEER_FLOW_HOME` when you need a different writable data directory.
 # - Set `DEER_FLOW_DATE_TIMEZONE` to an IANA timezone name (e.g. `Asia/Shanghai`)
 #   when the conversation date injected into agents should follow a zone other
@@ -76,7 +76,7 @@ logging:
 #     - my_company.deerflow_middlewares:DomainGuardMiddleware
 #     - class: my_company.deerflow_middlewares:LatencyStampingMiddleware
 #       kwargs:
-#         header: X-DeerFlow-Latency
+#         header: X-BerkshireAgent-Latency
 
 # ============================================================================
 # Tracing / Observability (Monocle)
@@ -90,7 +90,7 @@ logging:
 # Token Usage
 # ============================================================================
 # Enable token usage collection and display.
-# When enabled, DeerFlow records input/output/total tokens per model call
+# When enabled, BerkshireAgent records input/output/total tokens per model call
 # and shows usage metadata in the workspace UI when providers return it.
 token_usage:
   enabled: true
@@ -229,7 +229,7 @@ models:
   # are still forwarded to ChatOllama.
   #
   # `supports_thinking` / `supports_reasoning_effort` only say whether a knob
-  # exists. Models whose provider contract differs from DeerFlow's generic
+  # exists. Models whose provider contract differs from BerkshireAgent's generic
   # assumptions can declare a `reasoning:` block instead; the two booleans are
   # then derived from it and every model-creation path (chat, summarization,
   # title generation, subagents) enforces the same normalized policy:
@@ -243,7 +243,7 @@ models:
   #     effort:
   #       values: [low, medium, high]  # provider vocabulary, in display order
   #       default: medium              # applied when the caller does not choose
-  #       aliases: {minimal: low}      # DeerFlow generic value -> provider value
+  #       aliases: {minimal: low}      # BerkshireAgent generic value -> provider value
   #       path: reasoning_effort       # dotted identifier path (default)
   #
   # `required` thinking never receives a disable payload, unknown effort values
@@ -264,7 +264,7 @@ models:
   #
   # GLM-5.3-Flash cannot disable thinking and only accepts low/high/max effort.
   # The contract keeps thinking on for every foreground and background call,
-  # maps DeerFlow's generic minimal/medium presets onto low/high, and
+  # maps BerkshireAgent's generic minimal/medium presets onto low/high, and
   # serializes clear_thinking=true so the model does not require exact
   # reasoning replay after summarization. `default: high` keeps background
   # calls off the provider's deepest budget; `max` stays selectable in the UI.
@@ -390,12 +390,12 @@ models:
   #
   # If llama-server was started with --api-key, replace the placeholder with
   # that key (prefer an environment variable). In Docker, localhost is the
-  # DeerFlow container itself; use an address reachable from the container,
+  # BerkshireAgent container itself; use an address reachable from the container,
   # for example on Docker Desktop:
   #   base_url: http://host.docker.internal:8080/v1
 
   # Example: Anthropic Claude model (with extended thinking)
-  # supports_thinking: true is required — without it, DeerFlow silently falls
+  # supports_thinking: true is required — without it, BerkshireAgent silently falls
   # back to non-thinking mode even when the UI thinking toggle is on.
   # budget_tokens is required by the Anthropic API when thinking.type=enabled
   # (no server default; min 1024; must be less than max_tokens).
@@ -596,8 +596,8 @@ models:
   #   supports_thinking: true
   #   # PatchedChatMiniMax is the MiniMax adapter: it enables reasoning_split and
   #   # maps MiniMax's structured reasoning into reasoning_content (the field
-  #   # DeerFlow understands), and it strips the per-message `name` field that
-  #   # DeerFlow middlewares attach — MiniMax rejects requests whose user-message
+  #   # BerkshireAgent understands), and it strips the per-message `name` field that
+  #   # BerkshireAgent middlewares attach — MiniMax rejects requests whose user-message
   #   # names differ with "user name must be consistent (2013)". Declare the
   #   # thinking toggle so non-thinking paths (flash mode, follow-up suggestions,
   #   # title/memory generation) truly disable reasoning instead of spending
@@ -615,7 +615,7 @@ models:
   # effect (per MiniMax docs), so the toggle above is omitted for M2.7. The
   # follow-up-suggestions endpoint strips inline <think> defensively regardless.
   # Still use the PatchedChatMiniMax adapter: it strips the per-message `name`
-  # field DeerFlow middlewares attach, which MiniMax otherwise rejects with
+  # field BerkshireAgent middlewares attach, which MiniMax otherwise rejects with
   # "user name must be consistent (2013)".
   # - name: minimax-m2.7
   #   display_name: MiniMax M2.7
@@ -660,8 +660,8 @@ models:
   #   supports_thinking: true
   #   # PatchedChatMiniMax is the MiniMax adapter: it enables reasoning_split and
   #   # maps MiniMax's structured reasoning into reasoning_content (the field
-  #   # DeerFlow understands), and it strips the per-message `name` field that
-  #   # DeerFlow middlewares attach — MiniMax rejects requests whose user-message
+  #   # BerkshireAgent understands), and it strips the per-message `name` field that
+  #   # BerkshireAgent middlewares attach — MiniMax rejects requests whose user-message
   #   # names differ with "user name must be consistent (2013)". Declare the
   #   # thinking toggle so non-thinking paths (flash mode, follow-up suggestions,
   #   # title/memory generation) truly disable reasoning instead of spending
@@ -679,7 +679,7 @@ models:
   # effect (per MiniMax docs), so the toggle above is omitted for M2.7. The
   # follow-up-suggestions endpoint strips inline <think> defensively regardless.
   # Still use the PatchedChatMiniMax adapter: it strips the per-message `name`
-  # field DeerFlow middlewares attach, which MiniMax otherwise rejects with
+  # field BerkshireAgent middlewares attach, which MiniMax otherwise rejects with
   # "user name must be consistent (2013)".
   # - name: minimax-m2.7
   #   display_name: MiniMax M2.7
@@ -761,7 +761,7 @@ models:
   #         type: disabled
 
   # Example: vLLM 0.19.0 (OpenAI-compatible, with reasoning toggle)
-  # DeerFlow's vLLM provider preserves vLLM reasoning across tool-call turns and
+  # BerkshireAgent's vLLM provider preserves vLLM reasoning across tool-call turns and
   # toggles Qwen-style reasoning by writing
   # extra_body.chat_template_kwargs.enable_thinking=true/false.
   # Some reasoning models also require the server to be started with
@@ -1054,7 +1054,7 @@ tools:
   #     -e CRAWL4AI_API_TOKEN=$CRAWL4AI_TOKEN unclecode/crawl4ai:0.9.2
   # Crawl4AI >= 0.9 is secure-by-default: a bearer token is REQUIRED on every request
   # except GET /health, and a server started without CRAWL4AI_API_TOKEN binds 127.0.0.1
-  # only (so a container/remote DeerFlow cannot reach it at all). Set the same value in
+  # only (so a container/remote BerkshireAgent cannot reach it at all). Set the same value in
   # the server env and in `token:` below, or requests fail with HTTP 401.
   # Use >= 0.8.7: earlier images, including 0.8.6, carry known pre-auth RCEs.
   # For Docker deployments, use the Docker service name instead of localhost.
@@ -1115,7 +1115,7 @@ tools:
   #   # allow_private_addresses: false # SSRF guard: keep false in production
   #   # cdp_url: http://127.0.0.1:9222 # Attach to YOUR running Chrome (Codex-style)
   #   # allow_unguarded_cdp: false      # REQUIRED true with cdp_url: attaching to an
-  #   #                                # existing Chrome prevents DeerFlow from
+  #   #                                # existing Chrome prevents BerkshireAgent from
   #   #                                # enforcing its subresource/redirect SSRF guard.
   #   #                                # instead of launching a private headless one.
   #   #                                # Start Chrome with --remote-debugging-port=9222
@@ -1612,7 +1612,7 @@ sandbox:
   # Optional: Mount additional host directories into the sandbox.
   # Each mount maps a host path to a virtual container path accessible by the agent.
   # Note: with LocalSandboxProvider under `make up` (docker-compose), host_path is
-  # checked from inside the deer-flow-gateway container — you must also bind-mount
+  # checked from inside the berkshire-agent-gateway container — you must also bind-mount
   # the same directory into services.gateway.volumes in docker/docker-compose.yaml
   # for this mount to take effect (see issue #3244).
   # mounts:
@@ -1670,8 +1670,8 @@ sandbox:
 #   # make room for new ones. Use a positive integer here; omit this field to use the default.
 #   # replicas: 3
 #
-#   # Optional: Prefix for container names (default: deer-flow-sandbox)
-#   # container_prefix: deer-flow-sandbox
+#   # Optional: Prefix for container names (default: berkshire-agent-sandbox)
+#   # container_prefix: berkshire-agent-sandbox
 #
 #   # Optional: outbound network policy for locally managed Docker sandboxes.
 #   # open keeps the current behavior. isolated denies all outbound traffic.
@@ -1688,7 +1688,7 @@ sandbox:
 #       - github.com
 #     approval: prompt                  # deny | prompt
 #     temporary_grant_ttl: 300          # 30-3600 seconds
-#     proxy_image: ghcr.io/bytedance/deer-flow-sandbox-network-proxy:latest
+#     proxy_image: ghcr.io/bytedance/berkshire-agent-sandbox-network-proxy:latest
 #
 #   # Optional: Override whether the sandbox already sees the gateway's
 #   # thread workspace/uploads/outputs through shared mounts.
@@ -1707,12 +1707,12 @@ sandbox:
 #   #     container_path: /home/user/shared
 #   #     read_only: false
 #   #
-#   #   # DeerFlow will surface configured container_path values to the agent,
+#   #   # BerkshireAgent will surface configured container_path values to the agent,
 #   #   # so it can directly read/write mounted directories such as /home/user/shared
 #
 #   # Optional: Environment variables to inject into the sandbox container
 #   # Values starting with $ will be resolved from host environment variables
-#   # AIO semver images default MAX_SHELL_SESSIONS to 10. DeerFlow leaves that
+#   # AIO semver images default MAX_SHELL_SESSIONS to 10. BerkshireAgent leaves that
 #   # image default unchanged while subagent_runtime.max_running + 1 fits, and
 #   # otherwise injects the required value for local and provisioner sandboxes.
 #   # An explicit value is allowed but must be at least max_running + 1.
@@ -2001,7 +2001,7 @@ verification:
 #     # timeout_seconds: 1800            # Abort + kill the subprocess if it doesn't respond in time (default: 1800 = 30 min)
 #
 #   claude_code:
-#     # DeerFlow expects an ACP adapter here. The standard `claude` CLI does not
+#     # BerkshireAgent expects an ACP adapter here. The standard `claude` CLI does not
 #     # speak ACP directly. Install `claude-agent-acp` separately or use:
 #     command: npx
 #     args: ["-y", "@zed-industries/claude-agent-acp"]
@@ -2013,7 +2013,7 @@ verification:
 #     #   ANTHROPIC_API_KEY: $ANTHROPIC_API_KEY  # $VAR resolves from host environment
 #
 #   codex:
-#     # DeerFlow expects an ACP adapter here. The standard `codex` CLI does not
+#     # BerkshireAgent expects an ACP adapter here. The standard `codex` CLI does not
 #     # speak ACP directly. Install `codex-acp` separately or use:
 #     command: npx
 #     args: ["-y", "@zed-industries/codex-acp"]
@@ -2173,7 +2173,7 @@ summarization:
 #   backend_config      - Backend-private config dict (passthrough; each backend self-interprets)
 #
 # DeerMem-private fields live under ``backend_config`` (NOT at the memory: top level):
-#   storage_path        - Data root. Empty = deer-flow base_dir (factory injects absolute
+#   storage_path        - Data root. Empty = berkshire-agent base_dir (factory injects absolute
 #                         runtime_home). Absolute path = that root. Relative = CWD-relative.
 #   model               - LLM config for memory extraction: {provider, model, api_key, base_url,
 #                         temperature}. Omit all fields = no extraction (non-LLM ops still work).
@@ -2205,7 +2205,7 @@ memory:
   # shutdown. Each pending item does one LLM call, so large IM batches may need
   # more. Must fit inside the pod's K8s terminationGracePeriodSeconds (channel
   # stop + this drain + buffer) or K8s SIGKILLs the drain -- set that on the
-  # gateway Helm deployment (see deploy/helm/deer-flow). Default 30s.
+  # gateway Helm deployment (see deploy/helm/berkshire-agent). Default 30s.
   shutdown_flush_timeout_seconds: 30.0
   # Memory backend selector. Either a registered backend name (matching a
   # backends/<name>/ folder that exposes MANAGER_CLASS, e.g. deermem / mem0 / noop)
@@ -2282,8 +2282,8 @@ memory:
   #
   # OpenViking example (replace this DeerMem backend_config block when
   # manager_class is openviking). This first official-adapter integration uses
-  # one credential-bound OpenViking USER key for one DeerFlow user and supports
-  # middleware mode only. Use owner_user_id: default when DeerFlow auth is off.
+  # one credential-bound OpenViking USER key for one BerkshireAgent user and supports
+  # middleware mode only. Use owner_user_id: default when BerkshireAgent auth is off.
   #
   # backend_config:
   #   base_url: http://openviking:1933
@@ -2305,7 +2305,7 @@ memory:
   #       user profile preferences important entities events ongoing goals
   #       constraints and prior decisions
   #
-  # For a host-installed OpenViking used by Docker DeerFlow, set base_url to
+  # For a host-installed OpenViking used by Docker BerkshireAgent, set base_url to
   # http://host.docker.internal:1933 and allow_insecure_http: true. The bundled
   # optional Compose overlay uses the internal http://openviking:1933 address.
   #
@@ -2321,7 +2321,7 @@ memory:
   #   # user_peer_overrides: {}    # map specific user ids to custom peer names
   #   assistant_peer: deerflow
   backend_config:
-    storage_path: ""            # empty = deer-flow base_dir (factory injects absolute runtime_home); a non-empty path is the root DIRECTORY (per-user memory under {storage_path}/users/{uid}/memory.json)
+    storage_path: ""            # empty = berkshire-agent base_dir (factory injects absolute runtime_home); a non-empty path is the root DIRECTORY (per-user memory under {storage_path}/users/{uid}/memory.json)
     storage_class: file         # file (default) or a dotted MemoryStorage class path; invalid persistent backends fail fast
     strict_user_scope: false    # set true in authenticated deployments after all callers propagate user_id
     manifest_filename: memory.json # user-global JSON: version/revision/time + user/history only; no facts or fact index
@@ -2463,7 +2463,7 @@ skill_evolution:
 # ============================================================================
 # Legacy standalone checkpointer config. Kept for backward compatibility.
 # Prefer the unified `database` section below, which drives the LangGraph
-# checkpointer, LangGraph Store, and DeerFlow application data (runs,
+# checkpointer, LangGraph Store, and BerkshireAgent application data (runs,
 # feedback, events) from a single backend setting.
 #
 # If both `checkpointer` and `database` are present, `checkpointer`
@@ -2484,15 +2484,15 @@ skill_evolution:
 # Database
 # ============================================================================
 # Unified storage backend for the LangGraph checkpointer, LangGraph Store,
-# and DeerFlow application data (runs, threads metadata, feedback, etc.).
+# and BerkshireAgent application data (runs, threads metadata, feedback, etc.).
 #
 # backend: memory  -- No persistence, data lost on restart
 # backend: sqlite  -- Single-node deployment, files in sqlite_dir
 # backend: postgres -- Production multi-node deployment
 #
-# If this section is omitted or empty in config.yaml, DeerFlow uses:
+# If this section is omitted or empty in config.yaml, BerkshireAgent uses:
 #   backend: sqlite
-#   sqlite_dir: .deer-flow/data
+#   sqlite_dir: .berkshire-agent/data
 #
 # SQLite mode uses a single deerflow.db file with WAL journal mode
 # for the checkpointer, Store, and application data.
@@ -2521,29 +2521,29 @@ skill_evolution:
 #
 # NOTE: When both `checkpointer` and `database` are configured,
 # `checkpointer` takes precedence for the LangGraph checkpointer and Store;
-# `database` still controls DeerFlow application data.
+# `database` still controls BerkshireAgent application data.
 # If you use `database`, you can remove the `checkpointer` section.
 # database:
 #   backend: sqlite
-#   sqlite_dir: .deer-flow/data
+#   sqlite_dir: .berkshire-agent/data
 #
 # database:
 #   backend: postgres
 #   postgres_url: $DATABASE_URL
-#   # Optional: place DeerFlow ORM tables and LangGraph checkpointer/store
+#   # Optional: place BerkshireAgent ORM tables and LangGraph checkpointer/store
 #   # tables in this schema. Leave empty to use the server default
 #   # search_path, usually public.
 #   postgres_schema: deerflow
 #
-# postgres_schema only takes effect for new tables. On startup DeerFlow runs
+# postgres_schema only takes effect for new tables. On startup BerkshireAgent runs
 # CREATE SCHEMA IF NOT EXISTS and pins the connection search_path; it never
 # moves existing tables, so third-party tables in `public` are left untouched.
 #
 # Migrating an EXISTING deployment from `public` to a dedicated schema:
-#   1. Stop the DeerFlow services.
-#   2. Move EVERY DeerFlow-owned table AND the Alembic state into the new schema
+#   1. Stop the BerkshireAgent services.
+#   2. Move EVERY BerkshireAgent-owned table AND the Alembic state into the new schema
 #      (run as the DB owner). Missing any table strands its rows: after restart
-#      DeerFlow recreates an empty counterpart in the target schema and the old
+#      BerkshireAgent recreates an empty counterpart in the target schema and the old
 #      rows stay invisible in `public`. Moving the ORM tables but leaving
 #      `alembic_version` behind is especially dangerous -- bootstrap then treats
 #      the target schema as unversioned, re-baselines it, and replays migrations.
@@ -2565,8 +2565,8 @@ skill_evolution:
 #        ALTER TABLE public.scheduled_task_runs   SET SCHEMA deerflow;
 #        -- Alembic migration state (REQUIRED -- see note above):
 #        ALTER TABLE public.alembic_version       SET SCHEMA deerflow;
-#      The DeerFlow-owned set grows over time; discover any tables the list
-#      above misses (as the DeerFlow DB owner/role) with:
+#      The BerkshireAgent-owned set grows over time; discover any tables the list
+#      above misses (as the BerkshireAgent DB owner/role) with:
 #        SELECT table_name FROM information_schema.tables WHERE table_schema='public';
 #      LangGraph checkpointer/store table names also vary by version -- list them
 #      the same way, then ALTER ... SET SCHEMA deerflow for each (e.g. checkpoints,
@@ -2574,10 +2574,10 @@ skill_evolution:
 #      store_migrations).
 #   3. Set postgres_schema: deerflow here and restart.
 #   4. Verify with `SHOW search_path;` and a smoke test (create a run, read
-#      its history). The `public` schema should gain no new DeerFlow tables.
+#      its history). The `public` schema should gain no new BerkshireAgent tables.
 database:
   backend: sqlite
-  sqlite_dir: .deer-flow/data
+  sqlite_dir: .berkshire-agent/data
 
 # ============================================================================
 # Inbound webhook dedupe storage (cross-pod redelivery dedup — issue #4120)
@@ -2816,7 +2816,7 @@ run_ownership:
 # ============================================================================
 # User-Owned IM Channel Connections
 # ============================================================================
-# Lets logged-in users connect their own IM accounts from the DeerFlow frontend
+# Lets logged-in users connect their own IM accounts from the BerkshireAgent frontend
 # while reusing the existing `channels` runtime configuration below.
 #
 # Security notes:
@@ -2830,7 +2830,7 @@ run_ownership:
 # channel_connections:
 #   enabled: false
 #   # Security: keep this enabled unless you intentionally want legacy open-bot behavior.
-#   # Disabling it lets unbound external IM users create DeerFlow threads/runs.
+#   # Disabling it lets unbound external IM users create BerkshireAgent threads/runs.
 #   require_bound_identity: true
 #
 #   telegram:
@@ -2861,7 +2861,7 @@ run_ownership:
 # ============================================================================
 # IM Channels Configuration
 # ============================================================================
-# Connect DeerFlow to external messaging platforms.
+# Connect BerkshireAgent to external messaging platforms.
 # All channels use outbound connections (WebSocket or polling) — no public IP required.
 
 # channels:
@@ -2940,7 +2940,7 @@ run_ownership:
 #     # QR bootstrap timeout
 #     qrcode_poll_timeout: 180
 #     # Optional: persist getupdates cursor under the gateway container volume
-#     state_dir: ./.deer-flow/wechat/state
+#     state_dir: ./.berkshire-agent/wechat/state
 #     # Optional: max inbound image size in bytes before skipping download
 #     max_inbound_image_bytes: 20971520
 #     # Optional: max outbound image size in bytes before skipping upload
@@ -2993,8 +2993,8 @@ run_ownership:
 #     thread_mode: false               # If true, group a channel conversation into a thread
 #
 #   # Buzz (https://github.com/block/buzz) — Nostr-relay team workspace.
-#   # DeerFlow joins as a member identity; generate a keypair and register it as
-#   # a relay member, then @mention or DM DeerFlow in Buzz. Requires the `buzz`
+#   # BerkshireAgent joins as a member identity; generate a keypair and register it as
+#   # a relay member, then @mention or DM BerkshireAgent in Buzz. Requires the `buzz`
 #   # dependency extra (uv sync --extra buzz).
 #   buzz:
 #     enabled: false
@@ -3002,7 +3002,7 @@ run_ownership:
 #     private_key: $BUZZ_PRIVATE_KEY        # hex or nsec1…
 #     allowed_users: []                     # pubkeys (hex or npub) allowed to trigger runs.
 #                                           # DENY-BY-DEFAULT (unlike other channels): empty
-#                                           # means nobody, and DeerFlow logs a startup warning.
+#                                           # means nobody, and BerkshireAgent logs a startup warning.
 #     require_mention: true                 # @mention needed in channels
 #     mention_free_channels: []             # channel UUIDs that respond to every message
 
@@ -3115,7 +3115,7 @@ run_ownership:
 # ============================================================================
 # Fine-grained resource authorization (RBAC and beyond). Disabled by default;
 # every authenticated user has access to all resources.
-# See RFC: https://github.com/bytedance/deer-flow/issues/4063
+# See RFC: https://github.com/bytedance/berkshire-agent/issues/4063
 #
 # authorization:
 #   enabled: true
@@ -3302,7 +3302,7 @@ authorization:
 #         token_endpoint_auth_method: client_secret_post
 #
 #         # User provisioning settings (safe defaults shown below):
-#         auto_create_users: true          # Auto-create DeerFlow account on first SSO login
+#         auto_create_users: true          # Auto-create BerkshireAgent account on first SSO login
 #         require_verified_email: true     # Reject SSO logins without verified email
 #         # allowed_email_domains:          # Restrict to specific email domains
 #         #   - example.com

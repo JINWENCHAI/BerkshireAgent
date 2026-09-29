@@ -6,7 +6,7 @@ implements, plus a singleton :func:`get_memory_manager` factory that resolves
 the active backend from ``MemoryConfig.manager_class``.
 
 Swap backend = drop a ``backends/<name>/`` folder exposing ``MANAGER_CLASS``
-and set ``manager_class: <name>``. Nothing else in deer-flow changes.
+and set ``manager_class: <name>``. Nothing else in berkshire-agent changes.
 
 Scope note: this phase is *pluggable only*, not black-box. Agent-side
 conventions (``enabled`` gating at call sites, ``<memory>`` wrapping in
@@ -103,7 +103,7 @@ class MemoryCallbacks:
         """Post-LLM-call hook for host-owned observation. Default: no-op.
 
         This callback keeps the vendorable DeerMem backend independent from
-        DeerFlow's extension API. It is invoked for both provider success and
+        BerkshireAgent's extension API. It is invoked for both provider success and
         failure, and backend callers isolate exceptions raised by an
         implementation.
         """
@@ -140,8 +140,8 @@ class MemoryManager(BaseModel):
     validation / serialization.
 
     Memories are bucketed per ``(agent_name, user_id)``; ``thread_id`` aligns
-    with the deer-flow conversation thread. The contract is deliberately
-    neutral so a third-party memory system can be adapted without deer-flow
+    with the berkshire-agent conversation thread. The contract is deliberately
+    neutral so a third-party memory system can be adapted without berkshire-agent
     code changes:
 
     - :meth:`get_context` returns plain injection text; the *format* is the
@@ -731,7 +731,7 @@ def backend_requires_passive_writes_in_tool_mode(manager_class: str) -> bool:
 #
 # These callables are the host's defaults for the slots a backend may consume
 # (tracing, hidden-message filtering, trace-context binding, a host default
-# LLM). The portable backend package never names a deer-flow concept; the host
+# LLM). The portable backend package never names a berkshire-agent concept; the host
 # supplies them HERE (host code outside ``backends/deermem/``). The factory
 # passes them to ``cls.from_config(..., **host_hooks)``; each backend's
 # ``from_config`` consumes the ones it needs (DeerMem does; noop ignores them).
@@ -836,7 +836,7 @@ class LangfuseMemoryCallbacks(MemoryCallbacks):
 
 
 def _host_default_should_keep_hidden_message(additional_kwargs: Any) -> bool:
-    """deer-flow default for DeerMem's ``should_keep_hidden_message`` slot.
+    """berkshire-agent default for DeerMem's ``should_keep_hidden_message`` slot.
 
     Keep a ``hide_from_ui`` message only when it carries a human-input
     clarification response, so the user's clarification is captured into
@@ -850,7 +850,7 @@ def _host_default_should_keep_hidden_message(additional_kwargs: Any) -> bool:
 
 
 def _host_default_llm() -> Any:
-    """deer-flow default for DeerMem's ``host_llm`` slot (zero-config extraction).
+    """berkshire-agent default for DeerMem's ``host_llm`` slot (zero-config extraction).
 
     Builds the host's default chat model (``create_chat_model(name=None)`` ->
     app default, ``attach_tracing=True`` so memory LLM calls surface in langfuse
@@ -869,7 +869,7 @@ def _host_default_llm() -> Any:
 
 
 def _host_default_extraction_callback(payload: Any) -> None:
-    """deer-flow default for DeerMem's ``extraction_callback`` slot.
+    """berkshire-agent default for DeerMem's ``extraction_callback`` slot.
 
     Logs post-extraction metrics (token usage, facts passing/rejected by the
     confidence filter, gate rejection rate) for ops observability, and flags a
@@ -1104,7 +1104,7 @@ def get_memory_manager() -> MemoryManager:
         _refresh_judge_for_reloaded_config(_memory_manager)
         return _memory_manager
 
-    # deer-flow is multi-threaded: memory injection runs via asyncio.to_thread,
+    # berkshire-agent is multi-threaded: memory injection runs via asyncio.to_thread,
     # the update queue fires on a Timer thread, and gateway/agent threads all
     # reach here. Double-checked locking ensures only one instance is built even
     # on first-call contention -- essential since backends now own stateful
@@ -1122,9 +1122,9 @@ def get_memory_manager() -> MemoryManager:
         manager_class = cfg.manager_class
         cls = _resolve_manager_class(manager_class)
         backend_config = dict(cfg.backend_config or {})
-        # Zero-config UX: default DeerMem storage to deer-flow's state dir
+        # Zero-config UX: default DeerMem storage to berkshire-agent's state dir
         # (absolute, CWD-independent) so memory lands at
-        # {runtime_home}/users/{user_id}/memory.json (deer-flow's base_dir,
+        # {runtime_home}/users/{user_id}/memory.json (berkshire-agent's base_dir,
         # same as pre-abstraction) unless the host explicitly sets storage_path.
         if not backend_config.get("storage_path"):
             from deerflow.config.runtime_paths import runtime_home

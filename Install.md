@@ -1,10 +1,10 @@
-# DeerFlow Install
+# BerkshireAgent Install
 
-This file is for coding agents. If the DeerFlow repository is not already cloned and open, clone `https://github.com/bytedance/deer-flow.git` first, then continue from the repository root.
+This file is for coding agents. If the BerkshireAgent repository is not already cloned and open, clone `https://github.com/bytedance/berkshire-agent.git` first, then continue from the repository root.
 
 ## Goal
 
-Bootstrap a DeerFlow local development workspace on the user's machine with the least risky path available.
+Bootstrap a BerkshireAgent local development workspace on the user's machine with the least risky path available.
 
 Default preference:
 
@@ -26,17 +26,17 @@ Do not assume API keys or model credentials exist. Set up everything that can be
 
 Consider the setup successful when all of the following are true:
 
-- The DeerFlow repository is cloned and the current working directory is the repo root.
+- The BerkshireAgent repository is cloned and the current working directory is the repo root.
 - `config.yaml` exists.
 - For Docker setup, `make docker-init` completed successfully and Docker prerequisites are prepared, but services are not assumed to be running yet.
 - For local setup, `make check` passed or reported no missing prerequisites, and `make install` completed successfully.
-- The user receives the exact next command to launch DeerFlow.
+- The user receives the exact next command to launch BerkshireAgent.
 - The user also receives any missing model configuration or referenced environment variable names from `config.yaml`, without inspecting secret-bearing files for actual values.
 
 ## Steps
 
-- If the current directory is not the DeerFlow repository root, clone `https://github.com/bytedance/deer-flow.git` if needed, then change into the repository root.
-- Confirm the current directory is the DeerFlow repository root by checking that `Makefile`, `backend/`, `frontend/`, and `config.example.yaml` exist.
+- If the current directory is not the BerkshireAgent repository root, clone `https://github.com/bytedance/berkshire-agent.git` if needed, then change into the repository root.
+- Confirm the current directory is the BerkshireAgent repository root by checking that `Makefile`, `backend/`, `frontend/`, and `config.example.yaml` exist.
 - Detect whether `config.yaml` already exists.
 - If `config.yaml` does not exist, run `make config`.
 - Detect whether Docker is available and the daemon is reachable with `docker info`.
@@ -80,7 +80,7 @@ Return a short status report with:
 2. Setup level reached: Docker prerequisites prepared or local dependencies installed
 3. Files created or detected: for example `config.yaml`
 4. Remaining user action: model config, env var values, auth files, or nothing
-5. Exact next command to start DeerFlow
+5. Exact next command to start BerkshireAgent
 
 ## EXECUTE NOW
 

@@ -465,7 +465,7 @@ test("keeps a pre-submit older-turn rescue above the submitted human", async () 
   act(() => {
     streamMockState.onUpdateEvent?.(
       {
-        "DeerFlowSummarizationMiddleware.before_model": {
+        "BerkshireAgentSummarizationMiddleware.before_model": {
           messages: [removeAll, hiddenSummary, recentHuman, recentAnswer],
         },
       },
@@ -582,7 +582,7 @@ test("keeps a transiently rescued current-turn step behind its submitted human",
   act(() => {
     streamMockState.onUpdateEvent?.(
       {
-        "DeerFlowSummarizationMiddleware.before_model": {
+        "BerkshireAgentSummarizationMiddleware.before_model": {
           messages: [removeAll, hiddenSummary, serverHuman, retainedStep],
         },
       },

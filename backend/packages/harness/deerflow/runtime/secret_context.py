@@ -139,7 +139,7 @@ def redact_secret_context_keys(context: Any) -> Any:
     """Return a shallow copy of ``context`` with secret-bearing keys removed.
 
     Defensive helper for any code path that serializes the run context into an
-    observable surface. DeerFlow's own trace-metadata builder never copies the
+    observable surface. BerkshireAgent's own trace-metadata builder never copies the
     context, so this is belt-and-suspenders for future call sites and custom
     tracer configurations.
     """

@@ -44,7 +44,7 @@ def isolated_paths(monkeypatch, tmp_path):
     """Redirect ``get_paths().base_dir`` to ``tmp_path`` and reset its singleton.
 
     Without this, per-thread directories would be created under the developer's
-    real ``.deer-flow/`` tree.
+    real ``.berkshire-agent/`` tree.
     """
     monkeypatch.setenv("DEER_FLOW_HOME", str(tmp_path))
     from deerflow.config import paths as paths_module

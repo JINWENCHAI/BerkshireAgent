@@ -11,7 +11,7 @@
         "path": "backend",
         "envManager": "ms-python.python:venv",
         "packageManager": "ms-python.python:pip",
-        "workspace": "deer-flow"
+        "workspace": "berkshire-agent"
       }
     ]
   },

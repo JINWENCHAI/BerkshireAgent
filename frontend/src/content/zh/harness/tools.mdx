@@ -8,13 +8,13 @@ import { Callout, Tabs } from "nextra/components";
 # 工具
 
 <Callout type="info" emoji="🔧">
-  工具是 Lead Agent 可以采取的行动。DeerFlow 提供内置工具、社区集成、MCP
+  工具是 Lead Agent 可以采取的行动。BerkshireAgent 提供内置工具、社区集成、MCP
   工具和技能工具——全部通过 <code>config.yaml</code> 控制。
 </Callout>
 
 Lead Agent 是一个工具调用 Agent。工具是它与世界交互的方式：搜索网络、读写文件、运行命令、委派任务以及向用户呈现输出。
 
-DeerFlow 将工具分为四类：
+BerkshireAgent 将工具分为四类：
 
 1. **内置工具** — 核心运行时能力，始终对 Agent 可用
 2. **社区工具** — 与外部搜索、抓取和图像服务的集成
@@ -287,7 +287,7 @@ tools:
     # allow_private_addresses: false # SSRF 防护；生产环境保持 false。仅在需要截取内网目标时设为 true。
 ```
 
-使用 Browserless `/screenshot` 渲染网页并截图，然后通过 DeerFlow 的 artifact
+使用 Browserless `/screenshot` 渲染网页并截图，然后通过 BerkshireAgent 的 artifact
 机制把图片呈现给用户。适合网页视觉证据、UI 检查，以及仅提取 Markdown 不够的
 JavaScript 页面。默认会拒绝解析到私网、回环或云元数据地址的 URL；仅在确实需要
 截取内网主机时才设置 `allow_private_addresses: true`。

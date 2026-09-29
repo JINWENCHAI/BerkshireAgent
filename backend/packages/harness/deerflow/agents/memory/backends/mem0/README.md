@@ -1,7 +1,7 @@
 # mem0 memory backend
 
 Uses mem0 (Platform hosted API, or any API-compatible self-hosted server) as
-DeerFlow's memory store. Fully stateless in-process: dedup, fact extraction,
+BerkshireAgent's memory store. Fully stateless in-process: dedup, fact extraction,
 and storage are server-side, so it is safe for multi-worker Gateway
 deployments.
 
@@ -36,7 +36,7 @@ network.
 
 ## Identity mapping
 
-| DeerFlow | mem0 |
+| BerkshireAgent | mem0 |
 |---|---|
 | `user_id` | `user_id` |
 | `agent_name` | `agent_id` |
@@ -63,7 +63,7 @@ network.
 ## Async execution and failure behavior
 
 The mem0 HTTP client is synchronous for compatibility with the
-`MemoryManager` contract. DeerFlow offloads it at every async boundary: the
+`MemoryManager` contract. BerkshireAgent offloads it at every async boundary: the
 async middleware uses the manager's `a*` methods, and Gateway memory routes run
 sync management calls in worker threads. A slow mem0 request therefore does
 not block unrelated ASGI handlers or SSE heartbeats.

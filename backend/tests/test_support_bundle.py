@@ -151,9 +151,9 @@ def test_redact_text_masks_env_assignments_and_bearer_tokens():
 def test_redact_text_masks_home_directory_paths():
     text = "\n".join(
         [
-            "/Users/alice/deer-flow/config.yaml",
-            "/home/bob/deer-flow/config.yaml",
-            r"C:\Users\carol\deer-flow\config.yaml",
+            "/Users/alice/berkshire-agent/config.yaml",
+            "/home/bob/berkshire-agent/config.yaml",
+            r"C:\Users\carol\berkshire-agent\config.yaml",
         ]
     )
 
@@ -162,9 +162,9 @@ def test_redact_text_masks_home_directory_paths():
     assert "alice" not in redacted
     assert "bob" not in redacted
     assert "carol" not in redacted
-    assert "/Users/<user>/deer-flow/config.yaml" in redacted
-    assert "/home/<user>/deer-flow/config.yaml" in redacted
-    assert r"C:\Users\<user>\deer-flow\config.yaml" in redacted
+    assert "/Users/<user>/berkshire-agent/config.yaml" in redacted
+    assert "/home/<user>/berkshire-agent/config.yaml" in redacted
+    assert r"C:\Users\<user>\berkshire-agent\config.yaml" in redacted
 
 
 def test_redact_data_masks_non_keyword_env_secrets_but_keeps_var_references():
@@ -268,14 +268,14 @@ def test_redact_data_does_not_over_redact_lookalike_non_secret_keys():
     guardrails "passport" path/ID are real, non-secret fields."""
     data = {
         "routing": {"mode": "prefer", "priority": 50, "keywords": ["database", "SQL", "table"]},
-        "guardrails": {"passport": "/etc/deer-flow/passport.json"},
+        "guardrails": {"passport": "/etc/berkshire-agent/passport.json"},
     }
 
     redacted = support_bundle.redact_data(data)
 
     assert redacted["routing"]["keywords"] == ["database", "SQL", "table"]
     assert redacted["routing"]["priority"] == 50
-    assert redacted["guardrails"]["passport"] == "/etc/deer-flow/passport.json"
+    assert redacted["guardrails"]["passport"] == "/etc/berkshire-agent/passport.json"
 
 
 def test_redact_data_masks_passphrase_and_passcode_without_over_redacting_passport():
@@ -295,7 +295,7 @@ def test_redact_data_masks_passphrase_and_passcode_without_over_redacting_passpo
                 "config": {
                     "passphrase": "hunter2-literal",
                     "passcode": "0000-literal",
-                    "passport": "/etc/deer-flow/passport.json",
+                    "passport": "/etc/berkshire-agent/passport.json",
                     "compass_bearing": 42,
                     "bypass_reason": "maintenance window",
                 }
@@ -308,7 +308,7 @@ def test_redact_data_masks_passphrase_and_passcode_without_over_redacting_passpo
 
     assert config["passphrase"] == "<redacted>"
     assert config["passcode"] == "<redacted>"
-    assert config["passport"] == "/etc/deer-flow/passport.json"
+    assert config["passport"] == "/etc/berkshire-agent/passport.json"
     assert config["compass_bearing"] == 42
     assert config["bypass_reason"] == "maintenance window"
 
@@ -524,7 +524,7 @@ def test_create_support_bundle_writes_ai_triage_entrypoints(tmp_path, monkeypatc
             "returncode": 1,
             "stdout": "\n".join(
                 [
-                    "DeerFlow Health Check",
+                    "BerkshireAgent Health Check",
                     "  ✗ Node.js  (v20.19.5)",
                     "      → Node.js 22+ required. Install from https://nodejs.org/",
                     "  ✗ config.yaml found",
@@ -594,8 +594,8 @@ def test_create_support_bundle_writes_ai_triage_entrypoints(tmp_path, monkeypatc
     assert "### Expected behavior" in issue_draft
     assert "### Steps to reproduce" in issue_draft
     assert "### Relevant logs" in issue_draft
-    assert "DeerFlow Health Check" in issue_draft
-    assert "### How are you running DeerFlow?" in issue_draft
+    assert "BerkshireAgent Health Check" in issue_draft
+    assert "### How are you running BerkshireAgent?" in issue_draft
     assert "<REQUIRED: choose Local, Docker, CI, or Other>" in issue_draft
     assert "### Operating system" in issue_draft
     assert "macOS" in issue_draft
@@ -665,8 +665,8 @@ def test_triage_flags_extensions_parse_errors(tmp_path):
 
 def test_thread_summary_lists_files_without_file_contents(tmp_path):
     project_root = tmp_path / "project"
-    outputs = project_root / ".deer-flow" / "threads" / "thread-123" / "user-data" / "outputs"
-    uploads = project_root / ".deer-flow" / "threads" / "thread-123" / "user-data" / "uploads"
+    outputs = project_root / ".berkshire-agent" / "threads" / "thread-123" / "user-data" / "outputs"
+    uploads = project_root / ".berkshire-agent" / "threads" / "thread-123" / "user-data" / "uploads"
     outputs.mkdir(parents=True)
     uploads.mkdir(parents=True)
     (outputs / "report.md").write_text("raw report content with secret-content", encoding="utf-8")

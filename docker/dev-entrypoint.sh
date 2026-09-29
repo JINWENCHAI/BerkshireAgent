@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# DeerFlow gateway dev entrypoint — runs inside the docker-compose-dev gateway
+# BerkshireAgent gateway dev entrypoint — runs inside the docker-compose-dev gateway
 # container. Extracted from docker/docker-compose-dev.yaml's inline `command:`
 # (PR #2767, addressing review on Issue #2754).
 #
@@ -128,10 +128,10 @@ fi
 # must exist before uvicorn starts so watchfiles treats it as an excluded
 # directory, not as a plain glob pattern — on Python 3.12, globbing an absolute
 # pattern raises NotImplementedError and crashes startup (#3459 / #3454). That
-# means `sandbox` must be created here too, not just `.deer-flow`.
-: "${DEER_FLOW_HOME:=/app/backend/.deer-flow}"
+# means `sandbox` must be created here too, not just `.berkshire-agent`.
+: "${DEER_FLOW_HOME:=/app/backend/.berkshire-agent}"
 export DEER_FLOW_HOME
-mkdir -p "$DEER_FLOW_HOME" /app/backend/.deer-flow /app/backend/sandbox
+mkdir -p "$DEER_FLOW_HOME" /app/backend/.berkshire-agent /app/backend/sandbox
 
 # ── Sync dependencies (with self-heal) ──────────────────────────────────────
 
@@ -169,4 +169,4 @@ PYTHONPATH=. exec uv run --no-sync uvicorn app.gateway.app:app \
     --reload-include='.env' \
     --reload-exclude=/app/backend/sandbox \
     --reload-exclude="$DEER_FLOW_HOME" \
-    --reload-exclude=/app/backend/.deer-flow
+    --reload-exclude=/app/backend/.berkshire-agent

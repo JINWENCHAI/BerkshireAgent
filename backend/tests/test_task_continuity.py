@@ -10,7 +10,7 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from langgraph.checkpoint.memory import InMemorySaver
 
 from deerflow.agents.middlewares.durable_context_middleware import DurableContextMiddleware
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 from deerflow.agents.task_continuity import archive
 from deerflow.agents.task_continuity.state import merge_task_notes
 from deerflow.agents.task_continuity.tools import append_task_continuity_tools, history_read, history_search, task_note
@@ -39,7 +39,7 @@ def scoped(tmp_path, monkeypatch):
 
 
 def compacting(config=None):
-    return DeerFlowSummarizationMiddleware(model=StaticModel(), trigger=("messages", 4), keep=("messages", 2), task_continuity_config=config)
+    return BerkshireAgentSummarizationMiddleware(model=StaticModel(), trigger=("messages", 4), keep=("messages", 2), task_continuity_config=config)
 
 
 def conversation():

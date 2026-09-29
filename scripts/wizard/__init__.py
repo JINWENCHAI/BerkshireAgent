@@ -1,1 +1,1 @@
-# DeerFlow Setup Wizard package
+# BerkshireAgent Setup Wizard package

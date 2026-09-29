@@ -1,4 +1,4 @@
-"""Minimal asynchronous client for the LightRAG APIs DeerFlow consumes."""
+"""Minimal asynchronous client for the LightRAG APIs BerkshireAgent consumes."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ class LightRAGProtocolError(LightRAGError):
 
 
 class LightRAGClient:
-    """Direct HTTP client for DeerFlow's read-only retrieval tools.
+    """Direct HTTP client for BerkshireAgent's read-only retrieval tools.
 
     The client deliberately owns no cache or persistent state. A fresh HTTP
     session is opened for each method call so callers do not need to manage a
@@ -154,7 +154,7 @@ class LightRAGClient:
 
         The data endpoint performs no LLM generation and always returns
         entities, relationships, chunks, and references, which is exactly the
-        read-only shape DeerFlow's knowledge tool consumes.
+        read-only shape BerkshireAgent's knowledge tool consumes.
         """
         if mode not in QUERY_MODES:
             raise ValueError(f"mode must be one of {QUERY_MODES}")

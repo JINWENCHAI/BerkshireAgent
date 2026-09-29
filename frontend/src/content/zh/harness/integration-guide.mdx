@@ -1,6 +1,6 @@
 ---
 title: 集成指南
-description: DeerFlow Harness 不仅仅是一个独立应用程序——它是一个可以导入并在你自己的后端、API 服务器、自动化系统或多 Agent 协调器中使用的 Python 库。
+description: BerkshireAgent Harness 不仅仅是一个独立应用程序——它是一个可以导入并在你自己的后端、API 服务器、自动化系统或多 Agent 协调器中使用的 Python 库。
 ---
 
 import { Callout } from "nextra/components";
@@ -8,24 +8,24 @@ import { Callout } from "nextra/components";
 # 集成指南
 
 <Callout type="info" emoji="🔌">
-  DeerFlow Harness 可以嵌入任何 Python 应用程序。本指南涵盖在你自己的系统中将
-  DeerFlow 作为库使用的集成模式。
+  BerkshireAgent Harness 可以嵌入任何 Python 应用程序。本指南涵盖在你自己的系统中将
+  BerkshireAgent 作为库使用的集成模式。
 </Callout>
 
-DeerFlow Harness 不仅仅是一个独立应用程序——它是一个可以导入并在你自己的后端、API 服务器、自动化系统或多 Agent 协调器中使用的 Python 库。
+BerkshireAgent Harness 不仅仅是一个独立应用程序——它是一个可以导入并在你自己的后端、API 服务器、自动化系统或多 Agent 协调器中使用的 Python 库。
 
-## 嵌入 DeerFlowClient
+## 嵌入 BerkshireAgentClient
 
-主要集成点是 `DeerFlowClient`。它封装了 LangGraph 运行时，并提供一个简洁的 API，用于在任何 Python 应用中发送消息和流式传输响应。
+主要集成点是 `BerkshireAgentClient`。它封装了 LangGraph 运行时，并提供一个简洁的 API，用于在任何 Python 应用中发送消息和流式传输响应。
 
 ```python
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 from deerflow.config import load_config
 
 # 加载配置（读取 config.yaml 或 DEER_FLOW_CONFIG_PATH）
 load_config()
 
-client = DeerFlowClient()
+client = BerkshireAgentClient()
 ```
 
 客户端是线程安全的，设计为实例化一次并在请求之间复用。
@@ -105,7 +105,7 @@ result = await client.ainvoke(
 
 ## 与 FastAPI 集成
 
-DeerFlow Gateway 本身是一个 FastAPI 应用程序。你可以将其作为子应用程序挂载：
+BerkshireAgent Gateway 本身是一个 FastAPI 应用程序。你可以将其作为子应用程序挂载：
 
 ```python
 from fastapi import FastAPI
@@ -115,20 +115,20 @@ load_config()
 
 app = FastAPI()
 
-# 挂载 DeerFlow Gateway
+# 挂载 BerkshireAgent Gateway
 from deerflow.app.gateway.main import app as gateway_app
 app.mount("/deerflow", gateway_app)
 ```
 
-或者在你自己的 FastAPI 路由中直接使用 `DeerFlowClient` 进行流式传输：
+或者在你自己的 FastAPI 路由中直接使用 `BerkshireAgentClient` 进行流式传输：
 
 ```python
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 
 app = FastAPI()
-client = DeerFlowClient()
+client = BerkshireAgentClient()
 
 @app.post("/chat/{thread_id}")
 async def chat(thread_id: str, body: dict):

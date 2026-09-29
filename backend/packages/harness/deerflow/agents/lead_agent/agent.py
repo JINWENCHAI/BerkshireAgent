@@ -43,7 +43,7 @@ from deerflow.agents.middlewares.memory_middleware import MemoryMiddleware
 from deerflow.agents.middlewares.model_length_finish_reason_middleware import ModelLengthFinishReasonMiddleware
 from deerflow.agents.middlewares.safety_finish_reason_middleware import SafetyFinishReasonMiddleware
 from deerflow.agents.middlewares.subagent_limit_middleware import SubagentLimitMiddleware
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware, create_summarization_middleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware, create_summarization_middleware
 from deerflow.agents.middlewares.terminal_response_middleware import TerminalResponseMiddleware
 from deerflow.agents.middlewares.title_middleware import TitleMiddleware
 from deerflow.agents.middlewares.todo_middleware import TodoMiddleware
@@ -343,7 +343,7 @@ def _create_summarization_middleware(
     run_model_name: str | None = None,
     skip_memory_flush: bool = False,
     extensions=None,
-) -> DeerFlowSummarizationMiddleware | None:
+) -> BerkshireAgentSummarizationMiddleware | None:
     """Create and configure the summarization middleware from config.
 
     ``run_model_name`` is the resolved run model; it is the source of truth for
@@ -370,7 +370,7 @@ def _create_todo_list_middleware(is_plan_mode: bool) -> TodoMiddleware | None:
     if not is_plan_mode:
         return None
 
-    # Custom prompts matching DeerFlow's style
+    # Custom prompts matching BerkshireAgent's style
     system_prompt = """
 <todo_list_system>
 You have access to the `write_todos` tool to help you manage and track complex multi-step objectives.
@@ -503,7 +503,7 @@ def build_middlewares(
     """Build the lead-agent middleware chain based on runtime configuration.
 
     Public entry point for the lead agent's full middleware composition. Used by
-    ``make_lead_agent`` and by the embedded ``DeerFlowClient`` (a lead-agent variant
+    ``make_lead_agent`` and by the embedded ``BerkshireAgentClient`` (a lead-agent variant
     that needs the identical chain). Keep this name stable: it is imported across a
     module boundary, so renames/signature changes ripple into ``client.py``.
 

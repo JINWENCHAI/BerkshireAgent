@@ -1,6 +1,6 @@
 """Neutralize prompt-injection control tokens in untrusted tool results.
 
-DeerFlow already treats the genuine user message as untrusted and neutralizes
+BerkshireAgent already treats the genuine user message as untrusted and neutralizes
 framework/injection tags in it (see ``InputSanitizationMiddleware``). Remote
 content that the agent *fetches* — web page bodies and search snippets returned
 by ``web_fetch`` / ``web_search`` / ``image_search``, plus the target site's

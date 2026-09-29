@@ -1,7 +1,7 @@
 [project]
 name = "deerflow-extension-bookmarks"
 version = "0.2.0"
-description = "Pi-inspired conversation bookmarks for the DeerFlow full-stack plugin API"
+description = "Pi-inspired conversation bookmarks for the BerkshireAgent full-stack plugin API"
 requires-python = ">=3.12"
 license = "MIT"
 license-files = ["THIRD_PARTY_NOTICES.md"]

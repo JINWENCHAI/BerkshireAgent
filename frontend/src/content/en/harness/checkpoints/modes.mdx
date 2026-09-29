@@ -33,7 +33,7 @@ The supersteps bound is what keeps replay depth bounded even for a channel that 
 | Constant | Key and location | Written when | Meaning |
 | --- | --- | --- | --- |
 | `CHECKPOINT_MODE_METADATA_KEY` | `deerflow_checkpoint_channel_mode` in `config["metadata"]` | `delta` only, value `"delta"` | The persisted mode marker. Full mode removes the key, so **absence means full** and pre-feature checkpoints need no migration |
-| `counters_since_delta_snapshot` | LangGraph's own checkpoint metadata key, a dict containing `"messages"` | Written by LangGraph | Fallback detection: its presence is treated as delta even when the DeerFlow marker is absent |
+| `counters_since_delta_snapshot` | LangGraph's own checkpoint metadata key, a dict containing `"messages"` | Written by LangGraph | Fallback detection: its presence is treated as delta even when the BerkshireAgent marker is absent |
 | `INTERNAL_CHECKPOINT_MODE_KEY` | `__deerflow_checkpoint_channel_mode` in `config["configurable"]` | Every request, both modes | Internal routing only, set by `inject_checkpoint_mode`. It is never a stored metadata key and never reaches the wire; a caller-supplied value is discarded by the Gateway's run-config builder, ignored on first freeze, and rejected once the process is frozen |
 
 The snapshot cadence is deliberately **not** stamped into checkpoint metadata, which is why the marker contract is unaffected by the cadence value:
@@ -63,7 +63,7 @@ The router records the rationale for the split:
 
 > A mismatch means the thread's persisted checkpoints conflict with the process's frozen mode (operator-actionable, 409); a reconfiguration means the process itself is mid mode-flip (transient, 503).
 
-Only the threads router maps these two errors; run-creation routes surface the same mismatch text asynchronously in the run record or the SSE `error` frame — except when the thread's run-event feed is empty and its checkpoint head has to be materialized before admission, where the seeding read turns the mismatch into a plain `500`. The `503` half of the mapping is defensive: reconfiguration errors are raised when a graph is built (Gateway startup, `make_lead_agent`, `DeerFlowClient.__init__`) and no state, history, or thread route builds an agent, so an operator who edited `config.yaml` without restarting sees a failed run rather than a `503`. See [Observability](/docs/harness/checkpoints/observability) and [Troubleshooting](/docs/harness/checkpoints/troubleshooting).
+Only the threads router maps these two errors; run-creation routes surface the same mismatch text asynchronously in the run record or the SSE `error` frame — except when the thread's run-event feed is empty and its checkpoint head has to be materialized before admission, where the seeding read turns the mismatch into a plain `500`. The `503` half of the mapping is defensive: reconfiguration errors are raised when a graph is built (Gateway startup, `make_lead_agent`, `BerkshireAgentClient.__init__`) and no state, history, or thread route builds an agent, so an operator who edited `config.yaml` without restarting sees a failed run rather than a `503`. See [Observability](/docs/harness/checkpoints/observability) and [Troubleshooting](/docs/harness/checkpoints/troubleshooting).
 
 ## Cross-process invariant
 

@@ -131,7 +131,7 @@ require_compose_version() {{ :; }}
 
 
 @pytest.mark.parametrize("docker_command", ["logs --gateway", "stop", "restart"])
-def test_compose_commands_set_deer_flow_root_before_compose(docker_command):
+def test_compose_commands_set_berkshire_agent_root_before_compose(docker_command):
     """Read-only compose commands should resolve mounts from the repository root."""
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_root = Path(tmpdir)
@@ -317,8 +317,8 @@ require_compose_version
 def test_logs_prod_targets_production_stack(args):
     """`logs --prod` must tail the stack deploy.sh started, not the dev project.
 
-    `make up` runs scripts/deploy.sh (project `deer-flow`, docker-compose.yaml)
-    while the dev default is project `deer-flow-dev`, so `make docker-logs`
+    `make up` runs scripts/deploy.sh (project `berkshire-agent`, docker-compose.yaml)
+    while the dev default is project `berkshire-agent-dev`, so `make docker-logs`
     after `make up` printed nothing (#5529). The production entry point must
     target the same project and interpolate the same .env.
 
@@ -354,7 +354,7 @@ unset BETTER_AUTH_SECRET DEER_FLOW_INTERNAL_AUTH_TOKEN
         subprocess.check_call([BASH_EXECUTABLE, "-lc", command])
 
         recorded = marker.read_text(encoding="utf-8")
-        assert "-p deer-flow " in recorded, recorded
+        assert "-p berkshire-agent " in recorded, recorded
         assert "-f docker-compose.yaml" in recorded, recorded
         assert "--env-file ../.env" in recorded, recorded
         assert "logs" in recorded, recorded

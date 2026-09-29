@@ -1,5 +1,5 @@
 #!/bin/sh
-# Stage the DeerFlow sandbox lark-cli runtime layout from official release
+# Stage the BerkshireAgent sandbox lark-cli runtime layout from official release
 # binaries. Runs at image BUILD time (network available).
 #
 # Usage: LARK_CLI_VERSION=v1.0.65 build-runtime.sh /opt/lark-cli

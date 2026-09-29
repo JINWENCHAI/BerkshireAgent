@@ -15,7 +15,7 @@ from langchain_openai import ChatOpenAI
 from deerflow.agents.middlewares.tool_call_metadata import clone_ai_message_with_tool_calls
 from deerflow.models.claude_provider import ClaudeChatModel
 
-# DeerFlow deployments use ClaudeChatModel, which post-processes the payload
+# BerkshireAgent deployments use ClaudeChatModel, which post-processes the payload
 # built by the upstream ChatAnthropic formatter; pin both.
 _ANTHROPIC_MODEL_CLASSES = pytest.mark.parametrize("model_class", [ChatAnthropic, ClaudeChatModel], ids=["ChatAnthropic", "ClaudeChatModel"])
 

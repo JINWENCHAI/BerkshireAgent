@@ -1,11 +1,11 @@
 ---
 name: smoke-test
-description: End-to-end smoke test skill for DeerFlow. Guides through: 1) Pulling latest code, 2) Docker OR Local installation and deployment (user preference, default to Local if Docker network issues), 3) Service availability verification, 4) Health check, 5) Final test report. Use when the user says "run smoke test", "smoke test deployment", "verify installation", "test service availability", "end-to-end test", or similar.
+description: End-to-end smoke test skill for BerkshireAgent. Guides through: 1) Pulling latest code, 2) Docker OR Local installation and deployment (user preference, default to Local if Docker network issues), 3) Service availability verification, 4) Health check, 5) Final test report. Use when the user says "run smoke test", "smoke test deployment", "verify installation", "test service availability", "end-to-end test", or similar.
 ---
 
-# DeerFlow Smoke Test Skill
+# BerkshireAgent Smoke Test Skill
 
-This skill guides the Agent through DeerFlow's full end-to-end smoke test workflow, including code updates, deployment (supporting both Docker and local installation modes), service availability verification, and health checks.
+This skill guides the Agent through BerkshireAgent's full end-to-end smoke test workflow, including code updates, deployment (supporting both Docker and local installation modes), service availability verification, and health checks.
 
 ## Deployment Mode Selection
 
@@ -43,7 +43,7 @@ smoke-test/
 
 ### Phase 1: Code Update Check
 
-1. **Confirm current directory** - Verify that the current working directory is the DeerFlow project root
+1. **Confirm current directory** - Verify that the current working directory is the BerkshireAgent project root
 2. **Check Git status** - See whether there are uncommitted changes
 3. **Pull the latest code** - Use `git pull origin main` to get the latest updates
 4. **Confirm code update** - Verify that the latest code was pulled successfully

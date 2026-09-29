@@ -104,7 +104,7 @@ describe("channels api", () => {
         mode: "deep_link",
         url: "https://t.me/deerflow_bot?start=state",
         code: "state",
-        instruction: "Send /start state to the DeerFlow Telegram bot.",
+        instruction: "Send /start state to the BerkshireAgent Telegram bot.",
         expires_in: 600,
       }),
     );
@@ -112,7 +112,7 @@ describe("channels api", () => {
     await expect(connectChannelProvider("telegram")).resolves.toMatchObject({
       provider: "telegram",
       url: "https://t.me/deerflow_bot?start=state",
-      instruction: "Send /start state to the DeerFlow Telegram bot.",
+      instruction: "Send /start state to the BerkshireAgent Telegram bot.",
     });
     expect(mockedFetch).toHaveBeenCalledWith(
       "/backend/api/channels/telegram/connect",
@@ -127,7 +127,7 @@ describe("channels api", () => {
         mode: "binding_code",
         url: null,
         code: "abc123",
-        instruction: "Send /connect abc123 to the DeerFlow Slack bot.",
+        instruction: "Send /connect abc123 to the BerkshireAgent Slack bot.",
         expires_in: 600,
       }),
     );
@@ -136,7 +136,7 @@ describe("channels api", () => {
       provider: "slack",
       url: null,
       code: "abc123",
-      instruction: "Send /connect abc123 to the DeerFlow Slack bot.",
+      instruction: "Send /connect abc123 to the BerkshireAgent Slack bot.",
     });
   });
 

@@ -75,7 +75,7 @@ def test_toggles_on_and_sets_up(monkeypatch):
 
     assert is_monocle_tracing_enabled() is True
     assert setup_monocle_tracing_if_enabled() is True
-    assert captured == {"workflow_name": "deer-flow", "monocle_exporters_list": "file"}
+    assert captured == {"workflow_name": "berkshire-agent", "monocle_exporters_list": "file"}
 
 
 def test_custom_exporters(monkeypatch):
@@ -221,7 +221,7 @@ def test_okahu_exporter_with_api_key_ok(monkeypatch):
 def test_embedded_hint_when_enabled_but_uninitialized(monkeypatch, caplog):
     """``build_tracing_callbacks()`` hints when Monocle is enabled but setup never ran.
 
-    The embedded ``DeerFlowClient`` and the TUI never hit the Gateway lifespan,
+    The embedded ``BerkshireAgentClient`` and the TUI never hit the Gateway lifespan,
     so this debug line is the only in-process signal explaining why no Monocle
     traces appear.
     """

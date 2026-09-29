@@ -45,8 +45,8 @@ Gateway 的环境里没有安装这个模块。请通过管理器安装，而不
 
 `@extension(api=...)` 标记超出了这个宿主接受的范围。1.0 之前，宿主接受相同的 `0.minor`，且 patch 不高于宿主自身。
 
-- 声明的版本**高于**宿主（例如在 `0.2.1` 宿主上声明 `0.3.0`）：升级 DeerFlow，或安装为这个宿主构建的扩展版本。
-- 声明的 patch 版本**高于**宿主（例如在 `0.2.1` 宿主上声明 `0.2.2`）：升级 DeerFlow，或安装声明 `0.2.1` 及以下版本的扩展。
+- 声明的版本**高于**宿主（例如在 `0.2.1` 宿主上声明 `0.3.0`）：升级 BerkshireAgent，或安装为这个宿主构建的扩展版本。
+- 声明的 patch 版本**高于**宿主（例如在 `0.2.1` 宿主上声明 `0.2.2`）：升级 BerkshireAgent，或安装声明 `0.2.1` 及以下版本的扩展。
 - 声明的版本属于**更旧**的 minor（例如在 `0.2.1` 宿主上声明 `0.1.0`）：把扩展升级到针对宿主 minor 编写的版本。
 
 这条消息会建议 `pip install 'deerflow-extension-api>=<declared>,<...'`。宿主的契约版本由它自己的 `uv.lock` 固定，所以对于旧扩展这个建议并不适用：要修的是扩展，不是宿主。
@@ -71,7 +71,7 @@ Gateway 的环境里没有安装这个模块。请通过管理器安装，而不
 
 ### `extension table_prefix '<prefix>' would hide host-owned table(s) [...] from alembic autogenerate`
 
-记录的 `table_prefix` 是某张 DeerFlow 表名的前缀。这总会中止启动，即使记录被禁用或是可选的。请选一个更具体的前缀，例如 `acme_audit_`。
+记录的 `table_prefix` 是某张 BerkshireAgent 表名的前缀。这总会中止启动，即使记录被禁用或是可选的。请选一个更具体的前缀，例如 `acme_audit_`。
 
 ### 加载 `config.yaml` 时出现针对 `plugins` 的校验错误
 
@@ -102,11 +102,11 @@ Gateway 的环境里没有安装这个模块。请通过管理器安装，而不
 | `configured extension '<name>' has no managed package metadata`                                            | 没有 `package` 的手写记录；请自己从 `config.yaml` 中删除                                                          |
 | `multiple configured plugins conflict with extension '<name>'`                                             | 另一条记录已使用这个 `name` 或 `package`，但 `use` 不同。删除过时的记录。在 `upgrade` 期间出现，也意味着新版本改了入口点目标：请移除后重新安装 |
 | `config.yaml contains duplicate top-level plugins keys`                                                    | 合并两个 `plugins:` 段                                                                                           |
-| `DeerFlow config not found: <path>`                                                                         | 运行 `make config`，或让 `DEER_FLOW_CONFIG_PATH` 指向正确的文件                                                   |
+| `BerkshireAgent config not found: <path>`                                                                         | 运行 `make config`，或让 `DEER_FLOW_CONFIG_PATH` 指向正确的文件                                                   |
 | `extension installation recovery preserved a concurrent dependency-file edit`（或 `removal`、`config edit`） | 操作期间有人修改了这些文件。检查 `git diff` 后重试                                                               |
 | `extension operation failed and the restored environment could not be synchronized; original failure: ...` | 回滚恢复了文件，但 `uv sync` 失败。运行 `cd backend && uv sync --locked --all-packages`                          |
 
-管理器命令看起来卡住时，通常是在等待另一条持有 `.deer-flow/extension-manager.lock` 的命令。
+管理器命令看起来卡住时，通常是在等待另一条持有 `.berkshire-agent/extension-manager.lock` 的命令。
 
 ## 中间件问题
 

@@ -579,7 +579,7 @@ class LocalContainerBackend(SandboxBackend):
         Args:
             image: Container image to use.
             base_port: Base port number to start searching for free ports.
-            container_prefix: Prefix for container names (e.g., "deer-flow-sandbox").
+            container_prefix: Prefix for container names (e.g., "berkshire-agent-sandbox").
             config_mounts: Volume mount configurations from config (list of VolumeMountConfig).
             environment: Environment variables to inject into containers.
             required_shell_sessions: Minimum usable capacity, independent of image environment overrides.
@@ -612,17 +612,17 @@ class LocalContainerBackend(SandboxBackend):
 
     def _resource_names(self, sandbox_id: str) -> tuple[str, str]:
         digest = hashlib.sha256(f"{self._container_prefix}:{sandbox_id}".encode()).hexdigest()[:16]
-        return f"deer-flow-netproxy-{digest}", f"deer-flow-sandbox-net-{digest}"
+        return f"berkshire-agent-netproxy-{digest}", f"berkshire-agent-sandbox-net-{digest}"
 
     def _egress_network_name(self, sandbox_id: str) -> str:
         digest = hashlib.sha256(f"{self._container_prefix}:{sandbox_id}".encode()).hexdigest()[:16]
-        return f"deer-flow-sandbox-egress-{digest}"
+        return f"berkshire-agent-sandbox-egress-{digest}"
 
     def _proxy_image(self) -> str:
         return str(
             self._network_config.get(
                 "proxy_image",
-                "ghcr.io/bytedance/deer-flow-sandbox-network-proxy:latest",
+                "ghcr.io/bytedance/berkshire-agent-sandbox-network-proxy:latest",
             )
         )
 
@@ -685,11 +685,11 @@ class LocalContainerBackend(SandboxBackend):
     def _persisted_sandbox_mode(self, sandbox: _ContainerInspection, sandbox_id: str) -> str | None:
         """Classify an inspected container without claiming or mutating it.
 
-        Matching DeerFlow identity labels are authoritative. Unlabelled
+        Matching BerkshireAgent identity labels are authoritative. Unlabelled
         containers can only be legacy ``open`` sandboxes: open mode preserves
         the historical name-based discovery contract, while a restricted
         process accepts the narrower legacy shape of the configured image with
-        a published API port. Any partial/mismatched DeerFlow identity is left
+        a published API port. Any partial/mismatched BerkshireAgent identity is left
         unmanaged so a configurable prefix cannot turn a sidecar or unrelated
         labelled container into a sandbox.
         """
@@ -700,7 +700,7 @@ class LocalContainerBackend(SandboxBackend):
         identity_keys_present = any(key in labels for key in ("deerflow.role", "deerflow.sandbox_id", "deerflow.network_mode"))
 
         if role == "sandbox" and labelled_id == sandbox_id:
-            # A missing/unknown value still proves DeerFlow ownership, but it
+            # A missing/unknown value still proves BerkshireAgent ownership, but it
             # cannot be adopted under any current policy. Returning a sentinel
             # routes it through the fenced replacement path.
             return labelled_mode or "unknown"
@@ -1266,7 +1266,7 @@ class LocalContainerBackend(SandboxBackend):
             persisted_mode = self._persisted_sandbox_mode(sandbox_inspection, sandbox_id)
             if persisted_mode is None:
                 logger.warning(
-                    "Container %s uses the sandbox name but lacks a compatible DeerFlow identity; leaving it unmanaged",
+                    "Container %s uses the sandbox name but lacks a compatible BerkshireAgent identity; leaving it unmanaged",
                     container_name,
                 )
                 return None
@@ -1432,8 +1432,8 @@ class LocalContainerBackend(SandboxBackend):
             sandbox_id = container_name[len(self._container_prefix) + 1 :]
             persisted_mode = persisted_modes.get(container_name)
             if persisted_mode is None:
-                # A custom prefix such as ``deer-flow`` also matches the fixed
-                # ``deer-flow-netproxy-*`` sidecar names. Inspecting the stable
+                # A custom prefix such as ``berkshire-agent`` also matches the fixed
+                # ``berkshire-agent-netproxy-*`` sidecar names. Inspecting the stable
                 # role/id identity excludes them while still allowing legacy
                 # open sandboxes to be reported for a fenced mode transition.
                 continue
@@ -1689,7 +1689,7 @@ class LocalContainerBackend(SandboxBackend):
             # handoff. FOWNER is specifically required by the newer 1.11.x
             # startup path (regression-tested against 1.11.0), which chmods
             # /run/user/1000 after capabilities are dropped. Images that do
-            # not perform that chmod do not need FOWNER; DeerFlow deliberately
+            # not perform that chmod do not need FOWNER; BerkshireAgent deliberately
             # keeps this compatibility allowlist version-agnostic instead of
             # guessing from mutable tags/digests or arbitrary custom images.
             # The root nginx master also writes gem-owned logs under

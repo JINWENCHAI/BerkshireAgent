@@ -26,7 +26,7 @@ def test_sandbox_info_does_not_serialize_or_repr_relay_credentials():
     info = SandboxInfo(
         sandbox_id="sandbox-id",
         sandbox_url="http://localhost:8080",
-        request_headers={"X-DeerFlow-Relay-Token": "secret-token"},
+        request_headers={"X-BerkshireAgent-Relay-Token": "secret-token"},
         requires_replacement=True,
     )
 
@@ -36,11 +36,11 @@ def test_sandbox_info_does_not_serialize_or_repr_relay_credentials():
 
 
 def test_format_container_mount_uses_mount_syntax_for_docker_windows_paths():
-    args = _format_container_mount("docker", "D:/deer-flow/backend/.deer-flow/threads", "/mnt/threads", False)
+    args = _format_container_mount("docker", "D:/berkshire-agent/backend/.berkshire-agent/threads", "/mnt/threads", False)
 
     assert args == [
         "--mount",
-        "type=bind,src=D:/deer-flow/backend/.deer-flow/threads,dst=/mnt/threads",
+        "type=bind,src=D:/berkshire-agent/backend/.berkshire-agent/threads,dst=/mnt/threads",
     ]
 
 
@@ -253,7 +253,7 @@ def test_darwin_open_keeps_docker_to_reconcile_restricted_sandbox(monkeypatch):
                     "deerflow.network_mode": "allowlist",
                 },
                 "sandbox:latest",
-                frozenset({"deer-flow-sandbox-net-old"}),
+                frozenset({"berkshire-agent-sandbox-net-old"}),
             )
         },
     )
@@ -479,15 +479,15 @@ def test_restricted_sandbox_has_no_published_port_and_forces_proxy_env(monkeypat
     backend._start_container(
         "sandbox-test",
         18080,
-        network_override="deer-flow-sandbox-net-test",
+        network_override="berkshire-agent-sandbox-net-test",
         publish_port=False,
-        extra_environment={"HTTP_PROXY": "http://deer-flow-netproxy-test:3128"},
+        extra_environment={"HTTP_PROXY": "http://berkshire-agent-netproxy-test:3128"},
     )
 
     assert "-p" not in captured_cmd
-    assert captured_cmd[captured_cmd.index("--network") + 1] == "deer-flow-sandbox-net-test"
+    assert captured_cmd[captured_cmd.index("--network") + 1] == "berkshire-agent-sandbox-net-test"
     proxy_values = [captured_cmd[index + 1] for index, value in enumerate(captured_cmd) if value == "-e" and captured_cmd[index + 1].startswith("HTTP_PROXY=")]
-    assert proxy_values[-1] == "HTTP_PROXY=http://deer-flow-netproxy-test:3128"
+    assert proxy_values[-1] == "HTTP_PROXY=http://berkshire-agent-netproxy-test:3128"
 
 
 def test_restricted_start_configures_shell_and_aio_browser_proxy(monkeypatch):
@@ -1124,12 +1124,12 @@ def test_start_container_passes_through_user_and_network(monkeypatch):
     )
     _clear_hardening_env(monkeypatch)
     monkeypatch.setenv("DEER_FLOW_SANDBOX_CONTAINER_USER", "1000:1000")
-    monkeypatch.setenv("DEER_FLOW_SANDBOX_NETWORK", "deer-flow-sandbox-egress")
+    monkeypatch.setenv("DEER_FLOW_SANDBOX_NETWORK", "berkshire-agent-sandbox-egress")
 
     captured_cmd = _capture_start_container_command(monkeypatch, backend)
 
     assert captured_cmd[captured_cmd.index("--user") + 1] == "1000:1000"
-    assert captured_cmd[captured_cmd.index("--network") + 1] == "deer-flow-sandbox-egress"
+    assert captured_cmd[captured_cmd.index("--network") + 1] == "berkshire-agent-sandbox-egress"
 
 
 def test_start_container_rejects_host_networking(monkeypatch):
@@ -1383,7 +1383,7 @@ def test_restricted_discovery_uses_proxy_relay_port(monkeypatch):
     assert info is not None
     assert info.container_name == "sandbox-existing"
     assert info.sandbox_url == "http://localhost:18080"
-    assert info.request_headers == {"X-DeerFlow-Relay-Token": "test-relay-token-that-is-at-least-32-bytes"}
+    assert info.request_headers == {"X-BerkshireAgent-Relay-Token": "test-relay-token-that-is-at-least-32-bytes"}
     assert readiness == [{"timeout": 5, "headers": info.request_headers}]
 
 
@@ -1501,7 +1501,7 @@ def test_open_discovery_reports_restricted_sandbox_for_fenced_replacement(monkey
                     "deerflow.network_mode": "allowlist",
                 },
                 "sandbox:latest",
-                frozenset({"deer-flow-sandbox-net-old"}),
+                frozenset({"berkshire-agent-sandbox-net-old"}),
             )
         },
     )
@@ -1669,7 +1669,7 @@ def test_open_list_reports_restricted_sandbox_for_fenced_replacement(monkeypatch
                     "deerflow.network_mode": "isolated",
                 },
                 "sandbox:latest",
-                frozenset({"deer-flow-sandbox-net-old"}),
+                frozenset({"berkshire-agent-sandbox-net-old"}),
             )
         },
     )
@@ -1684,9 +1684,9 @@ def test_open_list_reports_restricted_sandbox_for_fenced_replacement(monkeypatch
 def test_restricted_list_running_excludes_sidecars_for_overlapping_custom_prefix(monkeypatch):
     backend = _backend_for_inspect_tests()
     backend._network_mode = "allowlist"
-    backend._container_prefix = "deer-flow"
+    backend._container_prefix = "berkshire-agent"
     sandbox_id = "live"
-    sandbox_name = "deer-flow-live"
+    sandbox_name = "berkshire-agent-live"
     proxy_name, _ = backend._resource_names(sandbox_id)
     commands: list[list[str]] = []
 
@@ -1914,11 +1914,11 @@ def test_start_container_passes_extended_network_syntax_for_custom_networks(monk
     """The legit name=<custom-net> long form (and network IDs) keep working."""
     backend = _backend_for_inspect_tests()
     _clear_hardening_env(monkeypatch)
-    monkeypatch.setenv("DEER_FLOW_SANDBOX_NETWORK", "name=deer-flow-sandbox-egress")
+    monkeypatch.setenv("DEER_FLOW_SANDBOX_NETWORK", "name=berkshire-agent-sandbox-egress")
 
     captured_cmd = _capture_start_container_command(monkeypatch, backend)
 
-    assert captured_cmd[captured_cmd.index("--network") + 1] == "name=deer-flow-sandbox-egress"
+    assert captured_cmd[captured_cmd.index("--network") + 1] == "name=berkshire-agent-sandbox-egress"
 
 
 @pytest.mark.parametrize("sandbox_host", ["fd00::1", "[fd00::1]"])
@@ -2280,7 +2280,7 @@ def test_restricted_network_proxy_enforces_and_approves_real_traffic(monkeypatch
                     "--max-time",
                     "2",
                     "-H",
-                    f"X-DeerFlow-Relay-Token: {relay_token}",
+                    f"X-BerkshireAgent-Relay-Token: {relay_token}",
                     sandbox_url,
                 ],
                 capture_output=True,

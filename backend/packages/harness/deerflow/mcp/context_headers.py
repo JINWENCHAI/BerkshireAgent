@@ -1,6 +1,6 @@
 """Per-request credential injection for shared MCP servers.
 
-``user_auth`` binds a credential to a *configured* DeerFlow user, which forces
+``user_auth`` binds a credential to a *configured* BerkshireAgent user, which forces
 one MCP server entry per credential when the credential is chosen by the caller
 at request time (multi-tenant gateways, per-run API keys). This module closes
 that gap: a server opts in by declaring a ``headers_from_context`` block

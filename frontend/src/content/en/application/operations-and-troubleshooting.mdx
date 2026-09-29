@@ -1,13 +1,13 @@
 ---
 title: Operations and Troubleshooting
-description: This page covers day-to-day operational tasks and solutions to common problems when running DeerFlow App.
+description: This page covers day-to-day operational tasks and solutions to common problems when running BerkshireAgent App.
 ---
 
 import { Callout } from "nextra/components";
 
 # Operations and Troubleshooting
 
-This page covers day-to-day operational tasks and solutions to common problems when running DeerFlow App.
+This page covers day-to-day operational tasks and solutions to common problems when running BerkshireAgent App.
 
 ## Log files
 
@@ -111,7 +111,7 @@ If file tools (`read_file`, `ls`, `bash`) fail with permission or path errors:
 
 ### SQLite reports `database is locked`
 
-This usually means SQLite is handling concurrent writes from multiple users or long-running agent runs. SQLite supports concurrent reads, but only one writer can hold the database lock at a time. In DeerFlow, checkpoint writes and application writes share the same SQLite database file.
+This usually means SQLite is handling concurrent writes from multiple users or long-running agent runs. SQLite supports concurrent reads, but only one writer can hold the database lock at a time. In BerkshireAgent, checkpoint writes and application writes share the same SQLite database file.
 
 For production or multi-user deployments, switch to Postgres:
 
@@ -154,16 +154,16 @@ If MCP tools appear in `extensions_config.json` but are not available in the age
 ### Memory not persisting across sessions
 
 - Verify `memory.enabled: true` in `config.yaml`.
-- Check that the storage path is writable: `ls -la backend/.deer-flow/`.
+- Check that the storage path is writable: `ls -la backend/.berkshire-agent/`.
 - Look for memory update errors in `logs/gateway.log` (search for "memory").
 
 ## Data backup
 
 Back up the storage backends you use:
 
-- `backend/.deer-flow/threads/` for thread working directories, uploads, and artifacts.
-- `backend/.deer-flow/memory.json` and `backend/.deer-flow/agents/` for learned memory.
-- `${database.sqlite_dir}/deerflow.db` when using `database.backend: sqlite` (default: `.deer-flow/data/deerflow.db`).
+- `backend/.berkshire-agent/threads/` for thread working directories, uploads, and artifacts.
+- `backend/.berkshire-agent/memory.json` and `backend/.berkshire-agent/agents/` for learned memory.
+- `${database.sqlite_dir}/deerflow.db` when using `database.backend: sqlite` (default: `.berkshire-agent/data/deerflow.db`).
 - Regular database dumps when using `database.backend: postgres`.
 - The legacy `checkpointer.connection_string` file if your deployment still configures a standalone `checkpointer`.
 

@@ -13,7 +13,7 @@ describe("static artifact mock route", () => {
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(new Response("artifact body", { status: 200 }));
     const request = new NextRequest(
-      "http://deer-flow.test/mock/api/threads/thread/artifacts/file",
+      "http://berkshire-agent.test/mock/api/threads/thread/artifacts/file",
     );
 
     const response = await GET(request, {
@@ -24,7 +24,7 @@ describe("static artifact mock route", () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "http://deer-flow.test/demo/threads/7cfa5f8f-a2f8-47ad-acbd-da7137baf990/user-data/outputs/index.html",
+      "http://berkshire-agent.test/demo/threads/7cfa5f8f-a2f8-47ad-acbd-da7137baf990/user-data/outputs/index.html",
       expect.objectContaining({ signal: request.signal }),
     );
     expect(response.status).toBe(200);
@@ -44,7 +44,7 @@ describe("static artifact mock route", () => {
       }),
     );
     const request = new NextRequest(
-      "http://deer-flow.test/mock/api/threads/thread/artifacts/file",
+      "http://berkshire-agent.test/mock/api/threads/thread/artifacts/file",
       { headers: { Range: "bytes=0-1048575" } },
     );
 
@@ -69,7 +69,7 @@ describe("static artifact mock route", () => {
   it("rejects traversal before fetching", async () => {
     const fetchMock = rs.spyOn(globalThis, "fetch");
     const request = new NextRequest(
-      "http://deer-flow.test/mock/api/threads/thread/artifacts/file",
+      "http://berkshire-agent.test/mock/api/threads/thread/artifacts/file",
     );
 
     const response = await GET(request, {

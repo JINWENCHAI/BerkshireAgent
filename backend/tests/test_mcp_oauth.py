@@ -393,7 +393,7 @@ def test_oauth_refresh_token_rotation_persists_rotated_value(monkeypatch):
 def test_get_authorization_header_concurrent_threads_no_deadlock(monkeypatch):
     """Concurrent callers on different event loops/threads must not deadlock.
 
-    The embedded/TUI sync tool-call path (``DeerFlowClient.stream()`` ->
+    The embedded/TUI sync tool-call path (``BerkshireAgentClient.stream()`` ->
     LangGraph's ``ToolNode._func`` -> a ``ThreadPoolExecutor`` ->
     ``deerflow.tools.sync.make_sync_tool_wrapper``'s per-call ``asyncio.run()``)
     invokes ``get_authorization_header`` from a fresh event loop on a fresh OS

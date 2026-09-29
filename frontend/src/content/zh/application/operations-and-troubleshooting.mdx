@@ -1,17 +1,17 @@
 ---
 title: 运维与排障
-description: 本页面涵盖运行 DeerFlow 应用的操作信息：日志记录、常见问题和维护任务。
+description: 本页面涵盖运行 BerkshireAgent 应用的操作信息：日志记录、常见问题和维护任务。
 ---
 
 import { Callout } from "nextra/components";
 
 # 运维与排障
 
-本页面涵盖运行 DeerFlow 应用的操作信息：日志记录、常见问题和维护任务。
+本页面涵盖运行 BerkshireAgent 应用的操作信息：日志记录、常见问题和维护任务。
 
 ## 日志
 
-DeerFlow 应用在 `logs/` 目录中写入每个服务的日志：
+BerkshireAgent 应用在 `logs/` 目录中写入每个服务的日志：
 
 | 文件                 | 内容                                   |
 | -------------------- | -------------------------------------- |
@@ -34,7 +34,7 @@ log_level: debug # debug | info | warning | error
 
 ## 健康检查
 
-DeerFlow 暴露健康检查端点：
+BerkshireAgent 暴露健康检查端点：
 
 ```bash
 # Gateway 健康状态
@@ -89,12 +89,12 @@ grep -i "error\|apikey\|unauthorized" logs/gateway.log | tail -20
 
 ```bash
 # 检查线程用户数据目录是否存在且可写
-ls -la backend/.deer-flow/threads/
+ls -la backend/.berkshire-agent/threads/
 ```
 
 **解决**：
 
-1. 确保 `backend/.deer-flow/` 对运行 DeerFlow 的进程可写。
+1. 确保 `backend/.berkshire-agent/` 对运行 BerkshireAgent 的进程可写。
 2. 在 Docker 部署中，验证卷挂载路径正确（`DEER_FLOW_ROOT` 设置为绝对路径）。
 3. 如果使用基于容器的沙箱，确认 Docker 已运行并且容器镜像已拉取。
 
@@ -104,7 +104,7 @@ ls -la backend/.deer-flow/threads/
 
 **症状**：Docker 或团队部署中，多个用户同时使用时出现 `sqlite3.OperationalError: database is locked`。
 
-**原因**：SQLite 支持并发读取，但同一时间只有一个写入者。DeerFlow 的检查点写入和应用写入会共享同一个 SQLite 数据库文件，多用户并发时可能竞争文件锁。
+**原因**：SQLite 支持并发读取，但同一时间只有一个写入者。BerkshireAgent 的检查点写入和应用写入会共享同一个 SQLite 数据库文件，多用户并发时可能竞争文件锁。
 
 **解决**：生产环境或多用户部署切换到 Postgres：
 
@@ -171,9 +171,9 @@ grep -i "mcp\|timeout" logs/gateway.log | tail -20
 
 根据你启用的存储后端备份：
 
-- `backend/.deer-flow/threads/`：线程工作目录、上传文件和产出物。
-- `backend/.deer-flow/memory.json` 和 `backend/.deer-flow/agents/`：全局和 Agent 记忆。
-- `${database.sqlite_dir}/deerflow.db`：当使用 `database.backend: sqlite` 时备份，默认路径为 `.deer-flow/data/deerflow.db`。
+- `backend/.berkshire-agent/threads/`：线程工作目录、上传文件和产出物。
+- `backend/.berkshire-agent/memory.json` 和 `backend/.berkshire-agent/agents/`：全局和 Agent 记忆。
+- `${database.sqlite_dir}/deerflow.db`：当使用 `database.backend: sqlite` 时备份，默认路径为 `.berkshire-agent/data/deerflow.db`。
 - Postgres 数据库备份：当使用 `database.backend: postgres` 时定期导出。
 - 旧的 `checkpointer.connection_string` 文件：如果你的部署仍配置独立 `checkpointer`。
 - `backend/agents/*/config.yaml`：自定义 Agent 配置。

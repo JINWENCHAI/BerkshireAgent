@@ -233,7 +233,7 @@ def create_goal_evaluator_model(
 
     The evaluator runs from ``runtime/runs/worker.py`` after the main graph
     run has already completed, so — unlike ``make_lead_agent``/
-    ``DeerFlowClient.stream``, which attach ``build_tracing_callbacks()`` at
+    ``BerkshireAgentClient.stream``, which attach ``build_tracing_callbacks()`` at
     the graph root and correctly pass ``attach_tracing=False`` to avoid
     double-attaching — there is no graph root here for the evaluator's model
     call to inherit tracing from. It must attach its own model-level tracing

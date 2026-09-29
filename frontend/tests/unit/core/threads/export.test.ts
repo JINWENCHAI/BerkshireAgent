@@ -7,7 +7,7 @@ import {
 } from "@/core/threads/export";
 import type { AgentThread } from "@/core/threads/types";
 
-// Bytedance/deer-flow issue #3107 BUG-006: the chat export path bypasses the
+// Bytedance/berkshire-agent issue #3107 BUG-006: the chat export path bypasses the
 // UI-level hidden-message filter and emits reasoning content, tool calls, and
 // any other "internal" payload as if it were part of the user transcript.
 
@@ -193,7 +193,7 @@ describe("formatThreadAsJSON", () => {
   });
 
   it("strips inline <think>...</think> wrappers from content", () => {
-    // bytedance/deer-flow#3131 review: JSON export must run the same
+    // bytedance/berkshire-agent#3131 review: JSON export must run the same
     // sanitiser the Markdown path uses so inline reasoning never leaks
     // even when `includeReasoning` is left at its default false.
     const message = ai("<think>internal monologue</think>visible answer", {

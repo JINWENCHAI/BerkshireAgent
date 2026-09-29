@@ -16,7 +16,7 @@ from deerflow.agents import thread_state as thread_state_module
 from deerflow.agents.lead_agent import agent as lead_agent_module
 from deerflow.agents.middlewares.durable_context_middleware import DurableContextMiddleware
 from deerflow.agents.middlewares.subagent_limit_middleware import SubagentLimitMiddleware
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 from deerflow.agents.middlewares.tool_error_handling_middleware import ToolErrorHandlingMiddleware
 from deerflow.agents.thread_state import ThreadState, merge_delegations
 from deerflow.config.app_config import AppConfig
@@ -1060,7 +1060,7 @@ class TestGraphIntegration:
             tools=[fake_task],
             middleware=[
                 DurableContextMiddleware(),
-                DeerFlowSummarizationMiddleware(
+                BerkshireAgentSummarizationMiddleware(
                     model=summary_model,
                     trigger=("messages", 4),
                     keep=("messages", 2),
@@ -1112,7 +1112,7 @@ def test_mixed_acceptance_gaps_stay_actionable_in_data_after_real_compaction():
         tools=[fake_task],
         middleware=[
             DurableContextMiddleware(),
-            DeerFlowSummarizationMiddleware(
+            BerkshireAgentSummarizationMiddleware(
                 model=FakeToolCallingModel(responses=[AIMessage(content="compressed summary without checklist")]),
                 trigger=("messages", 4),
                 keep=("messages", 2),
@@ -1235,7 +1235,7 @@ class TestSkillContextInjection:
             middleware=[
                 ToolErrorHandlingMiddleware(),
                 DurableContextMiddleware(),
-                DeerFlowSummarizationMiddleware(model=summary_model, trigger=("messages", 4), keep=("messages", 2), token_counter=len),
+                BerkshireAgentSummarizationMiddleware(model=summary_model, trigger=("messages", 4), keep=("messages", 2), token_counter=len),
             ],
             state_schema=ThreadState,
             checkpointer=InMemorySaver(),
@@ -1540,7 +1540,7 @@ class TestActiveGoalInjection:
             middleware=[
                 ToolErrorHandlingMiddleware(),
                 DurableContextMiddleware(),
-                DeerFlowSummarizationMiddleware(model=summary_model, trigger=("messages", 4), keep=("messages", 2), token_counter=len),
+                BerkshireAgentSummarizationMiddleware(model=summary_model, trigger=("messages", 4), keep=("messages", 2), token_counter=len),
             ],
             state_schema=ThreadState,
             checkpointer=InMemorySaver(),
@@ -1566,7 +1566,7 @@ class TestSummaryRecordWindowSplit:
             tools=[fake_task],
             middleware=[
                 DurableContextMiddleware(),
-                DeerFlowSummarizationMiddleware(
+                BerkshireAgentSummarizationMiddleware(
                     model=summary_model,
                     trigger=("messages", 2),
                     keep=("messages", 1),

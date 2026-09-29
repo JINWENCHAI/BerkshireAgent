@@ -1,6 +1,6 @@
-# DeerFlow Maintainer Orchestrator — design notes
+# BerkshireAgent Maintainer Orchestrator — design notes
 
-This document explains the *thinking* behind the `deerflow-maintainer-orchestrator` skill: what it is for, the boundaries that make it safe to run, and the principles that shape how it reviews. It is written for DeerFlow maintainers who run the skill, and for anyone in the community who wants to understand — or adapt — the pattern of delegating issue and PR triage to an agent.
+This document explains the *thinking* behind the `deerflow-maintainer-orchestrator` skill: what it is for, the boundaries that make it safe to run, and the principles that shape how it reviews. It is written for BerkshireAgent maintainers who run the skill, and for anyone in the community who wants to understand — or adapt — the pattern of delegating issue and PR triage to an agent.
 
 It is **not** a rule reference. The exact resolution commands, comment templates, severity definitions, and validation matrix live in the skill itself, which is the canonical executable contract:
 

@@ -54,7 +54,7 @@ depends on; index, proxy, cache, and credential-provider settings remain availab
 The `--no-workspace` boundary requires uv 0.8.0 or newer. The stock Docker paths pin uv
 0.11.1, and the manager fails before mutation when the host uv is older.
 All install/upgrade/remove/enable/disable mutations for a checkout hold the cross-process
-`.deer-flow/extension-manager.lock`; remove deactivates config before changing the package
+`.berkshire-agent/extension-manager.lock`; remove deactivates config before changing the package
 declaration, and rollback preserves a concurrent external config edit instead of replacing
 it. Upgrade replaces a managed local snapshot (or re-pins a package requirement that is already
 in the `extensions` group) and adopts the existing `plugins:` record so private `config`,
@@ -217,7 +217,7 @@ snapshot on runtime context under the host-internal `EXTENSION_SNAPSHOT_CONTEXT_
 `task_tool` reads it back through `resolve_run_extensions()` (type-checked — runtime
 context is caller-mergeable), and `SubagentExecutor` binds it at construction. That key is
 written after the caller merge and popped when the run has none, so a caller-supplied value
-is never authoritative. Absent the key — embedded `DeerFlowClient`, standalone LangGraph
+is never authoritative. Absent the key — embedded `BerkshireAgentClient`, standalone LangGraph
 Server — the executor keeps its `get_loaded_extensions()` fallback.
 
 The lead worker awaits `on_task_start` after the run has started and awaits `on_task_stop`
@@ -236,7 +236,7 @@ skip its successors, and must not reach the worker's deferred-interrupt path, wh
 end an otherwise successful run as cancelled. `KeyboardInterrupt` / `SystemExit` still
 propagate.
 
-System-model-call observers cover DeerFlow-owned model invocations that do not pass
+System-model-call observers cover BerkshireAgent-owned model invocations that do not pass
 through middleware model-call wrappers: goal evaluation, memory extraction, title
 generation, and summarization. They receive a request/result snapshot, duration, and the
 active task store when one exists; detached system work receives an isolated store. All
@@ -257,7 +257,7 @@ there. Shutdown stops accepting detached observations before the memory shutdown
 resets the loop only after in-flight run/subagent drain ordering is complete.
 
 `ContextCompactionObserver` reports the one moment a lossy context transform can still be
-described: `DeerFlowSummarizationMiddleware.compact_state()` / `acompact_state()` hash each
+described: `BerkshireAgentSummarizationMiddleware.compact_state()` / `acompact_state()` hash each
 about-to-be-removed message's content before the summary model call, then — once a summary
 is produced and the pre-compaction hooks have run — build a `CompactionEvent` (transform
 kind/version, source content hashes, the produced summary's content hash, and the
@@ -391,7 +391,7 @@ route handlers.
 The memory kind reaches those observers through a different shape, and the difference is
 deliberate rather than an oversight to be "aligned" away. DeerMem must stay vendorable and
 cannot import the extension API, so it reports through the `MemoryCallbacks.on_memory_llm_result`
-host hook, which the DeerFlow-side callbacks translate into an observation and submit
+host hook, which the BerkshireAgent-side callbacks translate into an observation and submit
 without awaiting. It also guards its provider call with `BaseException` rather than
 `Exception`, which is safe precisely because that whole path runs on a worker thread — the
 debounce timer, or the executor `update_memory` offloads to — where cancelling the awaiting

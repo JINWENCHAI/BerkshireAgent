@@ -1,7 +1,7 @@
 """Regression test: subagent _create_agent() must isolate from parent run checkpointer.
 
 When a parent run carries a synchronous checkpointer (e.g. SqliteSaver via
-DeerFlowClient), the subagent's ``agent.astream()`` inherits it through
+BerkshireAgentClient), the subagent's ``agent.astream()`` inherits it through
 ``copy_context()`` + ``ensure_config()``. Without ``checkpointer=False``
 at compile time, LangGraph's resolution prioritizes the inherited value
 and calls the sync checkpointer's async methods, raising NotImplementedError.

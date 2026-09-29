@@ -1,7 +1,7 @@
 """Content-addressed blob store (issue #4189, item 2).
 
 See ``contract.py`` for the interface and ``AGENTS.md`` for how to add a
-backend. Nothing in deer-flow writes here until ``blob_storage.enabled`` is
+backend. Nothing in berkshire-agent writes here until ``blob_storage.enabled`` is
 True and a producer has been migrated to the store.
 """
 

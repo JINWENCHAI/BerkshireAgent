@@ -21,7 +21,7 @@
 
 ```bash
 # 清除已有数据
-rm -f backend/.deer-flow/data/deerflow.db
+rm -f backend/.berkshire-agent/data/deerflow.db
 
 # 启动标准模式（Gateway embedded runtime）
 make dev
@@ -125,7 +125,7 @@ curl -s -X POST $BASE/api/v1/auth/change-password \
 ```bash
 cd backend
 python -m app.gateway.auth.reset_admin --email admin@example.com
-# 从 .deer-flow/admin_initial_credentials.txt 读取 reset 后密码
+# 从 .berkshire-agent/admin_initial_credentials.txt 读取 reset 后密码
 
 curl -s -X POST $BASE/api/v1/auth/login/local \
   -d "username=admin@example.com&password=<凭据文件密码>" \
@@ -519,7 +519,7 @@ curl -s -X POST $BASE/api/v1/auth/register \
 
 ```bash
 # 检查数据库
-sqlite3 backend/.deer-flow/data/deerflow.db "SELECT email, password_hash FROM users LIMIT 3;"
+sqlite3 backend/.berkshire-agent/data/deerflow.db "SELECT email, password_hash FROM users LIMIT 3;"
 ```
 
 **预期：** `password_hash` 以 `$2b$` 开头（bcrypt 格式）
@@ -629,7 +629,7 @@ sqlite3 backend/.deer-flow/data/deerflow.db "SELECT email, password_hash FROM us
 #### TC-UI-15: reset_admin 后重新登录
 
 1. 执行 `cd backend && python -m app.gateway.auth.reset_admin`
-2. 从 `.deer-flow/admin_initial_credentials.txt` 读取新密码并登录
+2. 从 `.berkshire-agent/admin_initial_credentials.txt` 读取新密码并登录
 3. **预期：** 跳转到 `/setup` 页面（`needs_setup` 被重置为 true）
 4. 旧 session 已失效
 
@@ -746,8 +746,8 @@ curl -s -X POST http://localhost:2026/api/threads/search \
 #### TC-UPG-05: 无 deerflow.db 时创建 schema 但不创建默认用户
 
 ```bash
-ls -la backend/.deer-flow/data/deerflow.db
-sqlite3 backend/.deer-flow/data/deerflow.db "SELECT COUNT(*) FROM users;"
+ls -la backend/.berkshire-agent/data/deerflow.db
+sqlite3 backend/.berkshire-agent/data/deerflow.db "SELECT COUNT(*) FROM users;"
 ```
 
 **预期：** 文件存在，`sqlite3` 可查到 `users` 表含 `needs_setup`、`token_version` 列；未调用 `/initialize` 前用户数为 0
@@ -755,7 +755,7 @@ sqlite3 backend/.deer-flow/data/deerflow.db "SELECT COUNT(*) FROM users;"
 #### TC-UPG-06: deerflow.db WAL 模式
 
 ```bash
-sqlite3 backend/.deer-flow/data/deerflow.db "PRAGMA journal_mode;"
+sqlite3 backend/.berkshire-agent/data/deerflow.db "PRAGMA journal_mode;"
 ```
 
 **预期：** 返回 `wal`
@@ -829,7 +829,7 @@ make dev
 #### TC-UPG-13: 未初始化 admin 时重启不创建默认账号
 
 ```bash
-rm -f backend/.deer-flow/data/deerflow.db
+rm -f backend/.berkshire-agent/data/deerflow.db
 make dev
 make stop
 
@@ -846,8 +846,8 @@ curl -s $BASE/api/v1/auth/setup-status | jq .
 
 ```bash
 python -m app.gateway.auth.reset_admin --email admin@example.com
-ls -la backend/.deer-flow/admin_initial_credentials.txt
-cat backend/.deer-flow/admin_initial_credentials.txt
+ls -la backend/.berkshire-agent/admin_initial_credentials.txt
+cat backend/.berkshire-agent/admin_initial_credentials.txt
 ```
 
 **预期：**
@@ -943,7 +943,7 @@ for i in 1 2 3; do
 done
 
 # 检查 admin 数量
-sqlite3 backend/.deer-flow/data/deerflow.db \
+sqlite3 backend/.berkshire-agent/data/deerflow.db \
   "SELECT COUNT(*) FROM users WHERE system_role='admin';"
 ```
 
@@ -1088,7 +1088,7 @@ curl -s -X POST $BASE/api/v1/auth/register \
 wait
 
 # 检查用户数
-sqlite3 backend/.deer-flow/data/deerflow.db \
+sqlite3 backend/.berkshire-agent/data/deerflow.db \
   "SELECT COUNT(*) FROM users WHERE email='race@example.com';"
 ```
 
@@ -1198,16 +1198,16 @@ curl -s -w "%{http_code}" -X DELETE "$BASE/api/threads/$TID" \
 ```bash
 cd backend
 python -m app.gateway.auth.reset_admin
-cp .deer-flow/admin_initial_credentials.txt /tmp/deerflow-reset-p1.txt
+cp .berkshire-agent/admin_initial_credentials.txt /tmp/deerflow-reset-p1.txt
 P1=$(awk -F': ' '/^password:/ {print $2}' /tmp/deerflow-reset-p1.txt)
 
 python -m app.gateway.auth.reset_admin
-cp .deer-flow/admin_initial_credentials.txt /tmp/deerflow-reset-p2.txt
+cp .berkshire-agent/admin_initial_credentials.txt /tmp/deerflow-reset-p2.txt
 P2=$(awk -F': ' '/^password:/ {print $2}' /tmp/deerflow-reset-p2.txt)
 ```
 
 **预期：**
-- [ ] `.deer-flow/admin_initial_credentials.txt` 每次都会被重写，文件权限为 `0600`
+- [ ] `.berkshire-agent/admin_initial_credentials.txt` 每次都会被重写，文件权限为 `0600`
 - [ ] P1 ≠ P2（每次生成新随机密码）
 - [ ] P1 不可用，只有 P2 有效
 - [ ] `token_version` 递增了 2
@@ -1435,8 +1435,8 @@ curl -s -X POST $BASE/api/v1/auth/register \
   -d '{"email":"docker-test@example.com","password":"DockerTest1!"}' -w "\nHTTP %{http_code}"
 
 # 检查宿主机上的 deerflow.db
-ls -la ${DEER_FLOW_HOME:-backend/.deer-flow}/data/deerflow.db
-sqlite3 ${DEER_FLOW_HOME:-backend/.deer-flow}/data/deerflow.db \
+ls -la ${DEER_FLOW_HOME:-backend/.berkshire-agent}/data/deerflow.db
+sqlite3 ${DEER_FLOW_HOME:-backend/.berkshire-agent}/data/deerflow.db \
   "SELECT email FROM users WHERE email='docker-test@example.com';"
 ```
 
@@ -1491,7 +1491,7 @@ done
 # 请求携带 process-local internal auth header，并带匹配的 CSRF cookie/header
 
 # 验证方式：检查 gateway 日志中 channel manager 的请求不包含 auth 错误
-docker logs deer-flow-gateway 2>&1 | grep -E "ChannelManager|channel" | head -10
+docker logs berkshire-agent-gateway 2>&1 | grep -E "ChannelManager|channel" | head -10
 ```
 
 **预期：** 无 auth 相关错误。渠道不依赖浏览器 cookie；服务端通过内部认证头把请求归入 `default` 用户桶。
@@ -1500,20 +1500,20 @@ docker logs deer-flow-gateway 2>&1 | grep -E "ChannelManager|channel" | head -10
 
 ```bash
 # 首次启动不会自动生成 admin 密码。先重置已有 admin，凭据文件写在挂载到宿主机的 DEER_FLOW_HOME 下。
-docker exec deer-flow-gateway python -m app.gateway.auth.reset_admin --email docker-test@example.com
+docker exec berkshire-agent-gateway python -m app.gateway.auth.reset_admin --email docker-test@example.com
 
-ls -la ${DEER_FLOW_HOME:-backend/.deer-flow}/admin_initial_credentials.txt
+ls -la ${DEER_FLOW_HOME:-backend/.berkshire-agent}/admin_initial_credentials.txt
 # 预期文件权限: -rw------- (0600)
 
-cat ${DEER_FLOW_HOME:-backend/.deer-flow}/admin_initial_credentials.txt
+cat ${DEER_FLOW_HOME:-backend/.berkshire-agent}/admin_initial_credentials.txt
 # 预期内容: email + password 行
 
 # 容器日志只输出文件路径，不输出密码本身
-docker logs deer-flow-gateway 2>&1 | grep -E "Credentials written to|Admin account"
+docker logs berkshire-agent-gateway 2>&1 | grep -E "Credentials written to|Admin account"
 # 预期看到: "Credentials written to: /...../admin_initial_credentials.txt (mode 0600)"
 
 # 反向验证: 日志里 NEVER 出现明文密码
-docker logs deer-flow-gateway 2>&1 | grep -iE "Password: .{15,}" && echo "FAIL: leaked" || echo "OK: not leaked"
+docker logs berkshire-agent-gateway 2>&1 | grep -iE "Password: .{15,}" && echo "FAIL: leaked" || echo "OK: not leaked"
 ```
 
 **预期：**
@@ -1529,8 +1529,8 @@ docker logs deer-flow-gateway 2>&1 | grep -iE "Password: .{15,}" && echo "FAIL: 
 sleep 15
 
 # 确认 gateway 容器存在
-docker ps --filter name=deer-flow-gateway --format '{{.Names}}'
-# 预期: deer-flow-gateway
+docker ps --filter name=berkshire-agent-gateway --format '{{.Names}}'
+# 预期: berkshire-agent-gateway
 
 # auth 流程正常：未登录受保护接口返回 401
 curl -s -w "%{http_code}" -o /dev/null $BASE/api/models

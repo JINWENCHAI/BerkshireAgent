@@ -2,7 +2,7 @@
 # Verify that every project version source agrees.
 #
 # Sources checked:
-#   deploy/helm/deer-flow/Chart.yaml   — version + appVersion
+#   deploy/helm/berkshire-agent/Chart.yaml   — version + appVersion
 #   backend/pyproject.toml             — version
 #   frontend/package.json              — version
 #
@@ -19,7 +19,7 @@ set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-CHART="$ROOT/deploy/helm/deer-flow/Chart.yaml"
+CHART="$ROOT/deploy/helm/berkshire-agent/Chart.yaml"
 PYPROJECT="$ROOT/backend/pyproject.toml"
 PACKAGE="$ROOT/frontend/package.json"
 

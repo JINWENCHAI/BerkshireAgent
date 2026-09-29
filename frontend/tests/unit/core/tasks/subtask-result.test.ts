@@ -135,7 +135,7 @@ describe("derivePendingSubtaskStatus", () => {
 });
 
 /**
- * Structured-status path (bytedance/deer-flow#3146).
+ * Structured-status path (bytedance/berkshire-agent#3146).
  *
  * The backend stamps `ToolMessage.additional_kwargs.subagent_status`
  * directly. The frontend should prefer that over reverse-engineering it
@@ -204,7 +204,7 @@ describe("parseSubtaskResult — structured additional_kwargs (preferred path)",
   });
 
   it("surfaces stop_reason on a capped run while keeping a normal pill status", () => {
-    // bytedance/deer-flow#3875 Phase 2: a token-capped run produced a final
+    // bytedance/berkshire-agent#3875 Phase 2: a token-capped run produced a final
     // answer, so it is `completed` with the cap on the additive
     // `subagent_stop_reason` field. The card stays green; stopReason carries
     // the cap detail for a future badge, and the recovered partial result

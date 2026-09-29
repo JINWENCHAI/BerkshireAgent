@@ -321,7 +321,7 @@ test("mergeMessages lets a visible live message replace overlapping hidden histo
   ]);
 });
 
-test("getSummarizationMiddlewareMessages matches DeerFlow summarization update keys", () => {
+test("getSummarizationMiddlewareMessages matches BerkshireAgent summarization update keys", () => {
   const removeAll = {
     id: "__remove_all__",
     type: "remove",
@@ -336,7 +336,7 @@ test("getSummarizationMiddlewareMessages matches DeerFlow summarization update k
 
   expect(
     getSummarizationMiddlewareMessages({
-      "DeerFlowSummarizationMiddleware.before_model": {
+      "BerkshireAgentSummarizationMiddleware.before_model": {
         messages: [removeAll, summary],
       },
     }),

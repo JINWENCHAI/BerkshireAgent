@@ -20,7 +20,7 @@ def test_proxy_publish_credentials_are_gated_to_upstream_main_pushes():
     publish = workflow["jobs"]["publish"]
     build = next(step for step in publish["steps"] if step["name"] == "Build and publish image")
 
-    assert publish["if"] == "github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'bytedance/deer-flow'"
+    assert publish["if"] == "github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'bytedance/berkshire-agent'"
     assert publish["permissions"] == {
         "contents": "read",
         "packages": "write",

@@ -85,7 +85,7 @@ def candidates(messages, options):
                 continue
         if not isinstance(message.content, str) or len(message.content) < options.min_result_chars:
             continue
-        # DeerFlow's sandbox also returns errors as successful string results.
+        # BerkshireAgent's sandbox also returns errors as successful string results.
         if message.content.lstrip().lower().startswith(("error:", "error ", "traceback")):
             continue
         args = json.dumps(call["args"], ensure_ascii=False).lower()

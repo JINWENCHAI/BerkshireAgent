@@ -36,7 +36,7 @@ class RunCreateRequest(BaseModel):
     command: dict[str, Any] | None = Field(default=None, description="LangGraph Command")
     metadata: dict[str, Any] | None = Field(default=None, description="Run metadata")
     config: dict[str, Any] | None = Field(default=None, description="RunnableConfig overrides")
-    context: dict[str, Any] | None = Field(default=None, description="DeerFlow context overrides (model_name, thinking_enabled, etc.)")
+    context: dict[str, Any] | None = Field(default=None, description="BerkshireAgent context overrides (model_name, thinking_enabled, etc.)")
     conversation_references: list[ConversationReference] = Field(
         default_factory=list,
         max_length=MAX_CONVERSATION_REFERENCES,
@@ -140,7 +140,7 @@ class RunCreateRequest(BaseModel):
         if not is_supported:
             raise PydanticCustomError(
                 "unsupported_run_option",
-                "Run option '{option}' is not supported by DeerFlow",
+                "Run option '{option}' is not supported by BerkshireAgent",
                 {"option": info.field_name},
             )
         return value
@@ -150,12 +150,12 @@ class RunCreateRequest(BaseModel):
     def reject_resumable_streams(cls, value: Any) -> Any:
         # LangGraph SDK clients always send this field (its default is ``False``, which the
         # payload's ``None`` filter keeps). ``False`` asks for the non-resumable stream
-        # DeerFlow already serves, so only an explicit ``True`` requests the unsupported feature.
+        # BerkshireAgent already serves, so only an explicit ``True`` requests the unsupported feature.
         if value is None or value is False:
             return value
         raise PydanticCustomError(
             "unsupported_run_option",
-            "Run option '{option}' is not supported by DeerFlow",
+            "Run option '{option}' is not supported by BerkshireAgent",
             {"option": "stream_resumable"},
         )
 

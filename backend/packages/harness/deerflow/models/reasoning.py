@@ -18,7 +18,7 @@ This module owns the single normalized view:
   contract and returns the effective ``thinking_enabled`` and provider effort
   value. It is the one policy the factory and the callers share.
 * :func:`reasoning_capabilities_payload` projects the contract for the
-  Gateway ``/api/models`` response and ``DeerFlowClient``.
+  Gateway ``/api/models`` response and ``BerkshireAgentClient``.
 """
 
 from __future__ import annotations
@@ -36,7 +36,7 @@ ReasoningDialect = Literal["auto", "openai_extra_body", "anthropic", "vllm_chat_
 ReasoningHistory = Literal["preserve", "clear"]
 ContractSource = Literal["legacy", "contract"]
 
-#: The vocabulary DeerFlow's generic UI and per-agent defaults emit. Legacy
+#: The vocabulary BerkshireAgent's generic UI and per-agent defaults emit. Legacy
 #: profiles advertise exactly this set so the frontend keeps its old choices.
 GENERIC_EFFORT_VALUES: tuple[str, ...] = ("minimal", "low", "medium", "high")
 

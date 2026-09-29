@@ -1,6 +1,6 @@
 """The anchor table and the single composition entry point.
 
-This is where DeerFlow's stack shape is encoded. Two structural facts drive it:
+This is where BerkshireAgent's stack shape is encoded. Two structural facts drive it:
 
 * The stack is built at two nested points — `build_lead_runtime_middlewares()`
   produces the base, then `build_middlewares()` appends ~18 lead-specific

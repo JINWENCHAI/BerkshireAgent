@@ -19,7 +19,7 @@ class ACPAgentConfig(BaseModel):
     auto_approve_permissions: bool = Field(
         default=False,
         description=(
-            "When True, DeerFlow automatically approves all ACP permission requests from this agent "
+            "When True, BerkshireAgent automatically approves all ACP permission requests from this agent "
             "(allow_once preferred over allow_always). When False (default), all permission requests "
             "are denied — the agent must be configured to operate without requesting permissions."
         ),

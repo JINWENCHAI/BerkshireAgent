@@ -1,4 +1,4 @@
-"""Standalone Jev extension. No imports from DeerFlow host internals."""
+"""Standalone Jev extension. No imports from BerkshireAgent host internals."""
 
 import os
 

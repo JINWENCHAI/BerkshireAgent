@@ -51,9 +51,9 @@ def test_client_mutating_and_read_entry_points_validate_thread_id(method_name: s
     Validation is the first statement of each method, so a bare ``__new__``
     instance is enough — no config, sandbox, or event loop is touched.
     """
-    from deerflow.client import DeerFlowClient
+    from deerflow.client import BerkshireAgentClient
 
-    client = DeerFlowClient.__new__(DeerFlowClient)
+    client = BerkshireAgentClient.__new__(BerkshireAgentClient)
     method = getattr(client, method_name)
     args = {"upload_files": (["x"],), "list_uploads": (), "delete_upload": ("f.txt",), "get_artifact": ("mnt/user-data/outputs/f.txt",)}[method_name]
 

@@ -1,13 +1,13 @@
-# DeerFlow 流式输出设计
+# BerkshireAgent 流式输出设计
 
-本文档解释 DeerFlow 是如何把 LangGraph agent 的事件流端到端送到两类消费者（HTTP 客户端、嵌入式 Python 调用方）的：两条路径为什么**必须**并存、它们各自的契约是什么、以及设计里那些 non-obvious 的不变式。
+本文档解释 BerkshireAgent 是如何把 LangGraph agent 的事件流端到端送到两类消费者（HTTP 客户端、嵌入式 Python 调用方）的：两条路径为什么**必须**并存、它们各自的契约是什么、以及设计里那些 non-obvious 的不变式。
 
 ---
 
 ## TL;DR
 
-- DeerFlow 有**两条并行**的流式路径：**Gateway 路径**（async / HTTP SSE / JSON 序列化）服务浏览器和 IM 渠道；**DeerFlowClient 路径**（sync / in-process / 原生 LangChain 对象）服务 Jupyter、脚本、测试。它们**无法合并**——消费者模型不同。
-- 两条路径都从 `create_agent()` 工厂出发，核心都是订阅 LangGraph 的 `stream_mode=["values", "messages", "custom"]`。`values` 是节点级 state 快照，`messages` 是 LLM token 级 delta，`custom` 是显式 `StreamWriter` 事件。DeerFlow 内置 custom 事件同时通过 callback dispatch 暴露为 `astream_events(version="v2")` 的 `on_custom_event`，供 AG-UI 等 callback 型消费者使用。**这些接口不是详细程度的梯度，而是独立事件源**，消费者必须订阅自己需要的接口。
+- BerkshireAgent 有**两条并行**的流式路径：**Gateway 路径**（async / HTTP SSE / JSON 序列化）服务浏览器和 IM 渠道；**BerkshireAgentClient 路径**（sync / in-process / 原生 LangChain 对象）服务 Jupyter、脚本、测试。它们**无法合并**——消费者模型不同。
+- 两条路径都从 `create_agent()` 工厂出发，核心都是订阅 LangGraph 的 `stream_mode=["values", "messages", "custom"]`。`values` 是节点级 state 快照，`messages` 是 LLM token 级 delta，`custom` 是显式 `StreamWriter` 事件。BerkshireAgent 内置 custom 事件同时通过 callback dispatch 暴露为 `astream_events(version="v2")` 的 `on_custom_event`，供 AG-UI 等 callback 型消费者使用。**这些接口不是详细程度的梯度，而是独立事件源**，消费者必须订阅自己需要的接口。
 - 嵌入式 client 为每个 `stream()` 调用维护四个 `set[str]`：`seen_ids` / `streamed_ids` / `counted_usage_ids` / `historical_message_ids`。前三者分别负责去重与用量幂等；最后一个隔离续聊时的历史消息。
 
 ---
@@ -16,10 +16,10 @@
 
 两条路径服务的消费者模型根本不同：
 
-| 维度 | Gateway 路径 | DeerFlowClient 路径 |
+| 维度 | Gateway 路径 | BerkshireAgentClient 路径 |
 |---|---|---|
-| 入口 | FastAPI `/runs/stream` endpoint | `DeerFlowClient.stream(message)` |
-| 触发层 | `runtime/runs/worker.py::run_agent` | `packages/harness/deerflow/client.py::DeerFlowClient.stream` |
+| 入口 | FastAPI `/runs/stream` endpoint | `BerkshireAgentClient.stream(message)` |
+| 触发层 | `runtime/runs/worker.py::run_agent` | `packages/harness/deerflow/client.py::BerkshireAgentClient.stream` |
 | 执行模型 | `async def` + `agent.astream()` | sync generator + `agent.stream()` |
 | 事件传输 | `StreamBridge`（asyncio Queue）+ `sse_consumer` | 直接 `yield` |
 | 序列化 | `serialize(chunk)` → 纯 JSON dict，匹配 LangGraph Platform wire 格式 | `StreamEvent.data`，携带原生 LangChain 对象 |
@@ -29,12 +29,12 @@
 
 **两条路径的存在是 DRY 的刻意妥协**：Gateway 的全部基础设施（async + Queue + JSON + RunManager）**都是为了跨网络边界把事件送给 HTTP 消费者**。当生产者（agent）和消费者（Python 调用栈）在同一个进程时，这整套东西都是纯开销。
 
-### 为什么不能让 DeerFlowClient 复用 Gateway
+### 为什么不能让 BerkshireAgentClient 复用 Gateway
 
 曾经考虑过三种复用方案，都被否决：
 
 1. **让 `client.stream()` 变成 `async def client.astream()`**  
-   breaking change。用户用不上的 `async for` / `asyncio.run()` 要硬塞进 Jupyter notebook 和同步脚本。DeerFlowClient 的一大卖点（"把 agent 当普通函数调用"）直接消失。
+   breaking change。用户用不上的 `async for` / `asyncio.run()` 要硬塞进 Jupyter notebook 和同步脚本。BerkshireAgentClient 的一大卖点（"把 agent 当普通函数调用"）直接消失。
 
 2. **在 `client.stream()` 内部起一个独立事件循环线程，用 `StreamBridge` 在 sync/async 之间做桥接**  
    引入线程池、队列、信号量。为了"消除重复"，把**复杂度**代替代码行数引进来。是典型的"wrong abstraction"——开销高于复用收益。
@@ -65,7 +65,7 @@ flowchart LR
 
     LG -->|"每个节点完成后"| V["values: 完整 state 快照"]
     Node1 -->|"LLM 每产生一个 token"| M["messages: (AIMessageChunk, meta)"]
-    Node1 -->|"emit_custom_event()"| E["DeerFlow custom event helper"]
+    Node1 -->|"emit_custom_event()"| E["BerkshireAgent custom event helper"]
     E -->|"StreamWriter.write()"| C["custom: 任意 dict"]
     E -->|"dispatch_custom_event()"| A["astream_events(v2): on_custom_event"]
 
@@ -82,7 +82,7 @@ flowchart LR
 | `custom` | 用户代码显式调用 `StreamWriter.write()` | 任意 dict | 应用定义 |
 | `on_custom_event` | 用户代码调用 `dispatch_custom_event()`；通过 `astream_events(version="v2")` 消费 | `name` + 任意 `data` | 应用定义 |
 
-DeerFlow 自身产生的事件必须通过 `deerflow.utils.custom_events` 的同步或异步 helper 发送，并且每个内置 payload 必须携带非空字符串 `type`；缺少合法 `type` 的 payload 只进入 `custom` stream，不会出现在 `astream_events`。helper 先写入 `custom` stream，再 best-effort dispatch callback；callback 名称取 payload 的 `type`，`data` 保留完整 payload。这样原生 Gateway / Web UI / `DeerFlowClient` 的 custom 事件不变，`astream_events` 消费者也能观察同一事件。callback dispatch 的普通异常只记 debug 日志，不允许打断原有 writer 链路；writer 的异常语义保持不变。
+BerkshireAgent 自身产生的事件必须通过 `deerflow.utils.custom_events` 的同步或异步 helper 发送，并且每个内置 payload 必须携带非空字符串 `type`；缺少合法 `type` 的 payload 只进入 `custom` stream，不会出现在 `astream_events`。helper 先写入 `custom` stream，再 best-effort dispatch callback；callback 名称取 payload 的 `type`，`data` 保留完整 payload。这样原生 Gateway / Web UI / `BerkshireAgentClient` 的 custom 事件不变，`astream_events` 消费者也能观察同一事件。callback dispatch 的普通异常只记 debug 日志，不允许打断原有 writer 链路；writer 的异常语义保持不变。
 
 ### 两套命名的由来
 
@@ -101,7 +101,7 @@ Application                    HTTP / SSE                    LangGraph Graph
 - **Platform SDK 层**（`langgraph-sdk` HTTP client）：跨进程 HTTP 契约，mode 叫 **`"messages-tuple"`**。
 - **Gateway worker** 显式做翻译：`if m == "messages-tuple": lg_modes.append("messages")`（`runtime/runs/worker.py:117-121`）。
 
-**后果**：`DeerFlowClient.stream()` 直接调 `agent.stream()`（Graph 层），所以必须传 `"messages"`。`app/channels/manager.py` 通过 `langgraph-sdk` 走 HTTP SDK，所以传 `"messages-tuple"`。**这两个字符串不能互相替代**，也不能抽成"一个共享常量"——它们是不同协议层的 type alias，共享只会让某一层说不是它母语的话。
+**后果**：`BerkshireAgentClient.stream()` 直接调 `agent.stream()`（Graph 层），所以必须传 `"messages"`。`app/channels/manager.py` 通过 `langgraph-sdk` 走 HTTP SDK，所以传 `"messages-tuple"`。**这两个字符串不能互相替代**，也不能抽成"一个共享常量"——它们是不同协议层的 type alias，共享只会让某一层说不是它母语的话。
 
 ---
 
@@ -159,7 +159,7 @@ data: {"code":"stream_replay_gap","run_id":"...","requested_event_id":"...","ear
 
 ```
 
-`gap` 帧没有 SSE `id:`，后面也没有正常 `end`；当前订阅随即关闭。它是恢复边界而不是客户端断开，因此不会触发 `on_disconnect=cancel`。`earliest_available_event_id` 与 `latest_available_event_id` 在缓冲区无保留事件时为 `null`。客户端必须丢弃不再可信的瞬时状态，重新读取 thread checkpoint 和持久化 run-event/message history，再以 `latest_available_event_id` 为游标跟随新事件（若缓冲区为空即 `latest_available_event_id` 为 `null`，则不带游标重新加入流）。DeerFlow Web UI 自动执行此流程并最多连续恢复五次。
+`gap` 帧没有 SSE `id:`，后面也没有正常 `end`；当前订阅随即关闭。它是恢复边界而不是客户端断开，因此不会触发 `on_disconnect=cancel`。`earliest_available_event_id` 与 `latest_available_event_id` 在缓冲区无保留事件时为 `null`。客户端必须丢弃不再可信的瞬时状态，重新读取 thread checkpoint 和持久化 run-event/message history，再以 `latest_available_event_id` 为游标跟随新事件（若缓冲区为空即 `latest_available_event_id` 为 `null`，则不带游标重新加入流）。BerkshireAgent Web UI 自动执行此流程并最多连续恢复五次。
 
 Redis 对无游标、空 stream 上已经建立的阻塞等待也遵循相同契约：第一次 `XREAD` 唤醒的数据在交付前仍是 provisional baseline，bridge 会用下一次事务快照确认其尾 ID 仍在保留窗口。若生产者已经裁剪了该基线，订阅直接返回 `requested_event_id: null` 的 `gap`，不会先交付 retained tail。这个检查有明确的性能代价：每轮订阅需要一个包含 `XRANGE`、`XREVRANGE`、非阻塞 `XREAD` 的事务快照；空闲时还需要单独的阻塞 `XREAD` 来唤醒。
 
@@ -167,12 +167,12 @@ Redis 对无游标、空 stream 上已经建立的阻塞等待也遵循相同契
 
 ---
 
-## DeerFlowClient 路径：sync + in-process
+## BerkshireAgentClient 路径：sync + in-process
 
 ```mermaid
 sequenceDiagram
     participant User as Python caller
-    participant Client as DeerFlowClient.stream
+    participant Client as BerkshireAgentClient.stream
     participant Agent as LangGraph<br/>agent.stream (sync)
 
     User->>Client: for event in client.stream("hi"):
@@ -198,9 +198,9 @@ sequenceDiagram
 
 LangGraph `messages` mode 给出的是 **delta**：每个 `AIMessageChunk.content` 只包含这一次新 yield 的 token，**不是**从头的累计文本。
 
-这个语义和 LangChain 的 `fs2 Stream` 风格一致：**上游发增量，下游负责累加**。Gateway 路径里前端 `useStream` React hook 自己维护累加器；DeerFlowClient 路径里 `chat()` 方法替调用者做累加。
+这个语义和 LangChain 的 `fs2 Stream` 风格一致：**上游发增量，下游负责累加**。Gateway 路径里前端 `useStream` React hook 自己维护累加器；BerkshireAgentClient 路径里 `chat()` 方法替调用者做累加。
 
-### `DeerFlowClient.chat()` 的 O(n) 累加器
+### `BerkshireAgentClient.chat()` 的 O(n) 累加器
 
 ```python
 chunks: dict[str, list[str]] = {}
@@ -221,7 +221,7 @@ return "".join(chunks.get(last_id, ()))
 
 ## 消息 id set 为什么不能合并
 
-`DeerFlowClient.stream()` 在一次调用生命周期内维护四个 `set[str]`：
+`BerkshireAgentClient.stream()` 在一次调用生命周期内维护四个 `set[str]`：
 
 ```python
 seen_ids: set[str] = set()           # values 路径内部 dedup
@@ -276,7 +276,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant C as DeerFlowClient
+    participant C as BerkshireAgentClient
     participant A as LangGraph<br/>agent.stream
 
     U->>C: stream("Count ... 15")
@@ -315,14 +315,14 @@ sequenceDiagram
 
 ## 为什么这个设计容易出 bug，以及测试策略
 
-本文档的直接起因是 bytedance/deer-flow#1969：`DeerFlowClient.stream()` 原本只订阅 `["values", "custom"]`，**漏了 `"messages"`**。结果 `client.stream("hello")` 等价于一次性返回，视觉上和 `chat()` 没区别。
+本文档的直接起因是 bytedance/berkshire-agent#1969：`BerkshireAgentClient.stream()` 原本只订阅 `["values", "custom"]`，**漏了 `"messages"`**。结果 `client.stream("hello")` 等价于一次性返回，视觉上和 `chat()` 没区别。
 
 Custom 事件还有一条独立回归边界：`get_stream_writer()` 产生的 chunk 不会自动成为 `astream_events(version="v2")` 的 `on_custom_event`，而 callback dispatch 也不会自动进入 `stream_mode="custom"`。测试必须使用真实最小 LangGraph 同时锁定两种 API，断言每个消费者各收到一次且 payload 相同；仅 mock 任一函数无法证明协议互操作。
 
 这类 bug 有三个结构性原因：
 
 1. **多协议层命名**：`messages` / `messages-tuple` / HTTP SSE `messages` 是同一概念的三个名字。在其中一层出错不会在另外两层报错。
-2. **多消费者模型**：Gateway 和 DeerFlowClient 是两套独立实现，**没有单一的"订阅哪些 mode"的 single source of truth**。前者订阅对了不代表后者也订阅对了。
+2. **多消费者模型**：Gateway 和 BerkshireAgentClient 是两套独立实现，**没有单一的"订阅哪些 mode"的 single source of truth**。前者订阅对了不代表后者也订阅对了。
 3. **mock 测试绕开了真实路径**：老测试用 `agent.stream.return_value = iter([dict_chunk, ...])` 喂 values 形状的 dict 模拟 state 快照。这样构造的输入**永远不会进入 `messages` mode 分支**，所以即使 `stream_mode` 里少一个元素，CI 依然全绿。
 
 ### 防御手段
@@ -365,9 +365,9 @@ assert "messages" in agent.stream.call_args.kwargs["stream_mode"]
 
 | 关心什么 | 看这里 |
 |---|---|
-| DeerFlowClient 嵌入式流 | `packages/harness/deerflow/client.py::DeerFlowClient.stream` |
+| BerkshireAgentClient 嵌入式流 | `packages/harness/deerflow/client.py::BerkshireAgentClient.stream` |
 | Embedded ToolMessage artifact 序列化 | `packages/harness/deerflow/client.py::_tool_message_event` / `_serialize_message` |
-| `chat()` 的 delta 累加器 | `packages/harness/deerflow/client.py::DeerFlowClient.chat` |
+| `chat()` 的 delta 累加器 | `packages/harness/deerflow/client.py::BerkshireAgentClient.chat` |
 | Gateway async 流 | `packages/harness/deerflow/runtime/runs/worker.py::run_agent` |
 | HTTP SSE 帧输出 | `app/gateway/services.py::sse_consumer` / `format_sse` |
 | 序列化到 wire 格式 | `packages/harness/deerflow/runtime/serialization.py` |

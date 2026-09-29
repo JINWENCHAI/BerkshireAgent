@@ -17,8 +17,8 @@ DOCKER_DIR="$PROJECT_ROOT/docker"
 # Docker Desktop does not receive a Git Bash `/c/...` path it cannot open.
 COMPOSE_FILE="docker-compose-dev.yaml"
 # Dev stack project name. `logs --prod` swaps both values for the production
-# stack started by `make up` (scripts/deploy.sh: project `deer-flow`).
-COMPOSE_PROJECT="deer-flow-dev"
+# stack started by `make up` (scripts/deploy.sh: project `berkshire-agent`).
+COMPOSE_PROJECT="berkshire-agent-dev"
 # Selected by require_compose_version: prefer the V2 plugin, else hyphenated binary.
 # Kept as an array so "docker compose" stays two words under set -u / quoting.
 COMPOSE_BIN=(docker compose)
@@ -56,7 +56,7 @@ require_compose_file() {
         return 0
     fi
     echo -e "${YELLOW}✗ ${COMPOSE_FILE} not found at ${DOCKER_DIR}/${COMPOSE_FILE}${NC}"
-    echo "Run this from the DeerFlow repository root, e.g. 'make docker-start'."
+    echo "Run this from the BerkshireAgent repository root, e.g. 'make docker-start'."
     echo "Do not run 'docker compose -f docker/${COMPOSE_FILE}' from inside docker/ — that resolves to docker/docker/${COMPOSE_FILE}."
     exit 1
 }
@@ -124,9 +124,9 @@ require_compose_version() {
 
 # Compose interpolates ${DEER_FLOW_ROOT} into host-side paths
 # (DEER_FLOW_HOST_BASE_DIR, THREADS_HOST_PATH) that AIO/provisioner sandbox
-# modes bind-mount. Unset, those render as /backend/.deer-flow — a plausible
+# modes bind-mount. Unset, those render as /backend/.berkshire-agent — a plausible
 # looking absolute path on the wrong root, so mounts silently miss the checkout.
-ensure_deer_flow_root() {
+ensure_berkshire_agent_root() {
     if [ -z "$DEER_FLOW_ROOT" ]; then
         export DEER_FLOW_ROOT="$PROJECT_ROOT"
     fi
@@ -136,7 +136,7 @@ ensure_deer_flow_root() {
 compose_preflight() {
     require_compose_file
     require_compose_version
-    ensure_deer_flow_root
+    ensure_berkshire_agent_root
 }
 
 # Only `start` may create files. Compose env_file entries fail closed on Windows
@@ -245,7 +245,7 @@ docker_available() {
 # Initialize: pre-pull the sandbox image so first Pod startup is fast
 init() {
     echo "=========================================="
-    echo "  DeerFlow Init — Pull Sandbox Image"
+    echo "  BerkshireAgent Init — Pull Sandbox Image"
     echo "=========================================="
     echo ""
 
@@ -317,7 +317,7 @@ start() {
     fi
 
     echo "=========================================="
-    echo "  Starting DeerFlow Docker Development"
+    echo "  Starting BerkshireAgent Docker Development"
     echo "=========================================="
     echo ""
 
@@ -373,7 +373,7 @@ start() {
             echo -e "${YELLOW}============================================================${NC}"
             echo -e "${YELLOW}  config.yaml has been created from config.example.yaml.${NC}"
             echo -e "${YELLOW}  Please edit config.yaml to set your API keys and model   ${NC}"
-            echo -e "${YELLOW}  configuration before starting DeerFlow.                  ${NC}"
+            echo -e "${YELLOW}  configuration before starting BerkshireAgent.                  ${NC}"
             echo -e "${YELLOW}============================================================${NC}"
             echo ""
             echo -e "${YELLOW}  Recommended: run 'make setup' before starting Docker.    ${NC}"
@@ -406,7 +406,7 @@ start() {
     cd "$DOCKER_DIR" && $COMPOSE_CMD up --build -d --remove-orphans $services
     echo ""
     echo "=========================================="
-    echo "  DeerFlow Docker is starting!"
+    echo "  BerkshireAgent Docker is starting!"
     echo "=========================================="
     echo ""
     echo "  🌐 Application: http://localhost:2026"
@@ -450,11 +450,11 @@ logs() {
         # Target the same project deploy.sh started. Relative paths: this
         # runs with cwd=$DOCKER_DIR.
         COMPOSE_FILE="docker-compose.yaml"
-        COMPOSE_PROJECT="deer-flow"
+        COMPOSE_PROJECT="berkshire-agent"
         # deploy.sh exports these before every compose invocation so the
         # volume specs in docker-compose.yaml interpolate; without them even
         # `logs` fails to parse the file on checkouts without a .env.
-        export DEER_FLOW_HOME="${DEER_FLOW_HOME:-$PROJECT_ROOT/backend/.deer-flow}"
+        export DEER_FLOW_HOME="${DEER_FLOW_HOME:-$PROJECT_ROOT/backend/.berkshire-agent}"
         export DEER_FLOW_CONFIG_PATH="${DEER_FLOW_CONFIG_PATH:-$DEER_FLOW_HOME/config.yaml}"
         export DEER_FLOW_EXTENSIONS_CONFIG_PATH="${DEER_FLOW_EXTENSIONS_CONFIG_PATH:-$DEER_FLOW_HOME/extensions_config.json}"
         export DEER_FLOW_REPO_ROOT="${DEER_FLOW_REPO_ROOT:-$PROJECT_ROOT}"
@@ -495,7 +495,7 @@ stop() {
     echo "Stopping Docker development services..."
     cd "$DOCKER_DIR" && $COMPOSE_CMD down
     echo "Cleaning up sandbox containers..."
-    bash "$SCRIPT_DIR/cleanup-containers.sh" deer-flow-sandbox 2>/dev/null || true
+    bash "$SCRIPT_DIR/cleanup-containers.sh" berkshire-agent-sandbox 2>/dev/null || true
     echo -e "${GREEN}✓ Docker services stopped${NC}"
 }
 
@@ -503,7 +503,7 @@ stop() {
 restart() {
     compose_preflight
     echo "========================================"
-    echo "  Restarting DeerFlow Docker Services"
+    echo "  Restarting BerkshireAgent Docker Services"
     echo "========================================"
     echo ""
     echo -e "${BLUE}Restarting containers...${NC}"
@@ -518,7 +518,7 @@ restart() {
 
 # Show help
 help() {
-    echo "DeerFlow Docker Management Script"
+    echo "BerkshireAgent Docker Management Script"
     echo ""
     echo "Usage: $0 <command> [options]"
     echo ""

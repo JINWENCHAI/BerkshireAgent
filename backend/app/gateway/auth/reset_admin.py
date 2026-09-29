@@ -4,7 +4,7 @@ Usage:
     python -m app.gateway.auth.reset_admin
     python -m app.gateway.auth.reset_admin --email admin@example.com
 
-Writes the new password to ``.deer-flow/admin_initial_credentials.txt``
+Writes the new password to ``.berkshire-agent/admin_initial_credentials.txt``
 (mode 0600) instead of printing it, so CI / log aggregators never see
 the cleartext secret.
 """

@@ -979,7 +979,7 @@ def test_subagent_compaction_injects_summary_before_assistant_tool_tail(monkeypa
     from langchain_core.outputs import ChatGeneration, ChatResult
 
     from deerflow.agents.middlewares.durable_context_middleware import DurableContextMiddleware
-    from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+    from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
     from deerflow.agents.middlewares.system_message_coalescing_middleware import SystemMessageCoalescingMiddleware
     from deerflow.agents.thread_state import ThreadState
     from deerflow.config.summarization_config import ContextSize, SummarizationConfig
@@ -1032,7 +1032,7 @@ def test_subagent_compaction_injects_summary_before_assistant_tool_tail(monkeypa
         model_name="test-model",
         agent_name="general-purpose",
     )
-    compaction_middlewares = [middleware for middleware in runtime_middlewares if isinstance(middleware, (DurableContextMiddleware, DeerFlowSummarizationMiddleware, SystemMessageCoalescingMiddleware))]
+    compaction_middlewares = [middleware for middleware in runtime_middlewares if isinstance(middleware, (DurableContextMiddleware, BerkshireAgentSummarizationMiddleware, SystemMessageCoalescingMiddleware))]
     agent = create_agent(
         model=strict_model,
         tools=[],
@@ -1210,14 +1210,14 @@ def test_subagent_runtime_middlewares_omit_summarization_when_factory_returns_no
     """When ``summarization.enabled`` is False the shared factory returns None and
     the subagent chain must NOT carry a summarization middleware — the default
     state, since SummarizationConfig.enabled defaults to False."""
-    from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+    from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 
     app_config = _make_app_config()  # summarization.enabled defaults to False
     _stub_runtime_middleware_imports(monkeypatch)
 
     middlewares = build_subagent_runtime_middlewares(app_config=app_config, model_name="test-model")
 
-    assert not any(isinstance(m, DeerFlowSummarizationMiddleware) for m in middlewares)
+    assert not any(isinstance(m, BerkshireAgentSummarizationMiddleware) for m in middlewares)
 
 
 def test_lead_runtime_chain_finds_historical_uploads_under_lazy_init_false(tmp_path, monkeypatch):
@@ -1276,7 +1276,7 @@ def test_lead_runtime_chain_finds_historical_uploads_under_lazy_init_false(tmp_p
 
 def test_subagent_summarization_fires_mid_run_and_produces_usable_result(monkeypatch):
     """Integration coverage for #3875 Phase 3 review gap: drive the REAL
-    ``DeerFlowSummarizationMiddleware`` (the exact instance the subagent chain
+    ``BerkshireAgentSummarizationMiddleware`` (the exact instance the subagent chain
     gets via ``create_summarization_middleware(skip_memory_flush=True)``) through
     a ``create_agent`` run, and assert that (a) compaction actually fires mid-run
     (messages channel contracts via ``RemoveMessage``) and (b) the run still
@@ -1293,7 +1293,7 @@ def test_subagent_summarization_fires_mid_run_and_produces_usable_result(monkeyp
     from langchain_core.outputs import ChatGeneration, ChatResult
 
     from deerflow.agents.middlewares.summarization_middleware import (
-        DeerFlowSummarizationMiddleware,
+        BerkshireAgentSummarizationMiddleware,
         create_summarization_middleware,
     )
     from deerflow.agents.thread_state import ThreadState
@@ -1338,7 +1338,7 @@ def test_subagent_summarization_fires_mid_run_and_produces_usable_result(monkeyp
         app_config=app_config,
         skip_memory_flush=True,
     )
-    assert isinstance(middleware, DeerFlowSummarizationMiddleware), "the real middleware must be built"
+    assert isinstance(middleware, BerkshireAgentSummarizationMiddleware), "the real middleware must be built"
     # Subagent invariant: skip_memory_flush means no durable-memory hook.
     assert not middleware._before_summarization_hooks
 
@@ -1361,9 +1361,9 @@ def test_subagent_summarization_fires_mid_run_and_produces_usable_result(monkeyp
     chunks = list(agent.stream({"messages": seed}, stream_mode="updates"))
 
     # (a) Compaction fired: the middleware's before_model emitted a summary + RemoveMessage.
-    before_model_chunks = [c for c in chunks if "DeerFlowSummarizationMiddleware.before_model" in c]
+    before_model_chunks = [c for c in chunks if "BerkshireAgentSummarizationMiddleware.before_model" in c]
     assert before_model_chunks, "summarization before_model must fire when messages exceed the trigger"
-    summary_update = before_model_chunks[0]["DeerFlowSummarizationMiddleware.before_model"]
+    summary_update = before_model_chunks[0]["BerkshireAgentSummarizationMiddleware.before_model"]
     assert summary_update.get("summary_text"), "a summary must be produced"
     emitted = summary_update["messages"]
     assert isinstance(emitted[0], RemoveMessage), "compaction must lead with RemoveMessage"

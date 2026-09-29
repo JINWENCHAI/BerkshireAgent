@@ -10,7 +10,7 @@ from types import SimpleNamespace
 
 from langgraph.types import Overwrite
 
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware, SummaryGenerationError, create_summarization_middleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware, SummaryGenerationError, create_summarization_middleware
 from deerflow.config.agents_config import validate_agent_name
 from deerflow.config.app_config import AppConfig, get_app_config
 from deerflow.runtime.checkpoint_state import CheckpointStateAccessor
@@ -66,7 +66,7 @@ def _create_compaction_middleware(
     keep: tuple[str, int | float] | None,
     run_model_name: str | None = None,
     skip_memory_flush: bool = False,
-) -> DeerFlowSummarizationMiddleware:
+) -> BerkshireAgentSummarizationMiddleware:
     middleware = create_summarization_middleware(
         app_config=app_config,
         keep=keep,

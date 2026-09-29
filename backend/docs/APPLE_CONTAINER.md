@@ -1,10 +1,10 @@
 # Apple Container Support
 
-DeerFlow now supports Apple Container as the preferred container runtime on macOS, with automatic fallback to Docker.
+BerkshireAgent now supports Apple Container as the preferred container runtime on macOS, with automatic fallback to Docker.
 
 ## Overview
 
-Starting with this version, DeerFlow automatically detects and uses Apple Container on macOS when available, falling back to Docker when:
+Starting with this version, BerkshireAgent automatically detects and uses Apple Container on macOS when available, falling back to Docker when:
 - Apple Container is not installed
 - Running on non-macOS platforms
 - A restricted sandbox network mode is configured
@@ -158,8 +158,8 @@ The project includes a unified cleanup script that handles both runtimes:
 
 **Usage:**
 ```bash
-# Clean up all DeerFlow sandbox containers
-./scripts/cleanup-containers.sh deer-flow-sandbox
+# Clean up all BerkshireAgent sandbox containers
+./scripts/cleanup-containers.sh berkshire-agent-sandbox
 
 # Custom prefix
 ./scripts/cleanup-containers.sh my-prefix
@@ -221,7 +221,7 @@ These tests mock the runtime commands and require neither Docker nor the Apple C
 
 2. Run cleanup script manually:
    ```bash
-   ./scripts/cleanup-containers.sh deer-flow-sandbox
+   ./scripts/cleanup-containers.sh berkshire-agent-sandbox
    ```
 
 ### Performance issues

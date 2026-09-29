@@ -16,7 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 NGINX_CONFIGS = (
     "docker/nginx/nginx.conf",
     "docker/nginx/nginx.local.conf",
-    "deploy/helm/deer-flow/templates/configmap-nginx.yaml",
+    "deploy/helm/berkshire-agent/templates/configmap-nginx.yaml",
 )
 
 _SIZE_MULTIPLIERS = {"": 1, "k": 1024, "m": 1024**2, "g": 1024**3}

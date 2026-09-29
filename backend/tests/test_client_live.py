@@ -1,4 +1,4 @@
-"""Live integration tests for DeerFlowClient with real external APIs.
+"""Live integration tests for BerkshireAgentClient with real external APIs.
 
 These tests require a working config.yaml with valid API credentials.
 They can incur API costs and create local sandboxes, artifacts, or files.
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from deerflow.client import DeerFlowClient, StreamEvent
+from deerflow.client import BerkshireAgentClient, StreamEvent
 from deerflow.sandbox.security import is_host_bash_allowed
 from deerflow.uploads.manager import PathTraversalError
 
@@ -44,8 +44,8 @@ if _skip_reason:
 
 @pytest.fixture(scope="module")
 def client():
-    """Create a real DeerFlowClient (no mocks)."""
-    return DeerFlowClient(thinking_enabled=False)
+    """Create a real BerkshireAgentClient (no mocks)."""
+    return BerkshireAgentClient(thinking_enabled=False)
 
 
 @pytest.fixture

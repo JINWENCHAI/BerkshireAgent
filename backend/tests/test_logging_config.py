@@ -655,8 +655,8 @@ def test_url_redaction_filter_leaves_arrow_paths_in_other_logs_alone() -> None:
 
     filt = UrlRedactionFilter()
     sandbox_error = (
-        "sandbox.mounts entry /srv/deer-flow/knowledge -> /mnt/knowledge ignored: host_path "
-        "/srv/deer-flow/knowledge does not exist from the perspective of the gateway process. "
+        "sandbox.mounts entry /srv/berkshire-agent/knowledge -> /mnt/knowledge ignored: host_path "
+        "/srv/berkshire-agent/knowledge does not exist from the perspective of the gateway process. "
         "In Docker deployments (make up / docker-compose), this path must also be bind-mounted "
         "into the gateway container — add a matching volume entry under services.gateway.volumes "
         "in docker/docker-compose.yaml (and use the in-container path here), or run in local mode "

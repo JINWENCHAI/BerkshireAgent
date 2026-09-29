@@ -106,8 +106,8 @@ def test_build_report_merges_top_and_pod_metadata():
     }
 
     report = mod.build_report(
-        namespace="deer-flow",
-        selector="app=deer-flow-sandbox",
+        namespace="berkshire-agent",
+        selector="app=berkshire-agent-sandbox",
         sample="empty",
         top_pods=top_pods,
         pod_json=pod_json,
@@ -129,8 +129,8 @@ def test_build_report_merges_top_and_pod_metadata():
 def test_render_markdown_escapes_process_command_pipes():
     mod = _load_module()
     report = mod.build_report(
-        namespace="deer-flow",
-        selector="app=deer-flow-sandbox",
+        namespace="berkshire-agent",
+        selector="app=berkshire-agent-sandbox",
         sample="pipe-command",
         top_pods=mod.parse_top_pods("sandbox-abc 29m 792Mi\n"),
         pod_json={"items": []},
@@ -149,8 +149,8 @@ def test_render_markdown_escapes_process_command_pipes():
 def test_build_report_counts_unparsed_memory_values():
     mod = _load_module()
     report = mod.build_report(
-        namespace="deer-flow",
-        selector="app=deer-flow-sandbox",
+        namespace="berkshire-agent",
+        selector="app=berkshire-agent-sandbox",
         sample="partial",
         top_pods=mod.parse_top_pods("sandbox-abc 29m 792Mi\nsandbox-def bad unknown\n"),
         pod_json={"items": []},
@@ -166,8 +166,8 @@ def test_build_report_counts_unparsed_memory_values():
 def test_build_report_includes_process_sample_errors():
     mod = _load_module()
     report = mod.build_report(
-        namespace="deer-flow",
-        selector="app=deer-flow-sandbox",
+        namespace="berkshire-agent",
+        selector="app=berkshire-agent-sandbox",
         sample="partial",
         top_pods=mod.parse_top_pods("sandbox-abc 29m 792Mi\n"),
         pod_json={"items": []},
@@ -194,7 +194,7 @@ def test_collect_process_samples_records_errors_and_continues(monkeypatch):
 
     result = mod.collect_process_samples(
         pods,
-        namespace="deer-flow",
+        namespace="berkshire-agent",
         kubectl="kubectl",
         limit=5,
     )
@@ -219,7 +219,7 @@ def test_collect_process_samples_records_timeout_and_continues(monkeypatch):
 
     result = mod.collect_process_samples(
         pods,
-        namespace="deer-flow",
+        namespace="berkshire-agent",
         kubectl="kubectl",
         limit=5,
         kubectl_timeout=7,
@@ -232,8 +232,8 @@ def test_collect_process_samples_records_timeout_and_continues(monkeypatch):
 def test_render_markdown_includes_sample_and_notes():
     mod = _load_module()
     report = mod.build_report(
-        namespace="deer-flow",
-        selector="app=deer-flow-sandbox",
+        namespace="berkshire-agent",
+        selector="app=berkshire-agent-sandbox",
         sample="after-python",
         top_pods=mod.parse_top_pods("sandbox-abc 29m 792Mi\n"),
         pod_json={"items": []},
@@ -253,8 +253,8 @@ def test_collect_rejects_invalid_kubectl_timeout():
 
     try:
         mod.collect(
-            namespace="deer-flow",
-            selector="app=deer-flow-sandbox",
+            namespace="berkshire-agent",
+            selector="app=berkshire-agent-sandbox",
             sample="empty",
             kubectl="kubectl",
             kubectl_timeout=0,

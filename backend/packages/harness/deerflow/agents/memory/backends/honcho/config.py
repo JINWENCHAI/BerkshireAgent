@@ -1,7 +1,7 @@
 """Honcho backend config — parses ``backend_config`` (see noop/config.py for the golden rule).
 
 The backend receives everything through the ABC method args and this dict; it
-imports nothing from deer-flow. Self-hosted Honcho commonly runs auth-less over
+imports nothing from berkshire-agent. Self-hosted Honcho commonly runs auth-less over
 plain HTTP; a configured ``api_key`` over plain HTTP requires the explicit
 ``allow_insecure_http: true`` opt-in (same posture as the mem0 backend).
 """

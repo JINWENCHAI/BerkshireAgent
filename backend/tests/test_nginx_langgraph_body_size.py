@@ -17,7 +17,7 @@ config reading): nginx's defaults are unfit for a text-chat proxy route.
   unwritable, which makes nginx fail the request with a raw
   "500 Internal Server Error" page and a "Permission denied" line in the
   error log, matching the reporter's exact symptom (nginx error page, no
-  DeerFlow JSON/SSE error) and reproduced independently while diagnosing
+  BerkshireAgent JSON/SSE error) and reproduced independently while diagnosing
   this issue.
 
 The uploads location (``/api/threads/{id}/uploads``) already carries both

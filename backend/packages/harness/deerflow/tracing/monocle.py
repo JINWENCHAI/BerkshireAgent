@@ -62,7 +62,7 @@ def setup_monocle_tracing_if_enabled() -> bool:
         raise RuntimeError("MONOCLE_TRACING is enabled but monocle_apptrace is not installed. Install the 'monocle' extra: `uv sync --extra monocle` in backend/, or `pip install 'deerflow-harness[monocle]'`.") from exc
 
     # monocle_exporters_list takes the comma-separated string as-is (monocle_apptrace's API).
-    setup_monocle_telemetry(workflow_name="deer-flow", monocle_exporters_list=exporters)
+    setup_monocle_telemetry(workflow_name="berkshire-agent", monocle_exporters_list=exporters)
     global _setup_completed
     _setup_completed = True
     logger.info("Monocle telemetry enabled (exporters=%s)", exporters)

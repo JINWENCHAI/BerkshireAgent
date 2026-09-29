@@ -42,7 +42,7 @@ image ships Python 3, so the default path needs no configuration.
 Build context is the **repo root** (the broker module lives under `backend/`):
 
 ```bash
-docker build -t deer-flow/lark-cli-broker:v1.0.65 \
+docker build -t berkshire-agent/lark-cli-broker:v1.0.65 \
   --build-arg LARK_CLI_VERSION=v1.0.65 \
   -f docker/lark-cli-broker/Dockerfile .
 ```
@@ -51,9 +51,9 @@ The tag should encode the lark-cli version so it can be bumped independently of
 the upstream `all-in-one-sandbox` image.
 
 CI publishes multi-arch (`linux/amd64,linux/arm64`) images to
-`ghcr.io/<owner>/deer-flow-lark-cli-broker:<lark-cli-version>` via
+`ghcr.io/<owner>/berkshire-agent-lark-cli-broker:<lark-cli-version>` via
 `.github/workflows/lark-cli-images.yaml` (run it with a `lark_cli_version` input,
-or push a `lark-cli-v*` tag). This is decoupled from the DeerFlow `v*` release
+or push a `lark-cli-v*` tag). This is decoupled from the BerkshireAgent `v*` release
 because the image tracks the upstream `larksuite/cli` version.
 
 ## Wiring it into the provisioner

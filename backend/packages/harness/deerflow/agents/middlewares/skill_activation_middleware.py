@@ -518,7 +518,7 @@ Follow this skill before choosing a general workflow. Load supporting resources 
         binding, or ``None``.
 
         Match strictly by normalized container file path — never by name. A
-        by-name fallback would be a confused deputy: DeerFlow lets a custom skill
+        by-name fallback would be a confused deputy: BerkshireAgent lets a custom skill
         shadow a same-named public/legacy one (load_skills de-dupes by name,
         custom wins), so a reference to public/foo could bind the custom foo's
         secrets. A path that does not resolve simply binds nothing (the safe

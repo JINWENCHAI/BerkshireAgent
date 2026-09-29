@@ -1,6 +1,6 @@
-"""E2B cloud sandbox provider for DeerFlow.
+"""E2B cloud sandbox provider for BerkshireAgent.
 
-This package implements DeerFlow's :class:`Sandbox` / :class:`SandboxProvider`
+This package implements BerkshireAgent's :class:`Sandbox` / :class:`SandboxProvider`
 contract on top of the `e2b` / `e2b_code_interpreter` cloud sandbox SDK.
 
 Configuration example (``config.yaml``)::

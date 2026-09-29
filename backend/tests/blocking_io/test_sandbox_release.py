@@ -83,7 +83,7 @@ def _make_provider_with_active_sandbox(tmp_path: Path, sandbox_id: str):
         sandbox_id: SandboxInfo(
             sandbox_id=sandbox_id,
             sandbox_url="http://localhost:8080",
-            container_name=f"deer-flow-sandbox-{sandbox_id}",
+            container_name=f"berkshire-agent-sandbox-{sandbox_id}",
             created_at=1.0,
         )
     }

@@ -1,6 +1,6 @@
 ---
 title: Design Principles
-description: Understanding the design principles behind DeerFlow Harness helps you use it effectively, extend it confidently, and reason about how your agents will behave in production.
+description: Understanding the design principles behind BerkshireAgent Harness helps you use it effectively, extend it confidently, and reason about how your agents will behave in production.
 ---
 
 import { Callout } from "nextra/components";
@@ -8,12 +8,12 @@ import { Callout } from "nextra/components";
 # Design Principles
 
 <Callout type="info" emoji="🏗️">
-  DeerFlow is built around one central idea: agent behavior should be composed
+  BerkshireAgent is built around one central idea: agent behavior should be composed
   from small, observable, replaceable pieces — not hardcoded into a fixed
   workflow graph.
 </Callout>
 
-Understanding the design principles behind DeerFlow Harness helps you use it effectively, extend it confidently, and reason about how your agents will behave in production.
+Understanding the design principles behind BerkshireAgent Harness helps you use it effectively, extend it confidently, and reason about how your agents will behave in production.
 
 ## Why a harness, not a framework
 
@@ -21,7 +21,7 @@ A framework gives you abstractions and building blocks. You assemble the parts a
 
 A **harness** goes further. It packages an opinionated, ready-to-run runtime so that agents can do real work without you rebuilding the same infrastructure every time.
 
-DeerFlow is a harness because it bundles:
+BerkshireAgent is a harness because it bundles:
 
 - a lead agent with tool routing,
 - a middleware chain that wraps every LLM turn,
@@ -35,7 +35,7 @@ You do not need to design the orchestration layer from scratch. The harness is t
 
 ## Long-horizon tasks are the primary case
 
-DeerFlow is designed for tasks that require more than a single prompt-response exchange. A useful long-horizon agent must:
+BerkshireAgent is designed for tasks that require more than a single prompt-response exchange. A useful long-horizon agent must:
 
 1. make a plan,
 2. call tools in sequence,
@@ -44,11 +44,11 @@ DeerFlow is designed for tasks that require more than a single prompt-response e
 5. delegate work to subagents when the task is too broad, and
 6. return a concrete artifact at the end.
 
-Every architectural decision in DeerFlow is evaluated against this use case. Short, stateless exchanges are easy. Long, multi-step workflows under real-world pressure are the target.
+Every architectural decision in BerkshireAgent is evaluated against this use case. Short, stateless exchanges are easy. Long, multi-step workflows under real-world pressure are the target.
 
 ## Middleware chain over inheritance
 
-DeerFlow does not ask you to subclass an agent or override methods to change its behavior. Instead, it uses a **middleware chain** that wraps every LLM turn.
+BerkshireAgent does not ask you to subclass an agent or override methods to change its behavior. Instead, it uses a **middleware chain** that wraps every LLM turn.
 
 Each middleware is a small, focused plugin that can inspect or modify the agent's state before and after the model call. The lead agent's behavior is entirely determined by which middlewares are active.
 
@@ -68,15 +68,15 @@ The key design decision is that skills are loaded **on demand**. The base agent 
 
 This matters because it keeps the base agent's context clean. A specialized prompt for writing academic papers does not pollute a session focused on coding. Skills inject their content exactly when relevant and no further.
 
-Skills also make the system extensible. Adding a new capability to DeerFlow means writing a new skill pack, not modifying the agent core.
+Skills also make the system extensible. Adding a new capability to BerkshireAgent means writing a new skill pack, not modifying the agent core.
 
 ## Sandbox is the execution environment
 
-DeerFlow gives agents a **sandbox**: an isolated workspace where they can read files, write outputs, run commands, and produce artifacts.
+BerkshireAgent gives agents a **sandbox**: an isolated workspace where they can read files, write outputs, run commands, and produce artifacts.
 
 This turns the agent from a text generator into a system that can do work. Instead of only describing what code to write, the agent can write it, run it, and verify the result.
 
-Isolation is important because execution should be reproducible and controllable. The sandbox is the reason DeerFlow can support genuine action rather than only conversation.
+Isolation is important because execution should be reproducible and controllable. The sandbox is the reason BerkshireAgent can support genuine action rather than only conversation.
 
 Two modes are available:
 
@@ -87,18 +87,18 @@ Two modes are available:
 
 Context pressure is the primary challenge for long-horizon agents. If everything accumulates in the context window indefinitely, the agent becomes slower, noisier, and less reliable.
 
-DeerFlow addresses this through **context engineering** — deliberate control of what the agent sees, remembers, and ignores at each step:
+BerkshireAgent addresses this through **context engineering** — deliberate control of what the agent sees, remembers, and ignores at each step:
 
 - **Summarization**: when the conversation grows too long, older turns are summarized and replaced. The agent retains the meaning without the bulk.
 - **Scoped subagent context**: when work is delegated to a subagent, that subagent receives only the information it needs for its piece of the task, not the full parent history.
 - **External working memory**: files and artifacts produced during a task live on disk, not in the context window. The agent references them when needed.
 - **Memory injection**: cross-session facts are injected into the system prompt at a controlled token budget.
 
-This is one of the most important ideas in DeerFlow. Good agent behavior is not only about a stronger model. It is also about giving the model the right working set at the right time.
+This is one of the most important ideas in BerkshireAgent. Good agent behavior is not only about a stronger model. It is also about giving the model the right working set at the right time.
 
 ## Configuration drives behavior
 
-All meaningful behaviors in DeerFlow are controlled through `config.yaml`. The system is designed so that operators can change how the agent behaves — which models to use, whether summarization is active, how subagents are limited, what tools are available — without touching code.
+All meaningful behaviors in BerkshireAgent are controlled through `config.yaml`. The system is designed so that operators can change how the agent behaves — which models to use, whether summarization is active, how subagents are limited, what tools are available — without touching code.
 
 This design principle has three implications:
 

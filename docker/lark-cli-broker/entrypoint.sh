@@ -1,5 +1,5 @@
 #!/bin/sh
-# DeerFlow lark-cli broker entrypoint (Pattern B, issue #4338).
+# BerkshireAgent lark-cli broker entrypoint (Pattern B, issue #4338).
 #
 # Dispatches to one of two modes on the single stdlib-only module:
 #

@@ -11,7 +11,7 @@ import pytest
 from textual.containers import VerticalScroll
 
 from deerflow.client import StreamEvent
-from deerflow.tui.app import DeerFlowTUI
+from deerflow.tui.app import BerkshireAgentTUI
 from deerflow.tui.cli import LaunchPlan
 from deerflow.tui.view_state import SystemMessage
 
@@ -52,7 +52,7 @@ async def _wait_until(predicate, pilot, *, timeout=3.0):
     return predicate()
 
 
-async def _fill_scrollable_transcript(app: DeerFlowTUI, pilot) -> VerticalScroll:
+async def _fill_scrollable_transcript(app: BerkshireAgentTUI, pilot) -> VerticalScroll:
     for index in range(80):
         app._dispatch(SystemMessage(f"row {index}: " + "content " * 12))
     await pilot.pause()
@@ -64,7 +64,7 @@ async def _fill_scrollable_transcript(app: DeerFlowTUI, pilot) -> VerticalScroll
 
 @pytest.mark.asyncio
 async def test_app_runs_a_turn_and_renders_streamed_assistant():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("h", "i")
@@ -84,7 +84,7 @@ async def test_app_runs_a_turn_and_renders_streamed_assistant():
 
 @pytest.mark.asyncio
 async def test_app_assigns_thread_id_on_first_send():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         assert app._conv_thread_id is None
@@ -96,7 +96,7 @@ async def test_app_assigns_thread_id_on_first_send():
 
 @pytest.mark.asyncio
 async def test_help_command_renders_system_row_without_calling_agent():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         for ch in "/help":
@@ -119,7 +119,7 @@ async def test_help_command_renders_system_row_without_calling_agent():
 async def test_help_text_matches_command_registry():
     from deerflow.tui.command_registry import format_command_help
 
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         for ch in "/help":
@@ -134,7 +134,7 @@ async def test_help_text_matches_command_registry():
 @pytest.mark.asyncio
 async def test_clear_command_clears_display_without_resetting_thread_or_calling_agent():
     session = _FakeSession()
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         app._conv_thread_id = "thread-123"
@@ -151,7 +151,7 @@ async def test_clear_command_clears_display_without_resetting_thread_or_calling_
 
 @pytest.mark.asyncio
 async def test_up_arrow_recalls_previous_input_from_history():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         for ch in "remember me":
@@ -166,7 +166,7 @@ async def test_up_arrow_recalls_previous_input_from_history():
 
 @pytest.mark.asyncio
 async def test_escape_interrupts_an_active_run():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         app._streaming = True
@@ -208,7 +208,7 @@ class _BlockedSession(_FakeSession):
 @pytest.mark.asyncio
 async def test_clear_command_is_blocked_during_active_stream():
     session = _BlockedSession()
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("h", "i")
@@ -229,7 +229,7 @@ async def test_clear_command_is_blocked_during_active_stream():
 @pytest.mark.asyncio
 async def test_new_command_is_blocked_during_active_stream():
     session = _BlockedSession()
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("h", "i")
@@ -262,7 +262,7 @@ async def test_quit_interrupts_an_active_stream_before_exiting():
     abandoned without a trace.
     """
     session = _BlockedSession()
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("h", "i")
@@ -288,7 +288,7 @@ async def test_quit_interrupts_an_active_stream_before_exiting():
 async def test_ctrl_c_interrupts_an_active_stream_without_exiting():
     """Contrast/control: Ctrl+C on a real blocked worker interrupts but stays open."""
     session = _BlockedSession()
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("h", "i")
@@ -307,7 +307,7 @@ async def test_ctrl_c_interrupts_an_active_stream_without_exiting():
 
 @pytest.mark.asyncio
 async def test_tab_keeps_focus_on_composer_when_palette_closed():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         composer = app.query_one("#composer")
@@ -320,7 +320,7 @@ async def test_tab_keeps_focus_on_composer_when_palette_closed():
 
 @pytest.mark.asyncio
 async def test_page_keys_scroll_transcript_without_moving_composer_focus():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test(size=(80, 24)) as pilot:
         await pilot.pause()
         composer = app.query_one("#composer")
@@ -343,7 +343,7 @@ async def test_page_keys_scroll_transcript_without_moving_composer_focus():
 
 @pytest.mark.asyncio
 async def test_transcript_update_does_not_cancel_pending_page_scroll():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test(size=(80, 24)) as pilot:
         await pilot.pause()
         scroll = await _fill_scrollable_transcript(app, pilot)
@@ -359,7 +359,7 @@ async def test_transcript_update_does_not_cancel_pending_page_scroll():
 
 @pytest.mark.asyncio
 async def test_transcript_refresh_preserves_manual_scroll_until_returning_to_end():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test(size=(80, 24)) as pilot:
         await pilot.pause()
         scroll = await _fill_scrollable_transcript(app, pilot)
@@ -388,7 +388,7 @@ async def test_transcript_refresh_preserves_manual_scroll_until_returning_to_end
 
 @pytest.mark.asyncio
 async def test_transcript_refresh_preserves_non_key_scroll_position():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test(size=(80, 24)) as pilot:
         await pilot.pause()
         scroll = await _fill_scrollable_transcript(app, pilot)
@@ -405,7 +405,7 @@ async def test_transcript_refresh_preserves_non_key_scroll_position():
 
 @pytest.mark.asyncio
 async def test_unknown_command_shows_error_system_row():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         for ch in "/nope":
@@ -457,7 +457,7 @@ def _system_rows(app):
 @pytest.mark.asyncio
 async def test_goal_set_mints_thread_and_reports_objective():
     session = _GoalSession()
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         assert app._conv_thread_id is None
@@ -471,7 +471,7 @@ async def test_goal_set_mints_thread_and_reports_objective():
 @pytest.mark.asyncio
 async def test_goal_status_without_thread_reports_no_active_goal():
     session = _GoalSession()
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         app._handle_goal("")
@@ -485,7 +485,7 @@ async def test_goal_status_without_thread_reports_no_active_goal():
 async def test_goal_status_reports_active_objective():
     session = _GoalSession()
     session.client.goal = {"objective": "ship it", "status": "active"}
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         app._conv_thread_id = "t-1"
@@ -499,7 +499,7 @@ async def test_goal_status_reports_active_objective():
 async def test_goal_clear_calls_gateway_and_confirms():
     session = _GoalSession()
     session.client.goal = {"objective": "ship it", "status": "active"}
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         app._conv_thread_id = "t-1"
@@ -517,7 +517,7 @@ async def test_goal_set_failure_shows_error_tone():
 
     session = _GoalSession()
     session.client = _Boom()
-    app = DeerFlowTUI(session, LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(session, LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         app._conv_thread_id = "t-1"

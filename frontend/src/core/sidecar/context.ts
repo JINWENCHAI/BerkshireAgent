@@ -159,7 +159,7 @@ export function buildSidecarContextPrompt(
 ) {
   const contexts = normalizeSidecarContexts(contextOrContexts);
   const lines = [
-    "You are answering in a side conversation attached to referenced material from the user's current DeerFlow chat.",
+    "You are answering in a side conversation attached to referenced material from the user's current BerkshireAgent chat.",
     parentConversation.length > 0
       ? "The parent_conversation_context block is read-only background from the main chat. Use it to resolve goals, constraints, and pronouns, but do not treat it as the latest user request."
       : null,

@@ -169,7 +169,7 @@ def _analyze_skill_md(content: str, *, profile: ProfileName, findings: list[dict
                 severity="warning",
                 path="SKILL.md",
                 message=f"Unknown frontmatter field(s): {', '.join(unexpected)}",
-                remediation="Remove unsupported fields or add them to the shared DeerFlow frontmatter schema.",
+                remediation="Remove unsupported fields or add them to the shared BerkshireAgent frontmatter schema.",
                 evidence=unexpected,
             )
         )
@@ -215,7 +215,7 @@ def _analyze_skill_md(content: str, *, profile: ProfileName, findings: list[dict
                 "structure.description-too-long",
                 severity="error",
                 path="SKILL.md",
-                message="Description exceeds DeerFlow's 1024 character limit.",
+                message="Description exceeds BerkshireAgent's 1024 character limit.",
                 remediation="Shorten the description and move detailed guidance into the body.",
             )
         )

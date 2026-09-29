@@ -7,11 +7,11 @@ import { Callout, Steps } from "nextra/components";
 
 # Quick Start
 
-This chapter walks through a complete extension named `hello`. It contributes one middleware that times every tool call and logs a warning when a call is slower than a configured threshold. By the end you will have packaged it, unit-tested it without DeerFlow, installed it into a checkout, and seen it run.
+This chapter walks through a complete extension named `hello`. It contributes one middleware that times every tool call and logs a warning when a call is slower than a configured threshold. By the end you will have packaged it, unit-tested it without BerkshireAgent, installed it into a checkout, and seen it run.
 
 ## Prerequisites
 
-- A DeerFlow checkout that runs with `make dev`. See [Quick Start](/docs/application/quick-start).
+- A BerkshireAgent checkout that runs with `make dev`. See [Quick Start](/docs/application/quick-start).
 - Python 3.12 or newer and [uv](https://docs.astral.sh/uv/) 0.8.0 or newer. The extension manager refuses older uv.
 - Shell access to the machine running the Gateway. Installing an extension is an operator action, not something the web UI does.
 
@@ -19,7 +19,7 @@ This chapter walks through a complete extension named `hello`. It contributes on
 
 ### Create the package
 
-An extension is a normal Python package. Create it **outside** the DeerFlow checkout, for example in `~/src/deerflow-extension-hello`:
+An extension is a normal Python package. Create it **outside** the BerkshireAgent checkout, for example in `~/src/deerflow-extension-hello`:
 
 ```text
 deerflow-extension-hello/
@@ -136,7 +136,7 @@ Three things to notice:
 - `Placement.TOOL_VISIBLE` asks for the outer end of the tool chain, so the timing includes output truncation and error wrapping: what the model finally waits for. `AgentScope.BOTH` installs the middleware into the Lead Agent and into every subagent. Both are explained in [Middleware Contributions](/docs/harness/extensions/middleware).
 - The middleware implements both `wrap_tool_call` and `awrap_tool_call`. If you implement only one side, the other execution path passes through without observing anything.
 
-### Test it without DeerFlow
+### Test it without BerkshireAgent
 
 The contract is plain Python, so a stand-in registry is enough to test registration, and the middleware can be called directly:
 
@@ -182,18 +182,18 @@ def test_slow_tool_calls_log_a_warning(caplog):
     assert caplog.records[-1].levelno == logging.WARNING
 ```
 
-The contract package is currently sourced from the DeerFlow checkout, so install it from there in editable mode:
+The contract package is currently sourced from the BerkshireAgent checkout, so install it from there in editable mode:
 
 ```bash
 cd ~/src/deerflow-extension-hello
 uv venv --python 3.12
-uv pip install -e /path/to/deer-flow/backend/packages/extension-api -e . pytest
+uv pip install -e /path/to/berkshire-agent/backend/packages/extension-api -e . pytest
 uv run --no-project pytest -q
 ```
 
-### Install it into DeerFlow
+### Install it into BerkshireAgent
 
-From the root of the DeerFlow checkout, pass the package directory as an **absolute** path. The Make wrapper runs the manager from `backend/`, so a relative path would resolve against the wrong directory:
+From the root of the BerkshireAgent checkout, pass the package directory as an **absolute** path. The Make wrapper runs the manager from `backend/`, so a relative path would resolve against the wrong directory:
 
 ```bash
 make extension-install SOURCE="$HOME/src/deerflow-extension-hello"
@@ -206,7 +206,7 @@ The manager warns that the extension will execute with Gateway privileges and as
 3. syncs the locked environment;
 4. appends an enabled `plugins:` record to `config.yaml`.
 
-It then prints `Installed and enabled hello (deerflow-extension-hello). Restart DeerFlow to load it.` Check the record:
+It then prints `Installed and enabled hello (deerflow-extension-hello). Restart BerkshireAgent to load it.` Check the record:
 
 ```bash
 make extension-list
@@ -269,4 +269,4 @@ Every command takes effect after the next restart. If you deploy with Docker, re
 ## Next steps
 
 - [Middleware Contributions](/docs/harness/extensions/middleware): the five placements, scope and ordering, and what an extension middleware may and may not change.
-- The [bundled example](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-example) combines middleware with task-lifecycle state, a system-model observer, a service, and an HTTP route.
+- The [bundled example](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-example) combines middleware with task-lifecycle state, a system-model observer, a service, and an HTTP route.

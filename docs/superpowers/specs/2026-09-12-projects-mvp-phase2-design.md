@@ -1,9 +1,9 @@
-# DeerFlow Projects MVP — Phase 2 Design (Instructions, Documents, Promotion, Trash)
+# BerkshireAgent Projects MVP — Phase 2 Design (Instructions, Documents, Promotion, Trash)
 
 **Date**: 2026-09-12
-**Status**: Draft for review (RFC v2, [issue #5160](https://github.com/bytedance/deer-flow/issues/5160))
+**Status**: Draft for review (RFC v2, [issue #5160](https://github.com/bytedance/berkshire-agent/issues/5160))
 **Phase**: Phase 2 of the Projects MVP. Phase 1 (organization) landed as #5265 (`cfda885c`..`e2f2afde`, merged 2026-09-08).
-**Source of truth**: **This spec governs Phase 2 in full**, including where it differs from RFC v2 (`docs/plans/2026-09-06-projects-mvp-rfc-v2.md` / `.zh.md`) or the predecessor spec. The RFC is historical context; §10 explains significant departures and is not a prerequisite for this spec to take precedence. An omission is an open implementation detail to resolve against this spec, not an implicit import of an RFC requirement. Requirement tracker: [#5129](https://github.com/bytedance/deer-flow/issues/5129).
+**Source of truth**: **This spec governs Phase 2 in full**, including where it differs from RFC v2 (`docs/plans/2026-09-06-projects-mvp-rfc-v2.md` / `.zh.md`) or the predecessor spec. The RFC is historical context; §10 explains significant departures and is not a prerequisite for this spec to take precedence. An omission is an open implementation detail to resolve against this spec, not an implicit import of an RFC requirement. Requirement tracker: [#5129](https://github.com/bytedance/berkshire-agent/issues/5129).
 **Predecessor**: `docs/superpowers/specs/2026-09-06-projects-mvp-design.md` (§"Runtime Design (Phase 2)", §"Delete, Trash, and Archive Semantics" are **superseded** by §7/§8 here; the Phase-1 sections of that spec remain accurate).
 **Pin**: every current-system claim below was re-verified against `main @ 0464502a` (2026-09-12) in this checkout.
 

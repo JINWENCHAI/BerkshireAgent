@@ -12,7 +12,7 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from pydantic import PrivateAttr
 
 from deerflow.agents.middlewares.dynamic_context_middleware import _DYNAMIC_CONTEXT_REMINDER_KEY
-from deerflow.agents.middlewares.summarization_middleware import DeerFlowSummarizationMiddleware
+from deerflow.agents.middlewares.summarization_middleware import BerkshireAgentSummarizationMiddleware
 from deerflow.agents.middlewares.todo_middleware import TODO_REMINDER_MESSAGE_NAME, TodoMiddleware
 from deerflow.agents.thread_state import ThreadState
 
@@ -53,7 +53,7 @@ def _middleware(*, trigger: int = 4, text: str = "Gateway route documentation is
     model.invoke.return_value = SimpleNamespace(text=text)
     model.ainvoke = AsyncMock(return_value=SimpleNamespace(text=text))
     model.with_config.return_value = model
-    return DeerFlowSummarizationMiddleware(model=model, trigger=("messages", trigger), keep=("messages", 3), token_counter=len, before_summarization=hooks)
+    return BerkshireAgentSummarizationMiddleware(model=model, trigger=("messages", trigger), keep=("messages", 3), token_counter=len, before_summarization=hooks)
 
 
 @pytest.mark.asyncio

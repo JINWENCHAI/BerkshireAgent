@@ -1,6 +1,6 @@
 ---
 title: 扩展包
-description: 扩展包是独立发布的 Python 包，通过一个 install() 函数接入 DeerFlow Gateway。本章介绍扩展能贡献什么、什么时候该用扩展而不是工具、MCP 或技能、扩展如何加载，以及如何阅读本手册。
+description: 扩展包是独立发布的 Python 包，通过一个 install() 函数接入 BerkshireAgent Gateway。本章介绍扩展能贡献什么、什么时候该用扩展而不是工具、MCP 或技能、扩展如何加载，以及如何阅读本手册。
 asIndexPage: true
 ---
 
@@ -9,11 +9,11 @@ import { Callout } from "nextra/components";
 # 扩展包
 
 <Callout type="info" emoji="🧩">
-  扩展包是 DeerFlow 在 Gateway 启动时导入的普通 Python 包。它只依赖公开的
-  `deerflow-extension-api` 契约，因此构建、测试和发布都不需要导入 DeerFlow 本身。
+  扩展包是 BerkshireAgent 在 Gateway 启动时导入的普通 Python 包。它只依赖公开的
+  `deerflow-extension-api` 契约，因此构建、测试和发布都不需要导入 BerkshireAgent 本身。
 </Callout>
 
-工具、MCP 服务器和技能给模型增加可调用的能力；扩展包给**宿主**增加行为：观察每一次模型调用和工具调用，在运行开始和结束时做出响应，在 Gateway 旁运行后台服务，并提供自己的 HTTP 路由。审计日志、成本核算、治理看板这类集成，扩展包是不 fork DeerFlow 就能交付的受支持方式。
+工具、MCP 服务器和技能给模型增加可调用的能力；扩展包给**宿主**增加行为：观察每一次模型调用和工具调用，在运行开始和结束时做出响应，在 Gateway 旁运行后台服务，并提供自己的 HTTP 路由。审计日志、成本核算、治理看板这类集成，扩展包是不 fork BerkshireAgent 就能交付的受支持方式。
 
 ## 如何阅读本手册
 
@@ -22,7 +22,7 @@ import { Callout } from "nextra/components";
 | 扩展作者           | 本页、[快速上手](/docs/harness/extensions/quick-start)、[运行时模型](/docs/harness/extensions/runtime)，然后按下文每种贡献类型阅读对应章节 |
 | 运维人员           | [运维扩展](/docs/harness/extensions/operations)、[故障排查](/docs/harness/extensions/troubleshooting)、[信任模型](#信任模型)                |
 | 查某个名称         | [参考](/docs/harness/extensions/reference)                                                                              |
-| DeerFlow 贡献者    | `backend/packages/harness/deerflow/extensions/AGENTS.md`，其中记录了宿主侧的设计决策                  |
+| BerkshireAgent 贡献者    | `backend/packages/harness/deerflow/extensions/AGENTS.md`，其中记录了宿主侧的设计决策                  |
 
 ## 该不该做成扩展包？
 
@@ -45,14 +45,14 @@ import { Callout } from "nextra/components";
 | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `registry.middlewares(contributor)`         | 按语义位置插入 Lead Agent 和子 Agent 链的 `AgentMiddleware`。见[中间件贡献](/docs/harness/extensions/middleware) |
 | `registry.task_lifecycle(contributor)`      | 每次 Lead 运行和每个被委派的子 Agent 的 `on_task_start` / `on_task_stop`。见[生命周期与观察者](/docs/harness/extensions/observers) |
-| `registry.system_model_observer(obs)`       | DeerFlow 自己发起的模型调用快照：目标评估、记忆抽取、标题生成、摘要压缩。见[生命周期与观察者](/docs/harness/extensions/observers) |
+| `registry.system_model_observer(obs)`       | BerkshireAgent 自己发起的模型调用快照：目标评估、记忆抽取、标题生成、摘要压缩。见[生命周期与观察者](/docs/harness/extensions/observers) |
 | `registry.agent_assembly_observer(obs)`     | 每个组装完成的 Agent 的描述：模型、提示词哈希、工具、中间件栈、技能和指纹。见[生命周期与观察者](/docs/harness/extensions/observers) |
 | `registry.context_compaction_observer(obs)` | 每次摘要压缩从上下文中移除消息时的 `CompactionEvent`。见[生命周期与观察者](/docs/harness/extensions/observers) |
 | `registry.service(service)`                 | 在 Gateway 持久化层就绪后启动、关闭时停止的对象，可通过[运行证据](/docs/harness/extensions/run-evidence)读取器读取运行。见[服务与路由](/docs/harness/extensions/services-and-routes) |
 | `registry.routers(routers)`                 | 在所有宿主路由之后挂载、受 Gateway 认证保护的 FastAPI 路由。见[服务与路由](/docs/harness/extensions/services-and-routes) |
 | `registry.plugin(contribution)`             | 实验性。浏览器模块、带认证的后端动作和模型工具。宿主不支持插件时返回 `False`。见[全栈插件](/docs/harness/extensions/plugins) |
 
-一个扩展可以注册任意组合。[内置示例](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-example)注册了一个中间件、一个任务生命周期贡献者、一个系统模型观察者、一个服务和一个路由。
+一个扩展可以注册任意组合。[内置示例](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-example)注册了一个中间件、一个任务生命周期贡献者、一个系统模型观察者、一个服务和一个路由。
 
 ## 安装与加载
 
@@ -100,7 +100,7 @@ plugins:
 
 ## 版本
 
-契约包独立于 DeerFlow 进行版本管理，宿主通过 `deerflow_extension_api.API_VERSION` 暴露其版本。本手册覆盖 `deerflow-extension-api` **0.2.4**。
+契约包独立于 BerkshireAgent 进行版本管理，宿主通过 `deerflow_extension_api.API_VERSION` 暴露其版本。本手册覆盖 `deerflow-extension-api` **0.2.4**。
 
 - 1.0 之前，minor 版本可以有不兼容变更，patch 版本只做增量。1.0 之后，不兼容变更会升 major。
 - 每个 Protocol 方法都有默认实现，每个可选的 dataclass 字段都有默认值，所以增量发布不会破坏已经发布的扩展。
@@ -110,7 +110,7 @@ plugins:
 
 ## 术语
 
-- **宿主**：加载扩展的 DeerFlow Gateway 进程。
+- **宿主**：加载扩展的 BerkshireAgent Gateway 进程。
 - **贡献**：通过注册表注册的一个对象：贡献者、观察者、服务、路由或插件。
 - **贡献者**：宿主回调以获取贡献的对象，例如 `MiddlewareContributor`，每构建一个 Agent 就返回一次中间件。
 - **作用域**：一份状态所属的生命周期。**应用作用域**与 Gateway 同寿；**任务作用域**只存活一次 Lead 运行或一次子 Agent 执行。

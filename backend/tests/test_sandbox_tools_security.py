@@ -34,9 +34,9 @@ from deerflow.sandbox.tools import (
 )
 
 _THREAD_DATA = {
-    "workspace_path": "/tmp/deer-flow/threads/t1/user-data/workspace",
-    "uploads_path": "/tmp/deer-flow/threads/t1/user-data/uploads",
-    "outputs_path": "/tmp/deer-flow/threads/t1/user-data/outputs",
+    "workspace_path": "/tmp/berkshire-agent/threads/t1/user-data/workspace",
+    "uploads_path": "/tmp/berkshire-agent/threads/t1/user-data/uploads",
+    "outputs_path": "/tmp/berkshire-agent/threads/t1/user-data/outputs",
 }
 
 
@@ -44,8 +44,8 @@ _THREAD_DATA = {
 
 
 def test_replace_virtual_path_maps_virtual_root_and_subpaths() -> None:
-    assert Path(replace_virtual_path("/mnt/user-data/workspace/a.txt", _THREAD_DATA)).as_posix() == "/tmp/deer-flow/threads/t1/user-data/workspace/a.txt"
-    assert Path(replace_virtual_path("/mnt/user-data", _THREAD_DATA)).as_posix() == "/tmp/deer-flow/threads/t1/user-data"
+    assert Path(replace_virtual_path("/mnt/user-data/workspace/a.txt", _THREAD_DATA)).as_posix() == "/tmp/berkshire-agent/threads/t1/user-data/workspace/a.txt"
+    assert Path(replace_virtual_path("/mnt/user-data", _THREAD_DATA)).as_posix() == "/tmp/berkshire-agent/threads/t1/user-data"
 
 
 def test_replace_virtual_path_preserves_trailing_slash() -> None:
@@ -57,7 +57,7 @@ def test_replace_virtual_path_preserves_trailing_slash() -> None:
     """
     result = replace_virtual_path("/mnt/user-data/workspace/", _THREAD_DATA)
     assert result.endswith("/"), f"Expected trailing slash, got: {result!r}"
-    assert result == "/tmp/deer-flow/threads/t1/user-data/workspace/"
+    assert result == "/tmp/berkshire-agent/threads/t1/user-data/workspace/"
 
 
 def test_replace_virtual_path_preserves_trailing_slash_windows_style() -> None:
@@ -67,9 +67,9 @@ def test_replace_virtual_path_preserves_trailing_slash_windows_style() -> None:
     mixed-separator path.  The separator must match the style of actual_base.
     """
     win_thread_data = {
-        "workspace_path": r"C:\deer-flow\threads\t1\user-data\workspace",
-        "uploads_path": r"C:\deer-flow\threads\t1\user-data\uploads",
-        "outputs_path": r"C:\deer-flow\threads\t1\user-data\outputs",
+        "workspace_path": r"C:\berkshire-agent\threads\t1\user-data\workspace",
+        "uploads_path": r"C:\berkshire-agent\threads\t1\user-data\uploads",
+        "outputs_path": r"C:\berkshire-agent\threads\t1\user-data\outputs",
     }
     result = replace_virtual_path("/mnt/user-data/workspace/", win_thread_data)
     assert result.endswith("\\"), f"Expected trailing backslash for Windows path, got: {result!r}"
@@ -79,12 +79,12 @@ def test_replace_virtual_path_preserves_trailing_slash_windows_style() -> None:
 def test_replace_virtual_path_preserves_windows_style_for_nested_subdir_trailing_slash() -> None:
     """Nested Windows-style subdirectories must keep backslashes throughout."""
     win_thread_data = {
-        "workspace_path": r"C:\deer-flow\threads\t1\user-data\workspace",
-        "uploads_path": r"C:\deer-flow\threads\t1\user-data\uploads",
-        "outputs_path": r"C:\deer-flow\threads\t1\user-data\outputs",
+        "workspace_path": r"C:\berkshire-agent\threads\t1\user-data\workspace",
+        "uploads_path": r"C:\berkshire-agent\threads\t1\user-data\uploads",
+        "outputs_path": r"C:\berkshire-agent\threads\t1\user-data\outputs",
     }
     result = replace_virtual_path("/mnt/user-data/workspace/subdir/", win_thread_data)
-    assert result == "C:\\deer-flow\\threads\\t1\\user-data\\workspace\\subdir\\"
+    assert result == "C:\\berkshire-agent\\threads\\t1\\user-data\\workspace\\subdir\\"
     assert "/" not in result, f"Mixed separators in Windows path: {result!r}"
 
 
@@ -92,17 +92,17 @@ def test_replace_virtual_paths_in_command_preserves_trailing_slash() -> None:
     """Trailing slash on a virtual path inside a command must be preserved."""
     cmd = """python -c "output_dir = '/mnt/user-data/workspace/'; print(output_dir + 'some_file.txt')\""""
     result = replace_virtual_paths_in_command(cmd, _THREAD_DATA)
-    assert "/tmp/deer-flow/threads/t1/user-data/workspace/" in result, f"Trailing slash lost in: {result!r}"
+    assert "/tmp/berkshire-agent/threads/t1/user-data/workspace/" in result, f"Trailing slash lost in: {result!r}"
 
 
 # ---------- mask_local_paths_in_output ----------
 
 
 def test_mask_local_paths_in_output_hides_host_paths() -> None:
-    output = "Created: /tmp/deer-flow/threads/t1/user-data/workspace/result.txt"
+    output = "Created: /tmp/berkshire-agent/threads/t1/user-data/workspace/result.txt"
     masked = mask_local_paths_in_output(output, _THREAD_DATA)
 
-    assert "/tmp/deer-flow/threads/t1/user-data" not in masked
+    assert "/tmp/berkshire-agent/threads/t1/user-data" not in masked
     assert "/mnt/user-data/workspace/result.txt" in masked
 
 
@@ -110,12 +110,12 @@ def test_mask_local_paths_in_output_hides_skills_host_paths() -> None:
     """Skills host paths in bash output should be masked to virtual paths."""
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
     ):
-        output = "Reading: /home/user/deer-flow/skills/public/bootstrap/SKILL.md"
+        output = "Reading: /home/user/berkshire-agent/skills/public/bootstrap/SKILL.md"
         masked = mask_local_paths_in_output(output, _THREAD_DATA)
 
-        assert "/home/user/deer-flow/skills" not in masked
+        assert "/home/user/berkshire-agent/skills" not in masked
         assert "/mnt/skills/public/bootstrap/SKILL.md" in masked
 
 
@@ -132,9 +132,9 @@ def test_mask_local_paths_does_not_match_inside_longer_sibling(suffix: str) -> N
     """
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
     ):
-        output = f"found /home/user/deer-flow/skills{suffix}"
+        output = f"found /home/user/berkshire-agent/skills{suffix}"
         masked = mask_local_paths_in_output(output, None)
 
         assert masked == output
@@ -150,7 +150,7 @@ def test_mask_local_paths_does_not_match_inside_longer_acp_sibling(suffix: str) 
     below) nothing maps its parent, so ``/mnt/acp-workspace-backup/hello.py``
     is unresolvable in both directions.
     """
-    acp_host = "/home/user/.deer-flow/acp-workspace"
+    acp_host = "/home/user/.berkshire-agent/acp-workspace"
     with patch("deerflow.sandbox.tools._get_acp_workspace_host_path", return_value=acp_host):
         output = f"copied {acp_host}{suffix}"
         masked = mask_local_paths_in_output(output, _THREAD_DATA)
@@ -172,10 +172,10 @@ def test_mask_local_paths_user_data_sibling_is_carried_by_the_virtual_root(suffi
     Green on ``main`` too: this is not a bug anchor, it guards the boundary from
     being narrowed into one that would stop translating a mapped path.
     """
-    masked = mask_local_paths_in_output(f"wrote /tmp/deer-flow/threads/t1/user-data/outputs{suffix}", _THREAD_DATA)
+    masked = mask_local_paths_in_output(f"wrote /tmp/berkshire-agent/threads/t1/user-data/outputs{suffix}", _THREAD_DATA)
 
     assert masked == f"wrote /mnt/user-data/outputs{suffix}"
-    assert replace_virtual_path(f"/mnt/user-data/outputs{suffix}", _THREAD_DATA) == f"/tmp/deer-flow/threads/t1/user-data/outputs{suffix}"
+    assert replace_virtual_path(f"/mnt/user-data/outputs{suffix}", _THREAD_DATA) == f"/tmp/berkshire-agent/threads/t1/user-data/outputs{suffix}"
 
 
 @pytest.mark.parametrize(
@@ -203,12 +203,12 @@ def test_mask_local_paths_still_matches_base_before_non_slash_boundaries(boundar
     """
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
     ):
-        masked = mask_local_paths_in_output(f"root is /home/user/deer-flow/skills{boundary}", None)
+        masked = mask_local_paths_in_output(f"root is /home/user/berkshire-agent/skills{boundary}", None)
 
         assert masked == f"root is {expected}"
-        assert "/home/user/deer-flow/skills" not in masked
+        assert "/home/user/berkshire-agent/skills" not in masked
 
 
 # Every redundant masking pass -- separator variants, the realpath spelling, the
@@ -220,7 +220,7 @@ _PATH_LIST_ENTRIES = 8
 
 def test_mask_local_paths_masks_every_entry_of_a_colon_joined_path_list() -> None:
     """Both source kinds: skills use the compiled regex, user-data the scanner."""
-    skills = "/home/user/deer-flow/skills"
+    skills = "/home/user/berkshire-agent/skills"
     workspace = _THREAD_DATA["workspace_path"]
     hosts = [f"{skills}/s{i}/bin" for i in range(_PATH_LIST_ENTRIES)] + [f"{workspace}/w{i}/bin" for i in range(_PATH_LIST_ENTRIES)]
     virtuals = [f"/mnt/skills/s{i}/bin" for i in range(_PATH_LIST_ENTRIES)] + [f"/mnt/user-data/workspace/w{i}/bin" for i in range(_PATH_LIST_ENTRIES)]
@@ -273,18 +273,18 @@ def test_mask_local_paths_translates_a_bare_base_at_end_of_output(prefix: str) -
     """
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
     ):
-        masked = mask_local_paths_in_output(f"{prefix}/home/user/deer-flow/skills", None)
+        masked = mask_local_paths_in_output(f"{prefix}/home/user/berkshire-agent/skills", None)
 
         assert masked == f"{prefix}/mnt/skills"
-        assert "/home/user/deer-flow/skills" not in masked
+        assert "/home/user/berkshire-agent/skills" not in masked
 
 
 def test_mask_local_paths_compiled_patterns_are_cached() -> None:
     """The compiled patterns for a given source set are built once and reused
     (mask runs once per glob/grep match, so this avoids per-match recompiles)."""
-    sources = (("/tmp/deer-flow/threads/t1/user-data/workspace", "/mnt/user-data/workspace"),)
+    sources = (("/tmp/berkshire-agent/threads/t1/user-data/workspace", "/mnt/user-data/workspace"),)
     first = _compiled_mask_patterns(sources)
     second = _compiled_mask_patterns(sources)
     assert first is second  # cache hit -> identical object, not rebuilt
@@ -296,11 +296,11 @@ def test_mask_local_paths_cache_does_not_retain_per_thread_sources() -> None:
 
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/srv/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/srv/berkshire-agent/skills"),
         patch("deerflow.sandbox.tools._get_acp_workspace_host_path", return_value=None),
     ):
         for index in range(32):
-            root = f"/tmp/deer-flow/threads/thread-{index}/user-data"
+            root = f"/tmp/berkshire-agent/threads/thread-{index}/user-data"
             thread_data = {
                 "workspace_path": f"{root}/workspace",
                 "uploads_path": f"{root}/uploads",
@@ -322,13 +322,13 @@ def test_mask_local_paths_caches_dynamic_source_resolution_per_root() -> None:
     try:
         with (
             patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-            patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/srv/deer-flow/skills"),
+            patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/srv/berkshire-agent/skills"),
             patch("deerflow.sandbox.tools._get_acp_workspace_host_path", return_value=None),
             patch("deerflow.config.paths.get_paths", side_effect=RuntimeError("skip user paths")),
             patch("deerflow.sandbox.tools.os.path.realpath", side_effect=lambda path: path) as realpath,
         ):
             for _ in range(200):
-                masked = mask_local_paths_in_output("created /tmp/deer-flow/threads/t1/user-data/workspace/result.txt", _THREAD_DATA)
+                masked = mask_local_paths_in_output("created /tmp/berkshire-agent/threads/t1/user-data/workspace/result.txt", _THREAD_DATA)
                 assert masked == "created /mnt/user-data/workspace/result.txt"
 
         # One stable skills root plus the workspace/uploads/outputs/thread roots.
@@ -341,10 +341,10 @@ def test_mask_local_paths_caches_dynamic_source_resolution_per_root() -> None:
 
 def test_mask_local_paths_stable_across_repeated_and_batched_calls() -> None:
     """Masking is identical whether applied once or repeatedly (per-match path)."""
-    output = "a /tmp/deer-flow/threads/t1/user-data/workspace/x.txt and /tmp/deer-flow/threads/t1/user-data/outputs/y.log"
+    output = "a /tmp/berkshire-agent/threads/t1/user-data/workspace/x.txt and /tmp/berkshire-agent/threads/t1/user-data/outputs/y.log"
     once = mask_local_paths_in_output(output, _THREAD_DATA)
     twice = mask_local_paths_in_output(once, _THREAD_DATA)
-    assert "/tmp/deer-flow/threads/t1/user-data" not in once
+    assert "/tmp/berkshire-agent/threads/t1/user-data" not in once
     assert "/mnt/user-data/workspace/x.txt" in once
     assert "/mnt/user-data/outputs/y.log" in once
     # Re-masking already-masked output leaves it unchanged (no host paths left).
@@ -357,10 +357,10 @@ def test_mask_local_paths_no_thread_data_still_masks_skills() -> None:
     """With thread_data=None, skills host paths are still masked (user-data skipped)."""
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
     ):
-        masked = mask_local_paths_in_output("Reading: /home/user/deer-flow/skills/a/b.md", None)
-        assert "/home/user/deer-flow/skills" not in masked
+        masked = mask_local_paths_in_output("Reading: /home/user/berkshire-agent/skills/a/b.md", None)
+        assert "/home/user/berkshire-agent/skills" not in masked
         assert "/mnt/skills/a/b.md" in masked
 
 
@@ -372,7 +372,7 @@ def test_mask_local_paths_normalizes_windows_spelled_skill_tails() -> None:
     keeps backslashes on every platform. Reverting the normalization here
     turns this test red on Linux CI too, not only on Windows hosts.
     """
-    windows_root = "C:\\Users\\alice\\deer-flow\\skills"
+    windows_root = "C:\\Users\\alice\\berkshire-agent\\skills"
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
         patch("deerflow.sandbox.tools._get_skills_host_path", return_value=windows_root),
@@ -392,7 +392,7 @@ def test_mask_local_paths_hides_global_integration_skill_paths(tmp_path: Path) -
 
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
         patch("deerflow.config.paths.get_paths", return_value=paths),
         patch("deerflow.runtime.user_context.get_effective_user_id", return_value="alice"),
     ):
@@ -500,20 +500,20 @@ def test_resolve_skills_path_resolves_correctly() -> None:
     """Skills virtual path should resolve to host path."""
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
     ):
         resolved = _resolve_skills_path("/mnt/skills/public/bootstrap/SKILL.md")
-        assert resolved == "/home/user/deer-flow/skills/public/bootstrap/SKILL.md"
+        assert resolved == "/home/user/berkshire-agent/skills/public/bootstrap/SKILL.md"
 
 
 def test_resolve_skills_path_resolves_root() -> None:
     """Skills container root should resolve to host skills directory."""
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
     ):
         resolved = _resolve_skills_path("/mnt/skills")
-        assert resolved == "/home/user/deer-flow/skills"
+        assert resolved == "/home/user/berkshire-agent/skills"
 
 
 def test_extract_skill_name_from_integration_skill_path() -> None:
@@ -529,7 +529,7 @@ def test_resolve_skills_path_resolves_global_integration_skills(tmp_path: Path) 
     expected = tmp_path / "integrations" / "skills" / "lark-cli" / "lark-doc" / "SKILL.md"
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
         patch("deerflow.config.paths.get_paths", return_value=paths),
         patch("deerflow.runtime.user_context.get_effective_user_id", return_value="alice"),
     ):
@@ -544,7 +544,7 @@ def test_resolve_skills_path_blocks_integration_traversal(tmp_path: Path) -> Non
     paths = Paths(base_dir=tmp_path)
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
         patch("deerflow.config.paths.get_paths", return_value=paths),
         patch("deerflow.runtime.user_context.get_effective_user_id", return_value="alice"),
     ):
@@ -606,13 +606,13 @@ def test_replace_virtual_paths_in_command_does_not_replace_skills_paths() -> Non
     """
     with (
         patch("deerflow.sandbox.tools._get_skills_container_path", return_value="/mnt/skills"),
-        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/deer-flow/skills"),
+        patch("deerflow.sandbox.tools._get_skills_host_path", return_value="/home/user/berkshire-agent/skills"),
     ):
         cmd = "cat /mnt/skills/public/bootstrap/SKILL.md"
         result = replace_virtual_paths_in_command(cmd, _THREAD_DATA)
         # Skills paths should remain as virtual paths (not resolved)
         assert "/mnt/skills/public/bootstrap/SKILL.md" in result
-        assert "/home/user/deer-flow/skills" not in result
+        assert "/home/user/berkshire-agent/skills" not in result
 
 
 def test_replace_virtual_paths_in_command_replaces_user_data_only() -> None:
@@ -628,7 +628,7 @@ def test_replace_virtual_paths_in_command_replaces_user_data_only() -> None:
         assert "/home/user/skills" not in result
         # User-data paths should still be resolved
         assert "/mnt/user-data" not in result
-        assert "/tmp/deer-flow/threads/t1/user-data/workspace/out.txt" in result
+        assert "/tmp/berkshire-agent/threads/t1/user-data/workspace/out.txt" in result
 
 
 @pytest.mark.parametrize(
@@ -657,7 +657,7 @@ def test_replace_virtual_paths_in_command_does_not_rewrite_prefix_siblings(sibli
     result = replace_virtual_paths_in_command(f"cat {sibling}", _THREAD_DATA)
 
     assert result == f"cat {sibling}"
-    assert "/tmp/deer-flow/threads/t1" not in result
+    assert "/tmp/berkshire-agent/threads/t1" not in result
 
 
 @pytest.mark.parametrize(
@@ -665,12 +665,12 @@ def test_replace_virtual_paths_in_command_does_not_rewrite_prefix_siblings(sibli
     [
         # The bare root, at end of string and before shell/text punctuation, must
         # keep translating — these guard the boundary from being narrowed too far.
-        ("ls /mnt/user-data", "ls /tmp/deer-flow/threads/t1/user-data"),
-        ("ls /mnt/user-data && pwd", "ls /tmp/deer-flow/threads/t1/user-data && pwd"),
-        ("PYTHONPATH=/mnt/user-data:/opt x", "PYTHONPATH=/tmp/deer-flow/threads/t1/user-data:/opt x"),
-        ("echo '/mnt/user-data, done'", "echo '/tmp/deer-flow/threads/t1/user-data, done'"),
+        ("ls /mnt/user-data", "ls /tmp/berkshire-agent/threads/t1/user-data"),
+        ("ls /mnt/user-data && pwd", "ls /tmp/berkshire-agent/threads/t1/user-data && pwd"),
+        ("PYTHONPATH=/mnt/user-data:/opt x", "PYTHONPATH=/tmp/berkshire-agent/threads/t1/user-data:/opt x"),
+        ("echo '/mnt/user-data, done'", "echo '/tmp/berkshire-agent/threads/t1/user-data, done'"),
         # Real children still translate.
-        ("cat /mnt/user-data/workspace/a.txt", "cat /tmp/deer-flow/threads/t1/user-data/workspace/a.txt"),
+        ("cat /mnt/user-data/workspace/a.txt", "cat /tmp/berkshire-agent/threads/t1/user-data/workspace/a.txt"),
     ],
 )
 def test_replace_virtual_paths_in_command_still_translates_genuine_paths(command: str, expected: str) -> None:
@@ -1165,7 +1165,7 @@ def test_replace_virtual_paths_in_command_does_not_replace_acp_workspace() -> No
     PathMapping at execution time, not pre-resolved, to ensure user_id
     consistency with the sandbox mapping.
     """
-    acp_host = "/home/user/.deer-flow/acp-workspace"
+    acp_host = "/home/user/.berkshire-agent/acp-workspace"
     with patch("deerflow.sandbox.tools._get_acp_workspace_host_path", return_value=acp_host):
         cmd = "cp /mnt/acp-workspace/hello.py /mnt/user-data/outputs/hello.py"
         result = replace_virtual_paths_in_command(cmd, _THREAD_DATA)
@@ -1174,12 +1174,12 @@ def test_replace_virtual_paths_in_command_does_not_replace_acp_workspace() -> No
         assert acp_host not in result
         # User-data paths should still be resolved
         assert "/mnt/user-data" not in result
-        assert "/tmp/deer-flow/threads/t1/user-data/outputs/hello.py" in result
+        assert "/tmp/berkshire-agent/threads/t1/user-data/outputs/hello.py" in result
 
 
 def test_mask_local_paths_in_output_hides_acp_workspace_host_paths() -> None:
     """ACP workspace host paths in bash output should be masked to virtual paths."""
-    acp_host = "/home/user/.deer-flow/acp-workspace"
+    acp_host = "/home/user/.berkshire-agent/acp-workspace"
     with patch("deerflow.sandbox.tools._get_acp_workspace_host_path", return_value=acp_host):
         output = f"Copied: {acp_host}/hello.py"
         masked = mask_local_paths_in_output(output, _THREAD_DATA)
@@ -1196,7 +1196,7 @@ def test_apply_cwd_prefix_prepends_workspace() -> None:
     result = _apply_cwd_prefix("ls -la", _THREAD_DATA)
     assert result.startswith("cd ")
     assert "ls -la" in result
-    assert "/tmp/deer-flow/threads/t1/user-data/workspace" in result
+    assert "/tmp/berkshire-agent/threads/t1/user-data/workspace" in result
 
 
 def test_apply_cwd_prefix_no_thread_data() -> None:
@@ -1666,7 +1666,7 @@ def test_write_file_tool_bounds_large_oserror_and_masks_local_paths(monkeypatch)
 
     assert len(result) <= 2000
     assert "Error: Failed to write file '/mnt/user-data/workspace/output.txt':" in result
-    assert "/tmp/deer-flow/threads/t1/user-data/workspace" not in result
+    assert "/tmp/berkshire-agent/threads/t1/user-data/workspace" not in result
     assert "/mnt/user-data/workspace/nested/output.txt" in result
     assert "remote tail marker" in result
     assert "[write_file error truncated:" in result
@@ -1813,7 +1813,7 @@ def test_file_operation_lock_memory_cleanup() -> None:
     class MockSandbox:
         id = "test_cleanup_sandbox"
 
-    test_path = "/tmp/deer-flow/memory_leak_test_file.txt"
+    test_path = "/tmp/berkshire-agent/memory_leak_test_file.txt"
     lock_key = (MockSandbox.id, test_path)
 
     # 确保测试开始前 key 不存在

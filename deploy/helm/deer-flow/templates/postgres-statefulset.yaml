@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "deer-flow.postgresFullname" . }}
-  namespace: {{ include "deer-flow.namespace" . }}
+  name: {{ include "berkshire-agent.postgresFullname" . }}
+  namespace: {{ include "berkshire-agent.namespace" . }}
   labels:
-    {{- include "deer-flow.labels" . | nindent 4 }}
+    {{- include "berkshire-agent.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres
 spec:
-  serviceName: {{ include "deer-flow.postgresFullname" . }}
+  serviceName: {{ include "berkshire-agent.postgresFullname" . }}
   replicas: 1
   selector:
     matchLabels:
-      {{- include "deer-flow.selectorLabels" . | nindent 6 }}
+      {{- include "berkshire-agent.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: postgres
   template:
     metadata:
       labels:
-        {{- include "deer-flow.selectorLabels" . | nindent 8 }}
+        {{- include "berkshire-agent.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: postgres
     spec:
-      {{- include "deer-flow.imagePullSecrets" . | nindent 6 }}
+      {{- include "berkshire-agent.imagePullSecrets" . | nindent 6 }}
       securityContext:
         # Non-root: postgres:16 ships a `postgres` user (uid 999). The official
         # entrypoint detects non-root, skips the chown/gosu dance, and runs
@@ -50,7 +50,7 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "deer-flow.databaseUrlSecret" . }}
+                  name: {{ include "berkshire-agent.databaseUrlSecret" . }}
                   key: postgres-password
           readinessProbe:
             exec:
@@ -80,7 +80,7 @@ spec:
     - metadata:
         name: data
         labels:
-          {{- include "deer-flow.labels" . | nindent 10 }}
+          {{- include "berkshire-agent.labels" . | nindent 10 }}
           app.kubernetes.io/component: postgres
       spec:
         accessModes:

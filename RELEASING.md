@@ -1,6 +1,6 @@
-# Releasing DeerFlow
+# Releasing BerkshireAgent
 
-DeerFlow releases are **tag-driven**: pushing a `v*` git tag triggers the
+BerkshireAgent releases are **tag-driven**: pushing a `v*` git tag triggers the
 publishing workflows. There is no separate release script that bumps versions —
 the maintainer bumps the version sources, updates the changelog, commits, and
 tags. The helper scripts below keep the version sources in lockstep, and CI
@@ -14,8 +14,8 @@ A release version must appear, identically, in four places:
 | -------------------------------------- | -------------------- |
 | `backend/pyproject.toml`               | `version = "X.Y.Z"`  |
 | `frontend/package.json`                | `"version": "X.Y.Z"` |
-| `deploy/helm/deer-flow/Chart.yaml`     | `version: X.Y.Z`     |
-| `deploy/helm/deer-flow/Chart.yaml`     | `appVersion: "X.Y.Z"`|
+| `deploy/helm/berkshire-agent/Chart.yaml`     | `version: X.Y.Z`     |
+| `deploy/helm/berkshire-agent/Chart.yaml`     | `appVersion: "X.Y.Z"`|
 
 Plus the git tag `vX.Y.Z` itself, which is the canonical release identifier.
 
@@ -59,7 +59,7 @@ distinguishes it from a release.
    `## [2.1.0] — YYYY-MM-DD` (note the em dash `—`), and add a link reference
    at the bottom of the file:
    ```
-   [2.1.0]: https://github.com/bytedance/deer-flow/releases/tag/v2.1.0
+   [2.1.0]: https://github.com/bytedance/berkshire-agent/releases/tag/v2.1.0
    ```
    Start a fresh `## [Unreleased]` section above it for the next cycle.
 3. **Commit** the version + changelog changes:
@@ -94,7 +94,7 @@ pick up a later version-fix commit.
 - `.github/workflows/chart.yaml` — packages the Helm chart and pushes it as an
   OCI artifact to `ghcr.io`. Users install with:
   ```bash
-  helm install deer-flow oci://ghcr.io/<owner>/charts/deer-flow --version 2.1.0
+  helm install berkshire-agent oci://ghcr.io/<owner>/charts/berkshire-agent --version 2.1.0
   ```
 
 ## Nightly builds
@@ -103,16 +103,16 @@ pick up a later version-fix commit.
 to publish the same three images plus the chart from unreleased `main`. It is
 **not** gated by the version check (there is no `v*` tag) and it does **not**
 touch the `latest` tag, which stays pinned to the last `v*` release. Every job
-is gated on `github.repository == 'bytedance/deer-flow'`, so it only runs on
+is gated on `github.repository == 'bytedance/berkshire-agent'`, so it only runs on
 the upstream repo - a scheduled run or manual dispatch on a fork skips all jobs.
 
 Artifacts (under the running repo's owner, where `<date>` is `YYYYMMDD`):
 
-- Images: `ghcr.io/<owner>/deer-flow-{backend,frontend,provisioner}:nightly`
+- Images: `ghcr.io/<owner>/berkshire-agent-{backend,frontend,provisioner}:nightly`
   (rolling, overwritten each run) and `:nightly-<date>` (pinned to a day, but
   mutable within it - a same-day re-dispatch overwrites it). For a truly
   immutable pin, use `:sha-<short>`.
-- Chart: `oci://ghcr.io/<owner>/charts/deer-flow`, version `<base>-nightly.<date>-<sha>`
+- Chart: `oci://ghcr.io/<owner>/charts/berkshire-agent`, version `<base>-nightly.<date>-<sha>`
   (e.g. `2.1.0-nightly.20260710-77a3652`). The short SHA makes each dispatch's
   chart version unique, so a same-day re-dispatch re-publishes cleanly (OCI
   chart versions are immutable and otherwise can't be overwritten). The
@@ -120,7 +120,7 @@ Artifacts (under the running repo's owner, where `<date>` is `YYYYMMDD`):
   `image.tag=nightly`, so installing it pulls the matching nightly images with
   no values overrides:
   ```bash
-  helm install deer-flow oci://ghcr.io/<owner>/charts/deer-flow \
+  helm install berkshire-agent oci://ghcr.io/<owner>/charts/berkshire-agent \
     --version 2.1.0-nightly.20260710-77a3652
   ```
 
@@ -137,9 +137,9 @@ the upstream `larksuite/cli` version, so they publish independently via
 - Trigger with `workflow_dispatch` (a `lark_cli_version` input, e.g. `v1.0.65`)
   or by pushing a `lark-cli-v*` tag (the version is read from after the prefix).
 - Builds multi-arch (`linux/amd64,linux/arm64`) and pushes
-  `ghcr.io/<owner>/deer-flow-{lark-cli-init,lark-cli-broker}:<lark-cli-version>`.
-- Gated on `github.repository == 'bytedance/deer-flow'`; not tied to the
-  `verify-versions` gate (its version is the lark-cli release, not the DeerFlow
+  `ghcr.io/<owner>/berkshire-agent-{lark-cli-init,lark-cli-broker}:<lark-cli-version>`.
+- Gated on `github.repository == 'bytedance/berkshire-agent'`; not tied to the
+  `verify-versions` gate (its version is the lark-cli release, not the BerkshireAgent
   release), and it never touches `latest`.
 
 Both features stay opt-in: the provisioner ignores them until
@@ -201,6 +201,6 @@ Optionally draft a **GitHub Release** from the tag, pasting the corresponding
 point at these release URLs.
 
 For the 2.1.0 chart release (the first chart release), pre-`charts/` nightly
-builds remain at the legacy bare `ghcr.io/<owner>/deer-flow` package. That
+builds remain at the legacy bare `ghcr.io/<owner>/berkshire-agent` package. That
 package receives no new versions after 2.1.0; delete it or revoke its
 visibility once nothing still pulls from it.

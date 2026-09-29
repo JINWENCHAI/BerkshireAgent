@@ -18,7 +18,7 @@ SUPPORTED_RUN_STREAM_MODES: frozenset[str] = frozenset(get_args(RunStreamMode.__
 
 
 class UnsupportedStreamModeError(ValueError):
-    """Raised when a caller requests a stream mode DeerFlow cannot honor."""
+    """Raised when a caller requests a stream mode BerkshireAgent cannot honor."""
 
     def __init__(self, modes: list[str]) -> None:
         self.modes = tuple(dict.fromkeys(modes))

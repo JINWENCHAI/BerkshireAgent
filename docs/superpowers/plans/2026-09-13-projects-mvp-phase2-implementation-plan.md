@@ -1,8 +1,8 @@
-# DeerFlow Projects MVP — Phase 2 Implementation Plan
+# BerkshireAgent Projects MVP — Phase 2 Implementation Plan
 
 **Date**: 2026-09-13
 **Spec revision note (2026-09-13)**: the spec's injection strategy was replaced mid-implementation. §7.2 is now **latest-only, request-scoped**: `DynamicContextMiddleware` gains `wrap_model_call`/`awrap_model_call` hooks rendering ONE transient HumanMessage per model call from the admission-pinned snapshot. The persisted identity block, `project_context_revision` in `additional_kwargs`, `__project` corrections, and `<project_update>` notices from the previous revision are abandoned (forbidden by §15 items 18-19). `_build_full_reminder`/`_inject`/date/`__memory` behavior stays byte-identical to main.
-**Branch**: `projects-mvp-phase2` (worktree `../deer-flow-phase2`, base `main @ 6f81daef`)
+**Branch**: `projects-mvp-phase2` (worktree `../berkshire-agent-phase2`, base `main @ 6f81daef`)
 **Scope rule**: every design decision, error mapping, and review-gate is owned by the spec. This document sequences files, symbols, and verification only. Where the spec and code disagree, the spec's deviation register (§10) wins.
 
 ## Slice map (spec §16 dependency order)

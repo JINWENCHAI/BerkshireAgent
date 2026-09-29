@@ -1,13 +1,13 @@
 # Jev context pruning — independent plugin example
 
 An opt-in Python plugin that uses Jev to shorten clearly obsolete **read-only
-tool results** before DeerFlow's normal summarization. It uses the existing
+tool results** before BerkshireAgent's normal summarization. It uses the existing
 extension API 0.2.2 and full-stack plugin catalog, with no host code changes.
-Distributed under DeerFlow's [MIT license](LICENSE).
+Distributed under BerkshireAgent's [MIT license](LICENSE).
 
 ## Install and configure
 
-From `backend/` in a compatible DeerFlow deployment:
+From `backend/` in a compatible BerkshireAgent deployment:
 
 ```sh
 uv run deerflow extensions install ../examples/deerflow-extension-jev-context --yes

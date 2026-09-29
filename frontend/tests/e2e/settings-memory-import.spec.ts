@@ -23,7 +23,7 @@ const LEGACY_MEMORY_WITHOUT_COGNITIVE_STYLE = {
   version: "1.0",
   lastUpdated: "2026-01-01T00:00:00Z",
   user: {
-    workContext: { summary: "Works on DeerFlow", updatedAt: "" },
+    workContext: { summary: "Works on BerkshireAgent", updatedAt: "" },
     personalContext: { summary: "", updatedAt: "" },
     topOfMind: { summary: "Memory import compatibility", updatedAt: "" },
   },

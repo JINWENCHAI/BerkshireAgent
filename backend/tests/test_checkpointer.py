@@ -316,7 +316,7 @@ class TestGetCheckpointer:
         'sqlite3.OperationalError: unable to open database file' when the
         parent directory for the database file does not yet exist (e.g. when
         using the harness package from an external virtualenv where the
-        .deer-flow directory has not been created).
+        .berkshire-agent directory has not been created).
         """
         load_checkpointer_config_from_dict({"type": "sqlite", "connection_string": "relative/test.db"})
 
@@ -892,7 +892,7 @@ class TestCheckpointerDatabaseConfig:
 
     Regression: ``get_checkpointer`` / ``checkpointer_context`` previously read
     only the legacy ``checkpointer`` section and fell back to ``InMemorySaver``,
-    silently ignoring ``database``. Embedded callers (``DeerFlowClient``) and the
+    silently ignoring ``database``. Embedded callers (``BerkshireAgentClient``) and the
     TUI then persisted Store rows to sqlite/postgres while checkpoints went to an
     in-memory saver and were lost on exit.
     """
@@ -1173,16 +1173,16 @@ class TestAppConfigLoadsCheckpointer:
 
 
 # ---------------------------------------------------------------------------
-# DeerFlowClient falls back to config checkpointer
+# BerkshireAgentClient falls back to config checkpointer
 # ---------------------------------------------------------------------------
 
 
 class TestClientCheckpointerFallback:
     def test_client_uses_config_checkpointer_when_none_provided(self):
-        """DeerFlowClient._ensure_agent falls back to get_checkpointer() when checkpointer=None."""
+        """BerkshireAgentClient._ensure_agent falls back to get_checkpointer() when checkpointer=None."""
         from langgraph.checkpoint.memory import InMemorySaver
 
-        from deerflow.client import DeerFlowClient
+        from deerflow.client import BerkshireAgentClient
 
         load_checkpointer_config_from_dict({"type": "memory"})
 
@@ -1210,9 +1210,9 @@ class TestClientCheckpointerFallback:
             patch("deerflow.client.build_middlewares", return_value=[]),
             patch("deerflow.client.apply_prompt_template", return_value=""),
             patch("deerflow.client.get_enabled_skills_for_config", return_value=[]),
-            patch("deerflow.client.DeerFlowClient._get_tools", return_value=[]),
+            patch("deerflow.client.BerkshireAgentClient._get_tools", return_value=[]),
         ):
-            client = DeerFlowClient(checkpointer=None)
+            client = BerkshireAgentClient(checkpointer=None)
             config = client._get_runnable_config("test-thread")
             client._ensure_agent(config)
 
@@ -1221,7 +1221,7 @@ class TestClientCheckpointerFallback:
 
     def test_client_explicit_checkpointer_takes_precedence(self):
         """An explicitly provided checkpointer is used even when config checkpointer is set."""
-        from deerflow.client import DeerFlowClient
+        from deerflow.client import BerkshireAgentClient
 
         load_checkpointer_config_from_dict({"type": "memory"})
 
@@ -1250,9 +1250,9 @@ class TestClientCheckpointerFallback:
             patch("deerflow.client.build_middlewares", return_value=[]),
             patch("deerflow.client.apply_prompt_template", return_value=""),
             patch("deerflow.client.get_enabled_skills_for_config", return_value=[]),
-            patch("deerflow.client.DeerFlowClient._get_tools", return_value=[]),
+            patch("deerflow.client.BerkshireAgentClient._get_tools", return_value=[]),
         ):
-            client = DeerFlowClient(checkpointer=explicit_cp)
+            client = BerkshireAgentClient(checkpointer=explicit_cp)
             config = client._get_runnable_config("test-thread")
             client._ensure_agent(config)
 

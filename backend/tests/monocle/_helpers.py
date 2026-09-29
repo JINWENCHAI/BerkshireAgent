@@ -1,4 +1,4 @@
-"""Helpers for the DeerFlow Monocle behavioural tests.
+"""Helpers for the BerkshireAgent Monocle behavioural tests.
 
 Kept out of ``conftest.py`` so nothing imports ``conftest`` as a module.
 Monocle instrumentation is owned by the Test Tools validator (installed by the
@@ -31,12 +31,12 @@ def live_tests_enabled() -> bool:
 
 
 def run_deerflow(message: str) -> str:
-    """Run the DeerFlow agent once and return its response text.
+    """Run the BerkshireAgent agent once and return its response text.
 
     The model is resolved from ``config.yaml`` (no hardcoded override) so the
-    live test exercises DeerFlow's own model-resolution path.
+    live test exercises BerkshireAgent's own model-resolution path.
     """
-    from deerflow.client import DeerFlowClient
+    from deerflow.client import BerkshireAgentClient
 
-    client = DeerFlowClient(config_path=str(CONFIG_PATH))
+    client = BerkshireAgentClient(config_path=str(CONFIG_PATH))
     return client.chat(message, thread_id=f"monocle-test-{uuid.uuid4().hex[:8]}")

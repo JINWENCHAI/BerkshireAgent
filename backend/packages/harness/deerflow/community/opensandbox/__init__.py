@@ -1,4 +1,4 @@
-"""OpenSandbox community provider for DeerFlow."""
+"""OpenSandbox community provider for BerkshireAgent."""
 
 from .provider import OpenSandboxProvider
 from .sandbox import OpenSandboxSandbox

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a first-class scheduled-task MVP for DeerFlow with durable backend scheduling, a workspace management page, run history, and real-path validation, limited to thread-attached agent runs with `once` and `cron` schedules.
+**Goal:** Build a first-class scheduled-task MVP for BerkshireAgent with durable backend scheduling, a workspace management page, run history, and real-path validation, limited to thread-attached agent runs with `once` and `cron` schedules.
 
 **Architecture:** Add harness persistence models and repositories for scheduled tasks and task-run history, then add an app-layer scheduler service and REST API that reuse the existing run lifecycle. Build a dedicated frontend workspace page and thread-level entry point backed by typed React Query hooks. Validate through backend tests, frontend tests, Playwright, and a real browser smoke path.
 
@@ -12,7 +12,7 @@
 
 - The MVP supports only thread-attached agent runs; there is no text-only task type, no channel dispatch, and no GitHub dispatch.
 - The MVP supports only `once` and `cron`; it must not add `interval`.
-- Scheduled executions must reuse the normal DeerFlow run lifecycle rather than introducing a parallel agent execution path.
+- Scheduled executions must reuse the normal BerkshireAgent run lifecycle rather than introducing a parallel agent execution path.
 - Harness persistence code must not import `app.*`.
 - Background scheduling remains opt-in through config and must default to disabled.
 - Owner isolation must cover task list, task detail, task history, mutate, trigger, and delete.
@@ -2075,7 +2075,7 @@ make dev
 Then verify in a real browser:
 - create a one-time scheduled task due soon
 - observe list row and task detail
-- observe task trigger and resulting DeerFlow run
+- observe task trigger and resulting BerkshireAgent run
 - verify final status/result is reflected in the management page
 
 - [ ] **Step 5: Commit**

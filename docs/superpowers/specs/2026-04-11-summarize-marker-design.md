@@ -15,7 +15,7 @@ Display a "summarization happened here" marker in the conversation history UI wh
 
 ### 2.1 Today's state: zero middleware records
 
-Full scan of `backend/.deer-flow/data/deerflow.db` `run_events`:
+Full scan of `backend/.berkshire-agent/data/deerflow.db` `run_events`:
 
 | category | rows |
 |---|---:|
@@ -37,7 +37,7 @@ No row has `event_type` containing `summariz` or `middleware`. The middleware ca
 
 Thread `3d5dea4a-0983-4727-a4e8-41a64428933a`:
 
-- `run_events` seq=1 → original human `"写一份关于deer-flow的详细技术报告"` ✓ (event store is fine)
+- `run_events` seq=1 → original human `"写一份关于berkshire-agent的详细技术报告"` ✓ (event store is fine)
 - `run_events` seq=43 → `llm_request` trace whose `messages[0]` literal contains `"Here is a summary of the conversation to date:"` — proof that SummarizationMiddleware did inject a summary mid-run
 - Zero rows with `category='middleware'` for this thread → nothing captured for UI to render
 
@@ -186,7 +186,7 @@ The marker uses a sentinel `type` (`summary_marker`) that doesn't collide with a
 
 ## 7. Risks
 
-1. **Synchronous path**. The upstream class has both `before_model` and `abefore_model`. Our wrapper only overrides the async variant. If any deer-flow code path ever uses the sync flow, those summarizations won't be captured. Mitigation: also override `before_model` and use `dispatch_custom_event` (sync variant) with the same pattern.
+1. **Synchronous path**. The upstream class has both `before_model` and `abefore_model`. Our wrapper only overrides the async variant. If any berkshire-agent code path ever uses the sync flow, those summarizations won't be captured. Mitigation: also override `before_model` and use `dispatch_custom_event` (sync variant) with the same pattern.
 2. **`_extract_summary_text` fragility**. It depends on the upstream class prefix `"Here is a summary of the conversation to date"` in the injected `HumanMessage`. Any upstream template change breaks detection. Mitigation: pick the first new `HumanMessage` that wasn't in `state["messages"]` before super() — resilient to template wording changes at the cost of a small diff helper.
 3. **`replaced_count` accuracy when concurrent updates**. If another middleware in the chain also modifies `state["messages"]` before super() returns, the naive `before_count - len(new_messages)` arithmetic is wrong. Mitigation: inspect the `RemoveMessage(id=REMOVE_ALL_MESSAGES)` that upstream emits and count from the original input list directly.
 4. **History helper contract change**. Introducing a non-LangChain-typed entry (`type="summary_marker"`) in the `/history` response could break frontend code that blindly casts entries to `Message`. Mitigation: the frontend change above adds an explicit branch; type-check the frontend end-to-end before merging.

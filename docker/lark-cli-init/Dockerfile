@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# DeerFlow "lark-cli init" image (Pattern A).
+# BerkshireAgent "lark-cli init" image (Pattern A).
 #
 # Purpose: provide the sandbox `lark-cli` runtime binary to a Kubernetes sandbox
 # Pod via an init container + shared `emptyDir`, instead of downloading Linux
@@ -26,7 +26,7 @@
 # independently of the upstream `all-in-one-sandbox` image.
 #
 # Build (defaults to the pinned version below):
-#   docker build -t deer-flow/lark-cli-init:v1.0.65 \
+#   docker build -t berkshire-agent/lark-cli-init:v1.0.65 \
 #     --build-arg LARK_CLI_VERSION=v1.0.65 docker/lark-cli-init
 
 FROM debian:bookworm-slim AS builder

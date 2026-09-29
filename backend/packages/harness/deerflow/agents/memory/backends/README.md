@@ -1,8 +1,8 @@
 # Memory Backends
 
-Each subfolder under `agents/memory/backends/` is a pluggable memory backend. Swap the active one by changing one line in `config.yaml` - no deer-flow core changes required.
+Each subfolder under `agents/memory/backends/` is a pluggable memory backend. Swap the active one by changing one line in `config.yaml` - no berkshire-agent core changes required.
 
-- `deermem/` - the default backend (deer-flow's own: structured facts + JSON storage).
+- `deermem/` - the default backend (berkshire-agent's own: structured facts + JSON storage).
 - `noop/` - an empty backend and the **template** to copy when adding a new one.
 - `openviking/` - optional remote backend using the official
   `langchain-openviking` package (single-user middleware mode).
@@ -27,7 +27,7 @@ Copy `noop/` to `backends/<yourname>/` and edit three files in this folder plus 
 
 | File | What to change |
 |---|---|
-| `backends/<yourname>/config.py` | Declare your config fields + `from_backend_config` (parse `backend_config`; read `storage_path` from it - **do not import deer-flow path helpers**) |
+| `backends/<yourname>/config.py` | Declare your config fields + `from_backend_config` (parse `backend_config`; read `storage_path` from it - **do not import berkshire-agent path helpers**) |
 | `backends/<yourname>/<yourname>_manager.py` | Rename the class; parse config in `model_post_init`; implement `from_config` + the tier-1 abstracts (`add`/`get_context`); override tier-2/3 methods as needed (see [Backend Contract](#backend-contract)) |
 | `backends/<yourname>/__init__.py` | `MANAGER_CLASS = YourManager` (relative import) |
 | `config.yaml` (repo root, parent of `backend/`) | `memory.manager_class: <yourname>` + your knobs under `memory.backend_config` |
@@ -45,7 +45,7 @@ memory:
   backend_config: { ... }      # that backend's private config
 ```
 
-Then **restart deer-flow** - the memory manager is a process-level singleton; a running process does not hot-reload config or backend code.
+Then **restart berkshire-agent** - the memory manager is a process-level singleton; a running process does not hot-reload config or backend code.
 
 ## Backend Contract
 
@@ -87,7 +87,7 @@ Implement the ones your backend supports; the rest inherit the default raise.
 from deerflow.agents.memory.manager import MemoryManager
 ```
 
-Change that one line (and only that line) to port the backend to another agent. **Do not import deer-flow path helpers, config singletons, or models** - get `storage_path` and everything else from `backend_config`.
+Change that one line (and only that line) to port the backend to another agent. **Do not import berkshire-agent path helpers, config singletons, or models** - get `storage_path` and everything else from `backend_config`.
 
 ### 5. What the host provides
 
@@ -124,8 +124,8 @@ Lessons from integrating external backends:
 1. **External deps must be declared in `pyproject.toml`.** A bare `uv pip install` is purged on the next `uv sync` / `langgraph dev`. Declare the dep (and `[tool.uv.sources]` for vendored source).
 2. **Return the DeerMem shape.** Otherwise the frontend crashes with `Invalid time value` and your data is silently dropped. Build a small adapter helper to map your native records into it.
 3. **Fact CRUD returns 501 if not implemented.** The frontend's delete-fact button reports `Operation 'delete fact' not supported`. Implement `delete_fact` (and friends) to fix it.
-4. **Don't import `runtime_home`.** Read `storage_path` from `backend_config`. (The `noop` template shows the correct pattern; importing deer-flow path helpers breaks portability - contract #4.)
-5. **Restart deer-flow after changes.** The manager is a process-level singleton; a running process does not hot-reload config or backend code.
+4. **Don't import `runtime_home`.** Read `storage_path` from `backend_config`. (The `noop` template shows the correct pattern; importing berkshire-agent path helpers breaks portability - contract #4.)
+5. **Restart berkshire-agent after changes.** The manager is a process-level singleton; a running process does not hot-reload config or backend code.
 6. **Cap `get_context` length yourself.** The host applies no token budget; the backend must truncate (DeerMem has `max_injection_tokens`; noop does not).
 
 ## Honcho Backend
@@ -149,7 +149,7 @@ The optional `honcho/` backend is a remote-only HTTP adapter for user-model memo
 | `max_injection_chars` | int | `6000` | Character limit for injected memory into the system prompt. Must be `> 0` |
 | `failure_policy.read` | str | `fail_open` | Recall failure handling: `fail_open` (log and return empty) or `fail_closed` (rethrow) |
 
-**Workspace Resolution**: Each DeerFlow user maps to one Honcho workspace. The workspace name is derived as: `workspace_overrides[user_id]` (if present) else `workspace_prefix + sanitized_id`, where `sanitized_id` is a collision-resistant hash suffix (sanitize[:48]-sha256[:8]). Missing user fails closed to no memory. The default derivation is isolated per user; a `workspace_overrides` entry that maps several users to one workspace deliberately shares that workspace's **search index** across them (`search` uses Honcho's workspace-scoped `/search`, which has no peer filter), while `get_context` / `get_memory` remain peer-scoped.
+**Workspace Resolution**: Each BerkshireAgent user maps to one Honcho workspace. The workspace name is derived as: `workspace_overrides[user_id]` (if present) else `workspace_prefix + sanitized_id`, where `sanitized_id` is a collision-resistant hash suffix (sanitize[:48]-sha256[:8]). Missing user fails closed to no memory. The default derivation is isolated per user; a `workspace_overrides` entry that maps several users to one workspace deliberately shares that workspace's **search index** across them (`search` uses Honcho's workspace-scoped `/search`, which has no peer filter), while `get_context` / `get_memory` remain peer-scoped.
 
 **Tool Mode**: While tool-mode memory tools are not fully supported, the backend implements `requires_passive_writes_in_tool_mode = True` to retain passive writes via MemoryMiddleware while also enabling memory search through the `memory_search` tool.
 

@@ -88,7 +88,7 @@ class AuthorizationProvider(Protocol):
 
     Any class with these methods works - no base class required.
     Providers are loaded by class path via ``resolve_variable()``, the same
-    mechanism DeerFlow uses for models, tools, sandbox, and guardrails.
+    mechanism BerkshireAgent uses for models, tools, sandbox, and guardrails.
 
     ``resource``, ``action``, and ``target`` are free-form strings (not an
     enum) so new resource types and provider-specific resources need no schema

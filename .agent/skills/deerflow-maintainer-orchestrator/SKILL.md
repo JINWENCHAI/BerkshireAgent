@@ -1,13 +1,13 @@
 ---
 name: deerflow-maintainer-orchestrator
-description: "Use when a DeerFlow maintainer needs comment-only GitHub issue or PR handling: resolve issue/PR scopes with gh, analyze issues, post or draft issue comments, perform PR review comments, review PR or issue batches, compare competing PRs that target the same issue, give fix strategy, risk classification, and validation guidance. Intended for maintainers and trusted local agents, not general contributors."
+description: "Use when a BerkshireAgent maintainer needs comment-only GitHub issue or PR handling: resolve issue/PR scopes with gh, analyze issues, post or draft issue comments, perform PR review comments, review PR or issue batches, compare competing PRs that target the same issue, give fix strategy, risk classification, and validation guidance. Intended for maintainers and trusted local agents, not general contributors."
 ---
 
-# DeerFlow Maintainer Orchestrator
+# BerkshireAgent Maintainer Orchestrator
 
 ## Core Rule
 
-This is a comment-plane skill: resolve GitHub scope, inspect evidence, and prepare or post DeerFlow issue comments and PR review comments. Keep the work comment-scoped; do not turn it into coding, branch management, release work, artifact closure, or other maintainer operations.
+This is a comment-plane skill: resolve GitHub scope, inspect evidence, and prepare or post BerkshireAgent issue comments and PR review comments. Keep the work comment-scoped; do not turn it into coding, branch management, release work, artifact closure, or other maintainer operations.
 
 When the maintainer asks to process, handle, comment on, or review a bounded set of issues or PRs, proceed without asking follow-up questions. Treat that request as authorization for one public issue comment per selected non-skipped issue and one PR review comment per selected PR with high-confidence findings. If a PR has no high-confidence findings, do not post a public comment; report that result to the maintainer only. If the maintainer explicitly asks for analysis only, return comment-ready drafts without posting.
 
@@ -21,7 +21,7 @@ Match the dominant language of the issue or PR unless the maintainer asks for an
 
 Use GitHub tooling to resolve artifact type and scope. Do not ask the maintainer to clarify when `gh` or GitHub API can determine the answer.
 
-1. Default repository is `bytedance/deer-flow` unless a URL or explicit repo says otherwise.
+1. Default repository is `bytedance/berkshire-agent` unless a URL or explicit repo says otherwise.
 2. For URLs, route `/issues/<number>` to Issue Flow and `/pull/<number>` to PR Review Flow.
 3. For typed numbers, use the typed command:
    - Issue: `gh issue view <number> --repo <repo> --json number,title,url,state,body,labels,author,comments`
@@ -65,7 +65,7 @@ Start every issue with a cheap precheck:
 
 For non-skipped issues:
 
-1. Read enough context to avoid guessing: issue body, comments, screenshots, logs, reproduction details, linked artifacts, and relevant DeerFlow code/docs.
+1. Read enough context to avoid guessing: issue body, comments, screenshots, logs, reproduction details, linked artifacts, and relevant BerkshireAgent code/docs.
 2. Classify the surface:
    - Frontend UI
    - Backend API
@@ -193,7 +193,7 @@ After per-artifact review, run one synthesis pass over the whole batch and repor
 When several PRs target the same issue, compare them instead of reviewing each in isolation.
 
 1. Pull the issue's acceptance criteria (reported problem and expected behavior); that is the rubric anchor.
-2. Score each PR on: does it actually resolve the issue's ask; correctness and edge/error-path coverage; test quality; blast radius and compatibility; maintainability. Use the same DeerFlow Review Heuristics and Posting Gate as a single review.
+2. Score each PR on: does it actually resolve the issue's ask; correctness and edge/error-path coverage; test quality; blast radius and compatibility; maintainability. Use the same BerkshireAgent Review Heuristics and Posting Gate as a single review.
 3. Report a maintainer-facing comparison — strongest PR and why, what each is missing — in the run result.
 4. Keep the public surface constructive and per-PR: post each PR's own gate-passing findings normally. Do not publicly rank PRs against each other or tell an author their PR is worse than a competitor's; winner selection stays in the maintainer report.
 
@@ -210,7 +210,7 @@ Stop without asking only when:
 
 In these cases, return a compact failure report with the attempted command path and the smallest next action. Do not phrase it as a question unless the maintainer explicitly asked to be prompted.
 
-## DeerFlow Review Heuristics
+## BerkshireAgent Review Heuristics
 
 Treat these as high-signal areas for issue comments and PR findings:
 

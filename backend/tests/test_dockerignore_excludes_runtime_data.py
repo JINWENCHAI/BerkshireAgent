@@ -2,24 +2,24 @@
 
 ``backend/Dockerfile`` copies the backend tree wholesale (``COPY backend ./backend``),
 so every path under ``backend/`` that ``.dockerignore`` does not exclude is shipped
-into the image. The runtime directories are written by a *running* DeerFlow, not by
+into the image. The runtime directories are written by a *running* BerkshireAgent, not by
 a build or local deployment:
 
 - Exact ``.env`` files hold deployment secrets at the repository root and in
   the backend/frontend projects.
-- ``DEER_FLOW_HOME`` (``backend/.deer-flow`` by default) holds the sqlite database,
+- ``DEER_FLOW_HOME`` (``backend/.berkshire-agent`` by default) holds the sqlite database,
   per-user agent definitions and uploads, and ``.jwt_secret``.
 - ``backend/sandbox`` is the local sandbox provider's workspace root, created by
   ``backend/Makefile`` and written by agent runs.
 
 Leaving them in the context has two consequences. Anyone who builds an image on a
-host that has run DeerFlow bakes that state — including the JWT secret and the user
+host that has run BerkshireAgent bakes that state — including the JWT secret and the user
 database — into the image. And because the Gateway container creates some of those
 directories as root, the build client eventually cannot read them and the build
 fails outright::
 
     target gateway: failed to solve: error from sender:
-    open .../.deer-flow/users/<uuid>/integrations/lark-cli: permission denied
+    open .../.berkshire-agent/users/<uuid>/integrations/lark-cli: permission denied
 
 None of these paths has tracked content, so excluding them costs the build nothing.
 """
@@ -39,10 +39,10 @@ HOST_LOCAL_PATHS = [
     ".env",
     "backend/.env",
     "frontend/.env",
-    ".deer-flow/integrations/skills/provider/pack/SKILL.md",
-    "backend/.deer-flow/data/deerflow.db",
-    "backend/.deer-flow/.jwt_secret",
-    "backend/.deer-flow/users/some-user/agents/my-agent/config.yaml",
+    ".berkshire-agent/integrations/skills/provider/pack/SKILL.md",
+    "backend/.berkshire-agent/data/deerflow.db",
+    "backend/.berkshire-agent/.jwt_secret",
+    "backend/.berkshire-agent/users/some-user/agents/my-agent/config.yaml",
     "backend/sandbox/some-thread/scratch.py",
 ]
 

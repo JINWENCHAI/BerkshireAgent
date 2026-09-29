@@ -25,7 +25,7 @@
       "type": "http",
       "url": "https://search.parallel.ai/mcp",
       "headers": {
-        "User-Agent": "deer-flow"
+        "User-Agent": "berkshire-agent"
       },
       "description": "Optional anonymous Parallel Search tools for web search and fetching requested URLs"
     },

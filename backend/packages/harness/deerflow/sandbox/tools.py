@@ -787,7 +787,7 @@ def _mask_source_roots(host_base: str) -> tuple[str, ...]:
     """Return lexical and filesystem-resolved spellings without ``pathlib``.
 
     ``PurePath`` interns every path component. That is useful for long-lived
-    paths but wasteful for one-off thread IDs, because evicting DeerFlow's LRU
+    paths but wasteful for one-off thread IDs, because evicting BerkshireAgent's LRU
     does not shrink the interpreter's intern/allocator high-water mark. The
     bounded cache avoids repeating ``realpath`` walks for every glob/grep match
     without retaining an unbounded set of thread roots.
@@ -2140,7 +2140,7 @@ _LARK_CLI_COMMAND_RE = re.compile(r"(?<![A-Za-z0-9_.-])lark-cli(?![A-Za-z0-9_.-]
 def _lark_cli_env_from_runtime(runtime: Runtime, command: str, *, sandbox_paths: bool) -> dict[str, str] | None:
     """Expose Settings-page Lark auth to sandbox ``lark-cli`` commands.
 
-    Settings authorizes ``lark-cli`` under DeerFlow's per-user integration
+    Settings authorizes ``lark-cli`` under BerkshireAgent's per-user integration
     config/data directories. Agent conversations invoke ``lark-cli`` through the
     sandbox, so lark commands must receive those same directories or they see an
     unrelated unauthenticated profile. Keep this scoped to commands that

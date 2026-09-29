@@ -5,7 +5,7 @@ import asyncio
 import pytest
 
 from deerflow.client import StreamEvent
-from deerflow.tui.app import DeerFlowTUI
+from deerflow.tui.app import BerkshireAgentTUI
 from deerflow.tui.cli import LaunchPlan
 
 
@@ -41,7 +41,7 @@ async def _settle(pilot, predicate, timeout=2.0):
 
 @pytest.mark.asyncio
 async def test_typing_slash_opens_palette_with_matches():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("slash", "h", "e")
@@ -52,7 +52,7 @@ async def test_typing_slash_opens_palette_with_matches():
 
 @pytest.mark.asyncio
 async def test_palette_index_resets_when_filter_changes():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("slash", "m")  # memory / mcp / model …
@@ -67,7 +67,7 @@ async def test_palette_index_resets_when_filter_changes():
 
 @pytest.mark.asyncio
 async def test_palette_enter_runs_builtin_and_closes():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         for ch in ("slash", "h", "e", "l", "p"):
@@ -83,7 +83,7 @@ async def test_palette_enter_runs_builtin_and_closes():
 
 @pytest.mark.asyncio
 async def test_escape_closes_palette():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("slash", "m")
@@ -95,7 +95,7 @@ async def test_escape_closes_palette():
 
 @pytest.mark.asyncio
 async def test_skill_command_tab_completes_with_trailing_space():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("slash", "t", "d", "d")
@@ -108,7 +108,7 @@ async def test_skill_command_tab_completes_with_trailing_space():
 
 @pytest.mark.asyncio
 async def test_normal_text_does_not_open_palette():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         await pilot.press("h", "i")

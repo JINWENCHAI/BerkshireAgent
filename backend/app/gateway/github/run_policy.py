@@ -112,7 +112,7 @@ def register_policy() -> None:
         default_recursion_limit=250,
         credentials_provider=inject_github_credentials,
         # GitHub deliveries are HMAC-authenticated at the webhook route,
-        # and the binding from "sender" to DeerFlow user is encoded in
+        # and the binding from "sender" to BerkshireAgent user is encoded in
         # the agent's config.yaml ownership (not in the channel-connections
         # table). There is no per-sender /connect handshake — opting out
         # of the bound-identity gate is what lets webhook events reach

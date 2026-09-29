@@ -17,7 +17,7 @@ replaces those channels nor writes a long-term user profile. No embedding servic
 or additional model call is required by the feature itself.
 
 The standard lead-agent builders (including custom-agent bootstrap) and
-`DeerFlowClient` expose three tools through the existing authorization filter:
+`BerkshireAgentClient` expose three tools through the existing authorization filter:
 
 - `task_note`: save, replace or delete a named task note. Keep up to eight notes,
   each with 750 characters and four optional source IDs. A full notebook rejects
@@ -108,14 +108,14 @@ Subagent compaction does not archive into the parent's thread. The feature does
 not transfer arbitrary parent state into children and does not resume a stopped
 run automatically. Direct `create_deerflow_agent` integrations can explicitly
 compose these middleware/tools; automatic installation is limited to the standard
-lead builders and `DeerFlowClient`.
+lead builders and `BerkshireAgentClient`.
 
 ## Evidence
 
 [The historical experiment package](experiments/task-continuity-20260912/README.md)
 contains the original A/B/C/D protocol, scripts and results. Those numbers describe
 an independent replay prototype under forced compression, not this production
-implementation or complete DeerFlow baseline behavior. Its vector-versus-keyword
+implementation or complete BerkshireAgent baseline behavior. Its vector-versus-keyword
 comparison did not establish a stable net benefit, so this implementation has no
 vector dependency.
 

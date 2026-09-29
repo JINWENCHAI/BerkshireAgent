@@ -5,7 +5,7 @@ Covers the three-branch decision table:
 | DB state                              | Action                                  |
 |---------------------------------------|-----------------------------------------|
 | empty                                 | create_all + stamp head                 |
-| legacy (DeerFlow tables, no alembic_version) | create_all (baseline tables only, backfill) + stamp baseline + upgrade head |
+| legacy (BerkshireAgent tables, no alembic_version) | create_all (baseline tables only, backfill) + stamp baseline + upgrade head |
 | versioned                             | upgrade head                            |
 
 Each test seeds a temp SQLite to the relevant pre-state, runs
@@ -564,7 +564,7 @@ async def test_baseline_table_names_constant_matches_0001(tmp_path: Path) -> Non
         async with engine.connect() as conn:
             reflected = await conn.run_sync(lambda c: set(sa.inspect(c).get_table_names()))
         # ``alembic_version`` is alembic's bookkeeping table, not part of
-        # our schema -- the constant is about DeerFlow-owned baseline tables.
+        # our schema -- the constant is about BerkshireAgent-owned baseline tables.
         reflected.discard("alembic_version")
 
         assert reflected == _BASELINE_TABLE_NAMES, f"_BASELINE_TABLE_NAMES drifted from 0001_baseline.upgrade()'s output: only-in-0001={sorted(reflected - _BASELINE_TABLE_NAMES)} only-in-constant={sorted(_BASELINE_TABLE_NAMES - reflected)}"
@@ -835,7 +835,7 @@ class TestDecideState:
         assert _decide_state({"has_alembic_version": False, "has_deerflow_tables": False}) == "empty"
 
     def test_empty_with_unrelated_tables(self):
-        # LangGraph checkpointer tables present but DeerFlow has nothing yet.
+        # LangGraph checkpointer tables present but BerkshireAgent has nothing yet.
         # ``has_deerflow_tables`` is derived from the metadata intersection in
         # production, so the only thing the decision function needs is the
         # bool itself.

@@ -13,7 +13,7 @@ import { Callout } from "nextra/components";
   引入。两者共享页面和动作接口，这些接口在 1.0 之前仍可能变化。
 </Callout>
 
-其他贡献类型改变的是宿主在幕后做的事。**插件**则增加一个用户看得见、用得上的功能：工作区里的一个页面、会话菜单里的一个入口、页面可以调用的后端动作，以及模型可以调用的工具。这一切都来自一个通过常规扩展流程安装的 Python 包，不需要重新构建 DeerFlow 前端，宿主里也没有专门针对某个插件的代码。
+其他贡献类型改变的是宿主在幕后做的事。**插件**则增加一个用户看得见、用得上的功能：工作区里的一个页面、会话菜单里的一个入口、页面可以调用的后端动作，以及模型可以调用的工具。这一切都来自一个通过常规扩展流程安装的 Python 包，不需要重新构建 BerkshireAgent 前端，宿主里也没有专门针对某个插件的代码。
 
 ## 用户看到什么
 
@@ -351,7 +351,7 @@ export default {
 
 内联哈希或资源修订版本过期时返回 `404`，需要刷新页面。两个下载路由在插件停用时仍然会提供它的代码。
 
-浏览器会带上 `X-Deerflow-Plugin-Viewer` 请求头，值为它发现插件时得到的 `viewer_id`，所以在另一个账号下打开的视图发起的动作会以 `409` 被拒绝。
+浏览器会带上 `X-BerkshireAgent-Plugin-Viewer` 请求头，值为它发现插件时得到的 `viewer_id`，所以在另一个账号下打开的视图发起的动作会以 `409` 被拒绝。
 
 ## 安全模型
 
@@ -375,7 +375,7 @@ export default {
 
 ## 逐步讲解：书签示例
 
-[`examples/deerflow-extension-bookmarks`](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-bookmarks)（0.2.0 版，需要 `deerflow-extension-api>=0.2.3`）是一个完整的插件：用户在会话菜单里收藏最后一条可见回答，然后在 **我的书签** 页面搜索、重命名、打开或删除书签，Agent 也可以搜索这些书签。它用到了本章的每一部分：
+[`examples/deerflow-extension-bookmarks`](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-bookmarks)（0.2.0 版，需要 `deerflow-extension-api>=0.2.3`）是一个完整的插件：用户在会话菜单里收藏最后一条可见回答，然后在 **我的书签** 页面搜索、重命名、打开或删除书签，Agent 也可以搜索这些书签。它用到了本章的每一部分：
 
 1. **配置和状态。** `install()` 要求 `config.enabled`（布尔值）和一个绝对路径 `config.storage_path`，并在那里打开 SQLite 存储。容器部署时要为它挂载持久目录。
 2. **贡献声明。** 命名空间 `community.bookmarks`，`enabled=config["enabled"]`，`BrowserAssets("bookmarks.v1", Path(__file__).parent)`，五个 `BackendAction`（`save`、`search`、`get`、`rename`、`delete`），以及一个只读的 `ModelTool`：`search_bookmarks`，模型看到的名字是 `ext_community_bookmarks_search_bookmarks_<hash>`。

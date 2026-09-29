@@ -29,7 +29,7 @@ Recovery when a session goes wrong:
 
 ## Matching the AIO session limit
 
-The AIO image allows at most 10 shell sessions by default (`MAX_SHELL_SESSIONS`) and evicts the oldest idle session beyond that; an evicted subagent's next command gets `404 Session not found`. DeerFlow needs `subagent_runtime.max_running + 1` sessions, the extra one for the Lead Agent's own shell.
+The AIO image allows at most 10 shell sessions by default (`MAX_SHELL_SESSIONS`) and evicts the oldest idle session beyond that; an evicted subagent's next command gets `404 Session not found`. BerkshireAgent needs `subagent_runtime.max_running + 1` sessions, the extra one for the Lead Agent's own shell.
 
 - Without an explicit `sandbox.environment.MAX_SHELL_SESSIONS`, local containers receive the required value automatically whenever it exceeds 10.
 - An explicit value below the requirement fails Gateway startup: `sandbox.environment.MAX_SHELL_SESSIONS must be at least subagent_runtime.max_running + 1`.

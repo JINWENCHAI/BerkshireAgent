@@ -5,7 +5,7 @@ export interface ModelReasoningEffortCapabilities {
   values: string[];
   /** Effort the Gateway applies when the caller does not choose one. */
   default: string | null;
-  /** DeerFlow generic value (minimal/low/medium/high) -> provider value. */
+  /** BerkshireAgent generic value (minimal/low/medium/high) -> provider value. */
   aliases: Record<string, string>;
 }
 

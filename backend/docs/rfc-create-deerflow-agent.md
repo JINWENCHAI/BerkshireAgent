@@ -19,13 +19,13 @@ make_lead_agent
 
 ### 对比
 
-| | `langchain.create_agent` | `make_lead_agent` | `DeerFlowClient`（增强后） |
+| | `langchain.create_agent` | `make_lead_agent` | `BerkshireAgentClient`（增强后） |
 |---|---|---|---|
 | 定位 | 底层原语 | 内部工厂 | **唯一公开 API** |
 | 配置来源 | 纯参数 | YAML 文件 | **参数优先，config fallback** |
 | 内置能力 | 无 | Sandbox/Memory/Skills/Subagent/... | **按需组合 + 管理 API** |
 | 用户接口 | `graph.invoke(state)` | 内部使用 | **`client.chat("hello")`** |
-| 适合谁 | 写 LangChain 的人 | 内部使用 | **所有 DeerFlow 用户** |
+| 适合谁 | 写 LangChain 的人 | 内部使用 | **所有 BerkshireAgent 用户** |
 
 ## 2. 设计原则
 
@@ -40,7 +40,7 @@ make_lead_agent
 
 ```
     ┌──────────────────────┐
-    │   DeerFlowClient     │  ← 唯一公开 API（chat/stream + 管理）
+    │   BerkshireAgentClient     │  ← 唯一公开 API（chat/stream + 管理）
     └──────────┬───────────┘
     ┌──────────▼───────────┐
     │   make_lead_agent    │  ← 内部：配置驱动工厂
@@ -53,9 +53,9 @@ make_lead_agent
     └──────────────────────┘
 ```
 
-`DeerFlowClient` 是唯一公开 API。`create_deerflow_agent` 和 `make_lead_agent` 都是内部实现。
+`BerkshireAgentClient` 是唯一公开 API。`create_deerflow_agent` 和 `make_lead_agent` 都是内部实现。
 
-用户通过 `DeerFlowClient` 三个参数控制行为：
+用户通过 `BerkshireAgentClient` 三个参数控制行为：
 
 | 参数 | 类型 | 职责 |
 |------|------|------|
@@ -69,20 +69,20 @@ make_lead_agent
 
 - **配置覆盖** — `config` dict > config.yaml > 默认值
 - **三层不重叠** — config 传参数，features 传实例，extra_middleware 传新增
-- **向前兼容** — 现有 `DeerFlowClient()` 无参构造行为不变
+- **向前兼容** — 现有 `BerkshireAgentClient()` 无参构造行为不变
 - **harness 边界合规** — 不 import `app.*`（`test_harness_boundary.py` 强制）
 
 ## 3. API 设计
 
-### 3.1 `DeerFlowClient` — 唯一公开 API
+### 3.1 `BerkshireAgentClient` — 唯一公开 API
 
 在现有构造函数上增加三个可选参数：
 
 ```python
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 from deerflow.agents.features import RuntimeFeatures
 
-client = DeerFlowClient(
+client = BerkshireAgentClient(
     # 1. config — 覆盖 config.yaml 的任意 key（结构和 yaml 一致）
     config={
         "models": [{"name": "gpt-4o", "use": "langchain_openai:ChatOpenAI", "model": "gpt-4o", "api_key": "sk-..."}],
@@ -110,19 +110,19 @@ client = DeerFlowClient(
 
 ```python
 # 用法 1：全读 config.yaml（现有行为，不变）
-client = DeerFlowClient()
+client = BerkshireAgentClient()
 
 # 用法 2：只改参数，不换实现
-client = DeerFlowClient(config={"memory": {"max_facts": 50}})
+client = BerkshireAgentClient(config={"memory": {"max_facts": 50}})
 
 # 用法 3：替换 middleware 实现
-client = DeerFlowClient(features=RuntimeFeatures(auto_title=MyTitleMiddleware()))
+client = BerkshireAgentClient(features=RuntimeFeatures(auto_title=MyTitleMiddleware()))
 
 # 用法 4：添加自定义 middleware
-client = DeerFlowClient(extra_middleware=[MyAuditMiddleware()])
+client = BerkshireAgentClient(extra_middleware=[MyAuditMiddleware()])
 
 # 用法 5：纯 SDK（无 config.yaml）
-client = DeerFlowClient(config={
+client = BerkshireAgentClient(config={
     "models": [{"name": "gpt-4o", "use": "langchain_openai:ChatOpenAI", ...}],
     "tools": [{"name": "bash", "use": "deerflow.sandbox.tools:bash_tool", "group": "bash"}],
     "memory": {"enabled": True},
@@ -149,7 +149,7 @@ def create_deerflow_agent(
     ...
 ```
 
-`DeerFlowClient` 内部调用此函数。
+`BerkshireAgentClient` 内部调用此函数。
 
 直接集成需要原生子智能体时，调用方可以显式传入一个 `SubagentRuntime`。同一应用内的多个 graph 应复用同一实例，让 middleware 限制、`task` 工具、真实执行槽位和可选批处理 worker 共享同一份容量快照。这个参数不改变“纯参数工厂”边界：工厂不读取 YAML、不创建 SQL repository，也不启动后台 worker。
 
@@ -180,13 +180,13 @@ class RuntimeFeatures:
 
 ```python
 # 改 memory 参数 → config
-client = DeerFlowClient(config={"memory": {"max_facts": 50}})
+client = BerkshireAgentClient(config={"memory": {"max_facts": 50}})
 
 # 换 memory 实现 → features
-client = DeerFlowClient(features=RuntimeFeatures(memory=MyMemoryMiddleware()))
+client = BerkshireAgentClient(features=RuntimeFeatures(memory=MyMemoryMiddleware()))
 
 # 两者组合 — config 参数给默认 middleware，但 title 换实现
-client = DeerFlowClient(
+client = BerkshireAgentClient(
     config={"memory": {"max_facts": 50}},
     features=RuntimeFeatures(auto_title=MyTitleMiddleware()),
 )
@@ -309,7 +309,7 @@ after_agent 反序 ←   [N] → [N-1] → ... → [0]
 
 `before_agent` / `after_agent` 只跑一次。`before_model` / `after_model` 每轮 tool call 循环都跑。
 
-### DeerFlow 的实际情况
+### BerkshireAgent 的实际情况
 
 **不是洋葱，是管道。** 11 个 middleware 中只有 SandboxMiddleware 有 before/after 对称（获取/释放），其余只用一个钩子。
 
@@ -324,16 +324,16 @@ after_agent 反序 ←   [N] → [N-1] → ... → [0]
 ### 5.1 全读 config.yaml（现有行为不变）
 
 ```python
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 
-client = DeerFlowClient()
+client = BerkshireAgentClient()
 response = client.chat("Hello")
 ```
 
 ### 5.2 覆盖配置参数
 
 ```python
-client = DeerFlowClient(config={
+client = BerkshireAgentClient(config={
     "memory": {"max_facts": 50},
     "title": {"enabled": False},
     "summarization": {"trigger": [{"type": "tokens", "value": 10000}]},
@@ -343,7 +343,7 @@ client = DeerFlowClient(config={
 ### 5.3 纯 SDK（无 config.yaml）
 
 ```python
-client = DeerFlowClient(config={
+client = BerkshireAgentClient(config={
     "models": [{"name": "gpt-4o", "use": "langchain_openai:ChatOpenAI", "model": "gpt-4o", "api_key": "sk-..."}],
     "tools": [
         {"name": "bash", "group": "bash", "use": "deerflow.sandbox.tools:bash_tool"},
@@ -359,7 +359,7 @@ client = DeerFlowClient(config={
 ```python
 from deerflow.agents.features import RuntimeFeatures
 
-client = DeerFlowClient(
+client = BerkshireAgentClient(
     features=RuntimeFeatures(
         memory=MyMemoryMiddleware(),       # 替换
         auto_title=MyTitleMiddleware(),    # 替换
@@ -385,7 +385,7 @@ class MyFilterMiddleware(AgentMiddleware):
     def after_model(self, state, runtime):
         filter_sensitive_output(state)
 
-client = DeerFlowClient(
+client = BerkshireAgentClient(
     extra_middleware=[MyAuditMiddleware(), MyFilterMiddleware()],
 )
 ```
@@ -407,11 +407,11 @@ Phase 1 中 `auto_title` 默认为 `False` 以避免无 config 时崩溃。其�
 ```
 Phase 1（当前 PR #1203）:
   ✓ 新增 create_deerflow_agent + RuntimeFeatures（内部 API）
-  ✓ 不改 DeerFlowClient 和 make_lead_agent
+  ✓ 不改 BerkshireAgentClient 和 make_lead_agent
   ✗ middleware 内部仍读 config（已知限制）
 
 Phase 2（#1380）:
-  - DeerFlowClient 构造函数增加可选参数（model, tools, features, system_prompt）
+  - BerkshireAgentClient 构造函数增加可选参数（model, tools, features, system_prompt）
   - Options 参数覆盖 config（MemoryOptions, TitleOptions 等）
   - @Next/@Prev 装饰器
   - 补缺失 middleware（Guardrail, TokenUsage, DeferredToolFilter）
@@ -426,7 +426,7 @@ Phase 3:
 
 | 问题 | 决议 | 理由 |
 |------|------|------|
-| 公开 API | `DeerFlowClient` 唯一入口 | 自顶向下，先改现有 API 再抽底层 |
+| 公开 API | `BerkshireAgentClient` 唯一入口 | 自顶向下，先改现有 API 再抽底层 |
 | create_deerflow_agent | 内部实现，不公开 | 用户不需要接触 CompiledStateGraph |
 | 配置覆盖 | `config` dict，和 config.yaml 结构一致 | 无新概念，deep merge 覆盖 |
 | middleware 替换 | `features=RuntimeFeatures(memory=MyMW())` | bool 开关 + 实例替换 |

@@ -18,7 +18,7 @@ def _canonical_peer_id(
     agent_name: str | None,
     default_peer_id: str,
 ) -> str:
-    """Map DeerFlow's case-insensitive agent names to disjoint peer IDs."""
+    """Map BerkshireAgent's case-insensitive agent names to disjoint peer IDs."""
 
     if agent_name is None:
         return default_peer_id
@@ -41,7 +41,7 @@ def _session_id(
     peer_id: str,
     thread_id: str,
 ) -> str:
-    """Derive one stable OpenViking session for one DeerFlow thread."""
+    """Derive one stable OpenViking session for one BerkshireAgent thread."""
 
     digest = hashlib.sha256(f"{_SESSION_NAMESPACE}\0{owner_user_id}\0{peer_id}\0{thread_id}".encode()).hexdigest()
     return f"df_{digest[:48]}"
@@ -60,7 +60,7 @@ def _captureable_messages(
     messages: list[Any],
     should_keep_hidden_message: Any,
 ) -> list[Any]:
-    """Drop DeerFlow-only injected context before handing messages to OpenViking."""
+    """Drop BerkshireAgent-only injected context before handing messages to OpenViking."""
 
     selected: list[Any] = []
     for message in messages:

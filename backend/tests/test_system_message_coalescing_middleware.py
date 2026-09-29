@@ -92,7 +92,7 @@ class TestCoalesceRequest:
 
     def test_system_message_plus_one_in_msg_system_coalesces(self):
         """system_message + 1 in-messages SystemMessage → merge into system_message."""
-        prompt = SystemMessage(content="You are DeerFlow.", id="sys-1")
+        prompt = SystemMessage(content="You are BerkshireAgent.", id="sys-1")
         reminder = SystemMessage(content="<system-reminder>date</system-reminder>", id="msg-1")
         user = HumanMessage(content="Hello", id="msg-1__user")
         request = _make_request(system_message=prompt, messages=[reminder, user])
@@ -100,7 +100,7 @@ class TestCoalesceRequest:
         result = _coalesce_request(request)
         assert result is not None
         assert result.system_message is not None
-        assert "You are DeerFlow." in result.system_message.content
+        assert "You are BerkshireAgent." in result.system_message.content
         assert "<system-reminder>date</system-reminder>" in result.system_message.content
         # messages no longer contain any SystemMessage
         assert not any(isinstance(m, SystemMessage) for m in result.messages)
@@ -221,7 +221,7 @@ class TestCoalesceRequest:
     def test_merged_handles_list_content(self):
         """List-type SystemMessage content is flattened before joining."""
         prompt = SystemMessage(
-            content=[{"type": "text", "text": "You are DeerFlow."}],
+            content=[{"type": "text", "text": "You are BerkshireAgent."}],
             id="sys-1",
         )
         reminder = SystemMessage(content="<system-reminder>date</system-reminder>", id="msg-1")
@@ -229,7 +229,7 @@ class TestCoalesceRequest:
 
         result = _coalesce_request(request)
         assert result is not None
-        assert "You are DeerFlow." in result.system_message.content
+        assert "You are BerkshireAgent." in result.system_message.content
         assert "<system-reminder>date</system-reminder>" in result.system_message.content
 
     def test_reminder_dedup_keeps_only_last(self):
@@ -429,7 +429,7 @@ class TestRealisticScenario:
         mw = SystemMessageCoalescingMiddleware()
         # Real shape: system_prompt in system_message field, reminder in messages
         request = _make_request(
-            system_message=SystemMessage(content="You are DeerFlow 2.0, an AI assistant...", id="sys-prompt"),
+            system_message=SystemMessage(content="You are BerkshireAgent 2.0, an AI assistant...", id="sys-prompt"),
             messages=[
                 SystemMessage(
                     content="<system-reminder>\n<current_date>2026-06-22, Monday</current_date>\n</system-reminder>",
@@ -449,7 +449,7 @@ class TestRealisticScenario:
         final = _final_payload(sent)
         system_count = sum(1 for m in final if isinstance(m, SystemMessage))
         assert system_count == 1  # key assertion: only 1 SystemMessage
-        assert "DeerFlow 2.0" in final[0].content
+        assert "BerkshireAgent 2.0" in final[0].content
         assert "<current_date>2026-06-22, Monday</current_date>" in final[0].content
         # User-owned memory stays as HumanMessage (OWASP LLM01 preserved)
         assert any(isinstance(m, HumanMessage) and "User prefers Python." in m.content for m in final)
@@ -583,7 +583,7 @@ class TestStrictBackendStub:
     def test_first_turn_without_middleware_rejects(self):
         """Reproduce #3707: raw request → handler flattens to 2 SystemMessages → stub rejects."""
         request = _make_request(
-            system_message=SystemMessage(content="You are DeerFlow.", id="sys-prompt"),
+            system_message=SystemMessage(content="You are BerkshireAgent.", id="sys-prompt"),
             messages=[
                 SystemMessage(content="<system-reminder>date</system-reminder>", id="msg-1"),
                 HumanMessage(content="Hello", id="msg-1__user"),
@@ -598,7 +598,7 @@ class TestStrictBackendStub:
         """Fix confirmed: middleware coalesces → 1 SystemMessage → stub accepts."""
         mw = SystemMessageCoalescingMiddleware()
         request = _make_request(
-            system_message=SystemMessage(content="You are DeerFlow.", id="sys-prompt"),
+            system_message=SystemMessage(content="You are BerkshireAgent.", id="sys-prompt"),
             messages=[
                 SystemMessage(content="<system-reminder>date</system-reminder>", id="msg-1"),
                 HumanMessage(content="Hello", id="msg-1__user"),

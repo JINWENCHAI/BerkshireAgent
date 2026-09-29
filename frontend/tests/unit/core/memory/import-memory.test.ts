@@ -63,7 +63,7 @@ describe("legacy memory import compatibility (TDD)", () => {
       summary: "",
       updatedAt: "",
     });
-    expect(result!.user.workContext.summary).toBe("Works on DeerFlow");
+    expect(result!.user.workContext.summary).toBe("Works on BerkshireAgent");
   });
 
   it("normalizeMemoryPayload preserves existing cognitiveStyle summary", () => {
@@ -186,7 +186,7 @@ describe("legacy memory import compatibility (TDD)", () => {
       data: { future: true },
       user: {
         workContext: {
-          summary: "Works on DeerFlow",
+          summary: "Works on BerkshireAgent",
           updatedAt: "2026-06-01T00:00:00Z",
           confidence: 0.8,
         },

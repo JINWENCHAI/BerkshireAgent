@@ -1,4 +1,4 @@
-"""Authentication module for DeerFlow.
+"""Authentication module for BerkshireAgent.
 
 This module provides:
 - JWT-based authentication

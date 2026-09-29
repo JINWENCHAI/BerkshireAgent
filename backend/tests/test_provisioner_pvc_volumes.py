@@ -154,7 +154,7 @@ class TestBuildVolumes:
         assert extra_vol.host_path.type == "DirectoryOrCreate"
 
     def test_extra_mount_uses_userdata_pvc_when_configured(self, provisioner_module):
-        """PVC mode should use the same DeerFlow data PVC for runtime config mounts."""
+        """PVC mode should use the same BerkshireAgent data PVC for runtime config mounts."""
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = "userdata-pvc"
         provisioner_module.DEER_FLOW_HOST_BASE_DIR = "/state"
@@ -353,24 +353,24 @@ class TestBuildVolumeMounts:
     def test_skills_pvc_can_use_user_scoped_subpath_template(self, provisioner_module):
         """Operators can opt into per-user/thread skills subPath for shared PVCs."""
         provisioner_module.SKILLS_PVC_NAME = "my-skills-pvc"
-        provisioner_module.SKILLS_PVC_SUBPATH_TEMPLATE = "deer-flow/users/{user_id}/threads/{thread_id}/skills"
+        provisioner_module.SKILLS_PVC_SUBPATH_TEMPLATE = "berkshire-agent/users/{user_id}/threads/{thread_id}/skills"
         mounts = provisioner_module._build_volume_mounts("thread-42", user_id="user-7")
         skills_mount = mounts[0]
-        assert skills_mount.sub_path == "deer-flow/users/user-7/threads/thread-42/skills"
+        assert skills_mount.sub_path == "berkshire-agent/users/user-7/threads/thread-42/skills"
 
     def test_pvc_sets_user_scoped_subpath(self, provisioner_module):
         """PVC mode should include user_id in the user-data subPath."""
         provisioner_module.USERDATA_PVC_NAME = "my-pvc"
         mounts = provisioner_module._build_volume_mounts("thread-42", user_id="user-7")
         userdata_mount = mounts[-1]
-        assert userdata_mount.sub_path == "deer-flow/users/user-7/threads/thread-42/user-data"
+        assert userdata_mount.sub_path == "berkshire-agent/users/user-7/threads/thread-42/user-data"
 
     def test_pvc_defaults_to_default_user_subpath(self, provisioner_module):
         """Older callers should still land under a stable default user namespace."""
         provisioner_module.USERDATA_PVC_NAME = "my-pvc"
         mounts = provisioner_module._build_volume_mounts("thread-42")
         userdata_mount = mounts[-1]
-        assert userdata_mount.sub_path == "deer-flow/users/default/threads/thread-42/user-data"
+        assert userdata_mount.sub_path == "berkshire-agent/users/default/threads/thread-42/user-data"
 
     # ── Managed integration extra mounts ───────────────────────────────
 
@@ -396,7 +396,7 @@ class TestBuildVolumeMounts:
         assert extra_mount.sub_path is None
 
     def test_extra_mount_uses_pvc_subpath(self, provisioner_module):
-        """PVC extra mounts should point at the same user-scoped DeerFlow path."""
+        """PVC extra mounts should point at the same user-scoped BerkshireAgent path."""
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = "userdata-pvc"
         provisioner_module.DEER_FLOW_HOST_BASE_DIR = "/state"
@@ -412,7 +412,7 @@ class TestBuildVolumeMounts:
 
         extra_mount = mounts[-1]
         assert extra_mount.name == "extra-0"
-        assert extra_mount.sub_path == "deer-flow/users/alice/integrations/lark-cli/config"
+        assert extra_mount.sub_path == "berkshire-agent/users/alice/integrations/lark-cli/config"
 
     def test_extra_mount_rejects_unknown_container_path(self, provisioner_module):
         """Only first-party managed mount paths are accepted."""
@@ -471,7 +471,7 @@ class TestBuildVolumeMounts:
         skill_mounts = [mount for mount in mounts if mount.mount_path.startswith("/mnt/skills/")]
         assert len(skill_mounts) == 4
         assert all(mount.name != "skills" for mount in mounts)
-        assert {mount.sub_path for mount in skill_mounts} == {f"deer-flow/users/alice/threads/thread-1/skills_view/{category}" for category in ("public", "custom", "legacy", "integrations")}
+        assert {mount.sub_path for mount in skill_mounts} == {f"berkshire-agent/users/alice/threads/thread-1/skills_view/{category}" for category in ("public", "custom", "legacy", "integrations")}
 
     @pytest.mark.parametrize("use_userdata_pvc", [False, True])
     def test_custom_root_thread_skill_mounts_replace_every_default_path(
@@ -608,7 +608,7 @@ class TestBuildPodVolumes:
         assert pod.spec.volumes[0].persistent_volume_claim is not None
         assert pod.spec.volumes[-1].persistent_volume_claim is not None
         userdata_mount = pod.spec.containers[0].volume_mounts[-1]
-        assert userdata_mount.sub_path == "deer-flow/users/user-7/threads/thread-1/user-data"
+        assert userdata_mount.sub_path == "berkshire-agent/users/user-7/threads/thread-1/user-data"
 
     def test_pod_includes_extra_mounts(self, provisioner_module):
         """Provisioner-created pods should include managed integration runtime mounts."""
@@ -658,11 +658,11 @@ class TestBuildPodVolumes:
     def test_pod_pvc_mode_can_use_user_scoped_skills_subpath(self, provisioner_module):
         """Pod should use a configured user-scoped subPath for PVC skills."""
         provisioner_module.SKILLS_PVC_NAME = "skills-pvc"
-        provisioner_module.SKILLS_PVC_SUBPATH_TEMPLATE = "deer-flow/users/{user_id}/threads/{thread_id}/skills"
+        provisioner_module.SKILLS_PVC_SUBPATH_TEMPLATE = "berkshire-agent/users/{user_id}/threads/{thread_id}/skills"
         provisioner_module.USERDATA_PVC_NAME = "userdata-pvc"
         pod = provisioner_module._build_pod("sandbox-1", "thread-1", user_id="user-7")
         skills_mount = pod.spec.containers[0].volume_mounts[0]
-        assert skills_mount.sub_path == "deer-flow/users/user-7/threads/thread-1/skills"
+        assert skills_mount.sub_path == "berkshire-agent/users/user-7/threads/thread-1/skills"
 
 
 class TestLarkCliInitContainer:
@@ -684,7 +684,7 @@ class TestLarkCliInitContainer:
     def test_no_init_container_when_flag_disabled(self, provisioner_module):
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
-        provisioner_module.LARK_CLI_INIT_IMAGE = "deer-flow/lark-cli-init:v1.0.65"
+        provisioner_module.LARK_CLI_INIT_IMAGE = "berkshire-agent/lark-cli-init:v1.0.65"
         pod = provisioner_module._build_pod(
             "sandbox-1",
             "thread-1",
@@ -695,7 +695,7 @@ class TestLarkCliInitContainer:
     def test_init_container_and_emptydir_when_enabled(self, provisioner_module):
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
-        provisioner_module.LARK_CLI_INIT_IMAGE = "deer-flow/lark-cli-init:v1.0.65"
+        provisioner_module.LARK_CLI_INIT_IMAGE = "berkshire-agent/lark-cli-init:v1.0.65"
         pod = provisioner_module._build_pod(
             "sandbox-1",
             "thread-1",
@@ -712,7 +712,7 @@ class TestLarkCliInitContainer:
         assert pod.spec.init_containers is not None
         assert len(pod.spec.init_containers) == 1
         init = pod.spec.init_containers[0]
-        assert init.image == "deer-flow/lark-cli-init:v1.0.65"
+        assert init.image == "berkshire-agent/lark-cli-init:v1.0.65"
         init_mount = init.volume_mounts[0]
         assert init_mount.name == provisioner_module.LARK_CLI_RUNTIME_VOLUME_NAME
         assert init_mount.mount_path == provisioner_module.LARK_CLI_RUNTIME_CONTAINER_PATH
@@ -728,7 +728,7 @@ class TestLarkCliInitContainer:
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
         provisioner_module.DEER_FLOW_HOST_BASE_DIR = "/state"
-        provisioner_module.LARK_CLI_INIT_IMAGE = "deer-flow/lark-cli-init:v1.0.65"
+        provisioner_module.LARK_CLI_INIT_IMAGE = "berkshire-agent/lark-cli-init:v1.0.65"
         extra_mounts = [
             provisioner_module.ExtraMount(
                 host_path="/state/users/alice/integrations/lark-cli/config",
@@ -807,7 +807,7 @@ class TestLarkCliBrokerSidecar:
     def test_no_sidecar_when_flag_disabled(self, provisioner_module):
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
-        provisioner_module.LARK_CLI_BROKER_IMAGE = "deer-flow/lark-cli-broker:v1.0.65"
+        provisioner_module.LARK_CLI_BROKER_IMAGE = "berkshire-agent/lark-cli-broker:v1.0.65"
         pod = provisioner_module._build_pod(
             "sandbox-1",
             "thread-1",
@@ -820,7 +820,7 @@ class TestLarkCliBrokerSidecar:
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
         provisioner_module.DEER_FLOW_HOST_BASE_DIR = "/state"
-        provisioner_module.LARK_CLI_BROKER_IMAGE = "deer-flow/lark-cli-broker:v1.0.65"
+        provisioner_module.LARK_CLI_BROKER_IMAGE = "berkshire-agent/lark-cli-broker:v1.0.65"
         pod = provisioner_module._build_pod(
             "sandbox-1",
             "thread-1",
@@ -834,14 +834,14 @@ class TestLarkCliBrokerSidecar:
         assert len(pod.spec.init_containers) == 1
         init = pod.spec.init_containers[0]
         assert init.name == "lark-cli-shim-init"
-        assert init.image == "deer-flow/lark-cli-broker:v1.0.65"
+        assert init.image == "berkshire-agent/lark-cli-broker:v1.0.65"
         assert init.args == ["install-shim", provisioner_module.LARK_CLI_RUNTIME_CONTAINER_PATH]
 
         # Broker sidecar alongside the sandbox container.
         sidecars = [c for c in pod.spec.containers if c.name == "lark-cli-broker"]
         assert len(sidecars) == 1
         sidecar = sidecars[0]
-        assert sidecar.image == "deer-flow/lark-cli-broker:v1.0.65"
+        assert sidecar.image == "berkshire-agent/lark-cli-broker:v1.0.65"
         assert sidecar.args == ["serve"]
         # Credentials mounted into the sidecar only.
         sidecar_mount_order = [m.mount_path for m in sidecar.volume_mounts]
@@ -871,7 +871,7 @@ class TestLarkCliBrokerSidecar:
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
         provisioner_module.DEER_FLOW_HOST_BASE_DIR = "/state"
-        provisioner_module.LARK_CLI_BROKER_IMAGE = "deer-flow/lark-cli-broker:v1.0.65"
+        provisioner_module.LARK_CLI_BROKER_IMAGE = "berkshire-agent/lark-cli-broker:v1.0.65"
         skills_root = "/custom-skills"
 
         pod = provisioner_module._build_pod(
@@ -904,8 +904,8 @@ class TestLarkCliBrokerSidecar:
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
         provisioner_module.DEER_FLOW_HOST_BASE_DIR = "/state"
-        provisioner_module.LARK_CLI_INIT_IMAGE = "deer-flow/lark-cli-init:v1.0.65"
-        provisioner_module.LARK_CLI_BROKER_IMAGE = "deer-flow/lark-cli-broker:v1.0.65"
+        provisioner_module.LARK_CLI_INIT_IMAGE = "berkshire-agent/lark-cli-init:v1.0.65"
+        provisioner_module.LARK_CLI_BROKER_IMAGE = "berkshire-agent/lark-cli-broker:v1.0.65"
         pod = provisioner_module._build_pod(
             "sandbox-1",
             "thread-1",
@@ -924,7 +924,7 @@ class TestLarkCliBrokerSidecar:
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
         provisioner_module.DEER_FLOW_HOST_BASE_DIR = "/state"
-        provisioner_module.LARK_CLI_BROKER_IMAGE = "deer-flow/lark-cli-broker:v1.0.65"
+        provisioner_module.LARK_CLI_BROKER_IMAGE = "berkshire-agent/lark-cli-broker:v1.0.65"
         provisioner_module.LARK_CLI_BROKER_DENY_SUBCOMMANDS = "config show, auth token"
         try:
             pod = provisioner_module._build_pod(
@@ -945,7 +945,7 @@ class TestLarkCliBrokerSidecar:
         provisioner_module.SKILLS_PVC_NAME = ""
         provisioner_module.USERDATA_PVC_NAME = ""
         provisioner_module.DEER_FLOW_HOST_BASE_DIR = "/state"
-        provisioner_module.LARK_CLI_BROKER_IMAGE = "deer-flow/lark-cli-broker:v1.0.65"
+        provisioner_module.LARK_CLI_BROKER_IMAGE = "berkshire-agent/lark-cli-broker:v1.0.65"
         provisioner_module.LARK_CLI_BROKER_DENY_SUBCOMMANDS = ""
         pod = provisioner_module._build_pod(
             "sandbox-1",

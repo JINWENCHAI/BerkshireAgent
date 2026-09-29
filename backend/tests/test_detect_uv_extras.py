@@ -158,7 +158,7 @@ def test_detect_from_config_postgres_via_checkpointer(tmp_path):
 
 def test_detect_from_config_sqlite_returns_no_extras(tmp_path):
     cfg = tmp_path / "config.yaml"
-    cfg.write_text("database:\n  backend: sqlite\n  sqlite_dir: .deer-flow/data\n")
+    cfg.write_text("database:\n  backend: sqlite\n  sqlite_dir: .berkshire-agent/data\n")
     assert detect.detect_from_config(cfg) == []
 
 

@@ -27,7 +27,7 @@ _REMOVED_CUSTOM_HTTP_FIELDS = frozenset(
 
 @dataclass(frozen=True, slots=True)
 class OpenVikingConfig:
-    """Credential-bound connection settings and existing DeerFlow policy."""
+    """Credential-bound connection settings and existing BerkshireAgent policy."""
 
     base_url: str
     storage_path: str

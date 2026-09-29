@@ -1,20 +1,20 @@
-# DeerFlow Architecture
+# BerkshireAgent Architecture
 
-This document is the **top-level architecture overview** for DeerFlow. It explains the
+This document is the **top-level architecture overview** for BerkshireAgent. It explains the
 "big picture" — how the services, layers, and cross-cutting subsystems fit together — and
 points to the module-level guides that own the depth:
 
 - Backend depth → [`backend/AGENTS.md`](../backend/AGENTS.md) and [`backend/docs/ARCHITECTURE.md`](../backend/docs/ARCHITECTURE.md)
 - Frontend depth → [`frontend/AGENTS.md`](../frontend/AGENTS.md)
 
-DeerFlow 2.0 is a ground-up rewrite of the original Deep Research framework (see
+BerkshireAgent 2.0 is a ground-up rewrite of the original Deep Research framework (see
 [`README.md`](../README.md)); it shares no code with v1.
 
 ---
 
-## 1. What DeerFlow Is
+## 1. What BerkshireAgent Is
 
-DeerFlow (**D**eep **E**xploration and **E**fficient **R**esearch **Flow**) is an
+BerkshireAgent (**D**eep **E**xploration and **E**fficient **R**esearch **Flow**) is an
 open-source **super-agent harness** built on LangGraph. A single "lead agent" orchestrates
 **sub-agents**, **persistent memory**, **sandboxed code execution**, and **extensible
 skills/tools** — all isolated per conversation thread. The frontend is a Next.js chat UI;
@@ -40,7 +40,7 @@ public entry point.
 - `/api/*` (other) → Gateway REST routers
 - `/*` (non-API) → Frontend
 
-This lets standard LangGraph SDK clients talk to DeerFlow without a separate LangGraph
+This lets standard LangGraph SDK clients talk to BerkshireAgent without a separate LangGraph
 server. Both compose files publish nginx as `"${BIND_HOST:-127.0.0.1}:${PORT:-2026}:2026"`
 — **loopback by default**; the Gateway's `8001` is never published. Any new published port
 must carry an explicit bind address (`backend/tests/test_compose_default_bind_host.py`
@@ -63,7 +63,7 @@ enforced in CI by `backend/tests/test_harness_boundary.py`. A thin third package
 `deerflow-extension-api` (`backend/packages/extension-api/`), defines the host-independent
 extension contract that plugins implement.
 
-There is also an **embedded Python client** (`deerflow.client.DeerFlowClient`) used by
+There is also an **embedded Python client** (`deerflow.client.BerkshireAgentClient`) used by
 scheduled tasks and tests to drive the same run lifecycle programmatically.
 
 ### Agent runtime path
@@ -91,7 +91,7 @@ the parent thread view.
 
 - **`ThreadState`** extends LangGraph's `AgentState` with `sandbox`, `artifacts`,
   `thread_data`, `title`, `todos`, `viewed_images`. Each thread gets isolated data dirs
-  under `backend/.deer-flow/threads/{thread_id}/`.
+  under `backend/.berkshire-agent/threads/{thread_id}/`.
 - **Tools** come from three sources, merged by `get_available_tools()`: built-ins
   (`present_files`, `ask_clarification`, `view_image`, `review_skill_package`), configured
   tools (`bash`, `read_file`, `write_file`, `str_replace`, `ls`, web search/fetch), and
@@ -146,7 +146,7 @@ These span both layers and require reading multiple files to understand:
   Gateway API. Operator-controlled third-party `plugins:` live only in `config.yaml`
   (never the API-writable `extensions_config.json`) because that list causes code import.
 - **Skills** — `skills/public/` (committed) and `skills/custom/` (gitignored); managed
-  integration packs are global at `.deer-flow/integrations/skills/{provider}/`. Skills are
+  integration packs are global at `.berkshire-agent/integrations/skills/{provider}/`. Skills are
   discovered/loaded lazily by the harness; `skills/public/skill-reviewer/` is a read-only
   quality reviewer using the harness `review_skill_package` tool.
 - **Sub-agents** — background delegation via `SubagentExecutor` (server-side `execution_id`)
@@ -158,7 +158,7 @@ These span both layers and require reading multiple files to understand:
 - **Long-running MCP** — a durable `McpTaskService` (leased rows, DB as source of truth)
   keeps remote task IDs/polling out of the agent loop.
 - **Version sources** — a release version must match in `backend/pyproject.toml`,
-  `frontend/package.json`, and `deploy/helm/deer-flow/Chart.yaml` (`version` + `appVersion`);
+  `frontend/package.json`, and `deploy/helm/berkshire-agent/Chart.yaml` (`version` + `appVersion`);
   pushing a `v*` tag triggers CI that runs `scripts/verify_versions.sh` and blocks all
   publishing on drift. See [`RELEASING.md`](../RELEASING.md).
 

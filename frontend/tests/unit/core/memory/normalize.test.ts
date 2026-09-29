@@ -15,7 +15,7 @@ describe("normalizeUserMemory (API read path)", () => {
       summary: "",
       updatedAt: "",
     });
-    expect(result.user.workContext.summary).toBe("Works on DeerFlow");
+    expect(result.user.workContext.summary).toBe("Works on BerkshireAgent");
   });
 
   it("throws when payload is not a valid memory object", () => {

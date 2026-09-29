@@ -1,7 +1,7 @@
 """Sync Store factory.
 
 Provides a **sync singleton** and a **sync context manager** for CLI tools
-and the embedded :class:`~deerflow.client.DeerFlowClient`.
+and the embedded :class:`~deerflow.client.BerkshireAgentClient`.
 
 The deprecated ``checkpointer`` section takes precedence when present;
 otherwise Store follows the unified ``database`` section. Supported backends:

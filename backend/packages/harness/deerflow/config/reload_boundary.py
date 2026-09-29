@@ -1,6 +1,6 @@
 """Single source of truth for the config hot-reload boundary.
 
-Bytedance/deer-flow issue #3144: gateway request dependencies resolve
+Bytedance/berkshire-agent issue #3144: gateway request dependencies resolve
 ``AppConfig`` through ``get_app_config()`` on every request, so per-run
 fields take effect on the next message without restarting the gateway.
 The fields listed in this module are the **infrastructure** subset that

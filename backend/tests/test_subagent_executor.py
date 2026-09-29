@@ -1777,7 +1777,7 @@ class TestAsyncExecutionPath:
 
     @pytest.mark.anyio
     async def test_aexecute_step_capture_survives_history_contraction(self, classes, base_config, mock_agent, msg):
-        """Regression for #3875 Phase 3: DeerFlowSummarizationMiddleware rewrites the
+        """Regression for #3875 Phase 3: BerkshireAgentSummarizationMiddleware rewrites the
         messages channel mid-run via ``RemoveMessage(id=REMOVE_ALL_MESSAGES)``,
         so a later ``values`` snapshot hands the executor a SHORTER message list
         than the cursor it was tracking. Without the contraction reset in
@@ -4739,7 +4739,7 @@ class TestSubagentTracingWiring:
         assert metadata.get("langfuse_trace_name") == "subagent"
 
     @pytest.mark.anyio
-    async def test_environment_tag_emitted_from_deer_flow_env(
+    async def test_environment_tag_emitted_from_berkshire_agent_env(
         self,
         classes,
         executor_module,

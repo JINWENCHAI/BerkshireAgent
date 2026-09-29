@@ -1,17 +1,17 @@
 ---
 title: Deployment Guide
-description: "This guide covers all supported deployment methods for DeerFlow App: local development, Docker Compose, and production with Kubernetes-managed sandboxes."
+description: "This guide covers all supported deployment methods for BerkshireAgent App: local development, Docker Compose, and production with Kubernetes-managed sandboxes."
 ---
 
 import { Callout, Steps, Tabs } from "nextra/components";
 
 # Deployment Guide
 
-This guide covers all supported deployment methods for DeerFlow App: local development, Docker Compose, and production with Kubernetes-managed sandboxes.
+This guide covers all supported deployment methods for BerkshireAgent App: local development, Docker Compose, and production with Kubernetes-managed sandboxes.
 
 ## Local development deployment
 
-The local workflow is the fastest way to run DeerFlow. All services run as native processes on your machine.
+The local workflow is the fastest way to run BerkshireAgent. All services run as native processes on your machine.
 
 <Tabs items={["Start", "Stop", "Logs"]}>
   <Tabs.Tab>
@@ -66,8 +66,8 @@ Docker Compose runs all services in containers. Use this for a more production-l
 ### Development compose
 
 ```bash
-# Set the absolute path to your deer-flow repo root
-export DEER_FLOW_ROOT=/path/to/deer-flow
+# Set the absolute path to your berkshire-agent repo root
+export DEER_FLOW_ROOT=/path/to/berkshire-agent
 
 docker compose -f docker/docker-compose-dev.yaml up --build
 ```
@@ -83,7 +83,7 @@ Create a `.env` file in the repo root for secrets and runtime configuration:
 ```bash
 # .env
 OPENAI_API_KEY=sk-...
-DEER_FLOW_ROOT=/absolute/path/to/deer-flow
+DEER_FLOW_ROOT=/absolute/path/to/berkshire-agent
 BETTER_AUTH_SECRET=your-secret-here-min-32-chars
 ```
 
@@ -97,7 +97,7 @@ The `docker-compose*.yaml` files include an `env_file: ../.env` directive that l
 
 ### Data persistence
 
-Thread data is stored in `backend/.deer-flow/threads/`. In Docker deployments, this directory is bind-mounted into the gateway container.
+Thread data is stored in `backend/.berkshire-agent/threads/`. In Docker deployments, this directory is bind-mounted into the gateway container.
 
 To avoid data loss when containers are recreated:
 
@@ -123,7 +123,7 @@ For any deployment with more than one concurrent user, use a container-based san
 
 SQLite is convenient for local development and single-user deployments, but it is not a production backend for concurrent users.
 
-In SQLite mode, DeerFlow stores LangGraph checkpoint data and application data in one `deerflow.db` file. WAL mode allows concurrent reads, but SQLite still permits only one writer at a time. When several users run agents at once, checkpoint writes and application writes can contend for the same file and raise `sqlite3.OperationalError: database is locked`.
+In SQLite mode, BerkshireAgent stores LangGraph checkpoint data and application data in one `deerflow.db` file. WAL mode allows concurrent reads, but SQLite still permits only one writer at a time. When several users run agents at once, checkpoint writes and application writes can contend for the same file and raise `sqlite3.OperationalError: database is locked`.
 
 For production or any multi-user deployment, use Postgres:
 
@@ -156,9 +156,9 @@ The provisioner manages sandbox Pods in a Kubernetes cluster. It is included in 
 Set required environment variables in your `.env` or compose override:
 
 ```bash
-K8S_NAMESPACE=deer-flow
+K8S_NAMESPACE=berkshire-agent
 SANDBOX_IMAGE=enterprise-public-cn-beijing.cr.volces.com/vefaas-public/all-in-one-sandbox:latest
-DEER_FLOW_ROOT=/absolute/path/to/deer-flow
+DEER_FLOW_ROOT=/absolute/path/to/berkshire-agent
 ```
 
 #### Configure the sandbox provider
@@ -176,11 +176,11 @@ For production, use PVCs instead of hostPath volumes:
 
 ```bash
 # In .env or compose environment
-USERDATA_PVC_NAME=deer-flow-userdata-pvc
-SKILLS_PVC_NAME=deer-flow-skills-pvc
+USERDATA_PVC_NAME=berkshire-agent-userdata-pvc
+SKILLS_PVC_NAME=berkshire-agent-skills-pvc
 ```
 
-When `USERDATA_PVC_NAME` is set, the provisioner automatically uses subPath (`deer-flow/users/{user_id}/threads/{thread_id}/user-data`) so each user's threads get their own directories in the PVC.
+When `USERDATA_PVC_NAME` is set, the provisioner automatically uses subPath (`berkshire-agent/users/{user_id}/threads/{thread_id}/user-data`) so each user's threads get their own directories in the PVC.
 
 </Steps>
 
@@ -190,7 +190,7 @@ nginx routes all traffic to the frontend or Gateway. `/api/langgraph/*` is rewri
 
 ### Authentication
 
-DeerFlow App uses [Better Auth](https://www.better-auth.com/) for session management. In production:
+BerkshireAgent App uses [Better Auth](https://www.better-auth.com/) for session management. In production:
 
 1. Set `BETTER_AUTH_SECRET` to a strong random string (minimum 32 characters).
 2. Set `BETTER_AUTH_URL` to your public-facing URL (e.g., `https://your-domain.com`).

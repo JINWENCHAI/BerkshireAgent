@@ -2138,10 +2138,10 @@ def _info(
     return SimpleNamespace(
         sandbox_id=sandbox_id,
         metadata={
-            "deer_flow_provider": "e2b_sandbox_provider",
-            "deer_flow_user": user_id,
-            "deer_flow_thread": thread_id,
-            "deer_flow_skills_root": skills_container_path,
+            "berkshire_agent_provider": "e2b_sandbox_provider",
+            "berkshire_agent_user": user_id,
+            "berkshire_agent_thread": thread_id,
+            "berkshire_agent_skills_root": skills_container_path,
         },
     )
 
@@ -2161,7 +2161,7 @@ def test_create_metadata_records_the_snapshotted_skills_root(monkeypatch):
 
     provider.acquire("t1", user_id="u1")
 
-    assert fake_cls.create_calls[0]["metadata"]["deer_flow_skills_root"] == "/custom-skills"
+    assert fake_cls.create_calls[0]["metadata"]["berkshire_agent_skills_root"] == "/custom-skills"
 
 
 def test_discover_remote_sandbox_walks_paginator(monkeypatch):
@@ -2490,7 +2490,7 @@ def test_peer_owned_live_vm_keeps_shared_capacity_until_remote_disappearance(mon
     old_sdk = _install_fake_sdk(monkeypatch, old)
     old_sdk.connect_factory = vm.connect
     entry = _info("sb-peer", "u1", "t1")
-    entry.metadata["deer_flow_capacity_ledger"] = store.key
+    entry.metadata["berkshire_agent_capacity_ledger"] = store.key
 
     client = FakeClient(sandbox_id="sb-peer")
     monkeypatch.setattr(client, "set_timeout", vm.set_timeout)
@@ -2666,7 +2666,7 @@ def test_reconcile_kills_metadata_orphan_only_after_ttl(monkeypatch):
     fake_cls.list_return = [
         SimpleNamespace(
             sandbox_id="sb-orphan",
-            metadata={"deer_flow_provider": "e2b_sandbox_provider"},
+            metadata={"berkshire_agent_provider": "e2b_sandbox_provider"},
         )
     ]
     client = FakeClient(sandbox_id="sb-orphan")
@@ -3937,11 +3937,11 @@ def test_deployment_capacity_reserves_commits_and_rejects_globally(monkeypatch) 
         gateway_b.acquire("thread-b", user_id="user-b")
 
     metadata = sdk_a.create_calls[0]["metadata"]
-    assert metadata["deer_flow_capacity_ledger"] == store.key
-    assert metadata["deer_flow_capacity_reservation"]
+    assert metadata["berkshire_agent_capacity_ledger"] == store.key
+    assert metadata["berkshire_agent_capacity_reservation"]
     store.track.assert_called_once_with(
         sandbox_id,
-        reservation_token=metadata["deer_flow_capacity_reservation"],
+        reservation_token=metadata["berkshire_agent_capacity_reservation"],
     )
     assert len(sdk_a.create_calls) == 1
     assert sdk_b.create_calls == []
@@ -3970,20 +3970,20 @@ def test_discovery_uses_sdk_query_and_tracks_without_reserving(monkeypatch) -> N
     entry = SimpleNamespace(
         sandbox_id="sandbox-existing",
         metadata={
-            "deer_flow_provider": "e2b_sandbox_provider",
-            "deer_flow_user": "user-a",
-            "deer_flow_thread": "thread-a",
-            "deer_flow_skills_root": "/mnt/skills",
-            "deer_flow_capacity_ledger": store.key,
+            "berkshire_agent_provider": "e2b_sandbox_provider",
+            "berkshire_agent_user": "user-a",
+            "berkshire_agent_thread": "thread-a",
+            "berkshire_agent_skills_root": "/mnt/skills",
+            "berkshire_agent_capacity_ledger": store.key,
         },
     )
     expected_query = {
         key: entry.metadata[key]
         for key in (
-            "deer_flow_provider",
-            "deer_flow_user",
-            "deer_flow_thread",
-            "deer_flow_skills_root",
+            "berkshire_agent_provider",
+            "berkshire_agent_user",
+            "berkshire_agent_thread",
+            "berkshire_agent_skills_root",
         )
     }
     sdk.list_return = SimpleNamespace(
@@ -4007,16 +4007,16 @@ def test_reconciliation_repairs_crash_and_uses_safe_reservation_age(monkeypatch)
         {
             "sandbox_id": "sandbox-existing",
             "metadata": {
-                "deer_flow_provider": "e2b_sandbox_provider",
-                "deer_flow_capacity_ledger": store.key,
-                "deer_flow_capacity_reservation": "reservation-crashed",
+                "berkshire_agent_provider": "e2b_sandbox_provider",
+                "berkshire_agent_capacity_ledger": store.key,
+                "berkshire_agent_capacity_reservation": "reservation-crashed",
             },
         },
         {
             "sandbox_id": "sandbox-other-deployment",
             "metadata": {
-                "deer_flow_provider": "e2b_sandbox_provider",
-                "deer_flow_capacity_ledger": "deerflow:other:e2b-capacity",
+                "berkshire_agent_provider": "e2b_sandbox_provider",
+                "berkshire_agent_capacity_ledger": "deerflow:other:e2b-capacity",
             },
         },
     ]
@@ -5126,10 +5126,10 @@ def test_discovery_reports_busy_capacity_without_killing_remote_vm(monkeypatch):
         SimpleNamespace(
             sandbox_id="sb-remote",
             metadata={
-                "deer_flow_provider": "e2b_sandbox_provider",
-                "deer_flow_user": "u2",
-                "deer_flow_thread": "t2",
-                "deer_flow_skills_root": "/mnt/skills",
+                "berkshire_agent_provider": "e2b_sandbox_provider",
+                "berkshire_agent_user": "u2",
+                "berkshire_agent_thread": "t2",
+                "berkshire_agent_skills_root": "/mnt/skills",
             },
         )
     ]
@@ -5152,10 +5152,10 @@ def test_discovery_reports_shutdown_without_killing_remote_vm(monkeypatch, caplo
         SimpleNamespace(
             sandbox_id=client.sandbox_id,
             metadata={
-                "deer_flow_provider": "e2b_sandbox_provider",
-                "deer_flow_user": "u1",
-                "deer_flow_thread": "t1",
-                "deer_flow_skills_root": "/mnt/skills",
+                "berkshire_agent_provider": "e2b_sandbox_provider",
+                "berkshire_agent_user": "u1",
+                "berkshire_agent_thread": "t1",
+                "berkshire_agent_skills_root": "/mnt/skills",
             },
         )
     ]
@@ -5190,10 +5190,10 @@ def test_discovery_bootstrap_kill_failure_retains_reserved_slot(monkeypatch):
         SimpleNamespace(
             sandbox_id=client.sandbox_id,
             metadata={
-                "deer_flow_provider": "e2b_sandbox_provider",
-                "deer_flow_user": "u1",
-                "deer_flow_thread": "t1",
-                "deer_flow_skills_root": "/mnt/skills",
+                "berkshire_agent_provider": "e2b_sandbox_provider",
+                "berkshire_agent_user": "u1",
+                "berkshire_agent_thread": "t1",
+                "berkshire_agent_skills_root": "/mnt/skills",
             },
         )
     ]
@@ -5225,10 +5225,10 @@ def test_shutdown_does_not_retry_kill_for_unowned_discovery_vm(monkeypatch):
         SimpleNamespace(
             sandbox_id=client.sandbox_id,
             metadata={
-                "deer_flow_provider": "e2b_sandbox_provider",
-                "deer_flow_user": "u1",
-                "deer_flow_thread": "t1",
-                "deer_flow_skills_root": "/mnt/skills",
+                "berkshire_agent_provider": "e2b_sandbox_provider",
+                "berkshire_agent_user": "u1",
+                "berkshire_agent_thread": "t1",
+                "berkshire_agent_skills_root": "/mnt/skills",
             },
         )
     ]
@@ -5270,10 +5270,10 @@ def test_shutdown_during_discovery_does_not_kill_unowned_vm(monkeypatch):
         SimpleNamespace(
             sandbox_id=client.sandbox_id,
             metadata={
-                "deer_flow_provider": "e2b_sandbox_provider",
-                "deer_flow_user": "u1",
-                "deer_flow_thread": "t1",
-                "deer_flow_skills_root": "/mnt/skills",
+                "berkshire_agent_provider": "e2b_sandbox_provider",
+                "berkshire_agent_user": "u1",
+                "berkshire_agent_thread": "t1",
+                "berkshire_agent_skills_root": "/mnt/skills",
             },
         )
     ]

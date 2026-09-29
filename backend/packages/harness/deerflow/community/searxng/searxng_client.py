@@ -99,7 +99,7 @@ class SearxngClient:
                     f"{self.base_url}/search",
                     params=params,
                     headers={
-                        "User-Agent": "Mozilla/5.0 (compatible; DeerFlow/1.0)",
+                        "User-Agent": "Mozilla/5.0 (compatible; BerkshireAgent/1.0)",
                         "Accept": "application/json",
                     },
                 )

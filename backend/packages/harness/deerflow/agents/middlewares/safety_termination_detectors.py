@@ -3,7 +3,7 @@
 Different LLM providers signal "I stopped this response for safety reasons"
 through different fields with different values. This module defines a small
 strategy interface and three built-in detectors that cover the major
-providers DeerFlow supports today. New providers (Wenxin, Hunyuan, Bedrock
+providers BerkshireAgent supports today. New providers (Wenxin, Hunyuan, Bedrock
 adapters, in-house gateways, ...) can be added by implementing
 ``SafetyTerminationDetector`` and wiring it through
 ``config.yaml: safety_finish_reason.detectors``.

@@ -117,7 +117,7 @@ Gateway 在**所有宿主路由之后**挂载贡献的路由，所以匹配时�
 贡献的路由与宿主 API 共用同一套中间件，而且无法退出：
 
 - **认证。** 未认证的请求在你的处理函数运行之前就会得到 `401`。个人访问令牌（PAT）不能访问扩展贡献的路由：即使令牌有效，宿主也会在处理函数运行之前返回 `403 {"detail": "PAT credentials are not permitted on this route"}`。
-- **CSRF。** 来自浏览器会话的 `POST`、`PUT`、`PATCH` 或 `DELETE` 必须在 `X-CSRF-Token` 头里带上 `csrf_token` cookie 的值，DeerFlow 前端已经这样做了。缺少时请求在你的处理函数运行之前就会得到 `403`。Bearer 头会跳过 CSRF 检查，但不会让 PAT 获得访问扩展贡献路由的权限。
+- **CSRF。** 来自浏览器会话的 `POST`、`PUT`、`PATCH` 或 `DELETE` 必须在 `X-CSRF-Token` 头里带上 `csrf_token` cookie 的值，BerkshireAgent 前端已经这样做了。缺少时请求在你的处理函数运行之前就会得到 `403`。Bearer 头会跳过 CSRF 检查，但不会让 PAT 获得访问扩展贡献路由的权限。
 
 当 Gateway 以 `DEER_FLOW_AUTH_DISABLED=1` 运行时（本地开发开关，`DEER_FLOW_ENV` 或 `ENVIRONMENT` 为 `prod` 或 `production` 时无效），每个请求都以一个合成的管理员用户运行，两项检查都不生效。
 

@@ -84,7 +84,7 @@ plugins:
 
 `LoadedExtensions` 是不可变的。每次 Lead 运行在开始时解析它一次，并把同一个对象用于任务存储、生命周期通知和 Agent 构建。运行还会把快照发布到运行时上下文，`task` 工具再读回来，所以它委派的每个子 Agent 都用与 Lead Agent 相同的扩展版本构建。调用方在这个宿主内部键下提供的值永远不会被信任。
 
-不发布快照的调用方，例如嵌入式 `DeerFlowClient` 或独立的 LangGraph Server，会回退到进程级集合。
+不发布快照的调用方，例如嵌入式 `BerkshireAgentClient` 或独立的 LangGraph Server，会回退到进程级集合。
 
 因为只在启动时加载，Gateway 运行期间进程级集合不会变化。按运行绑定对替换该集合的宿主和测试才有意义，它保证一次运行永远不会混用两个版本。
 
@@ -123,7 +123,7 @@ class ExtensionData:
 - **以类型为键。** `set(value)` 严格按 `type(value)` 存储，子类是不同的键。为你要保存的每个值定义一个小类。除非两个扩展共用同一个类，否则不会冲突。
 - **线程安全。** 每个方法都持有一把可重入锁，所以同一个存储可以在不同线程上被中间件、生命周期钩子和观察者使用。
 - **`init` 在锁内执行。** `get_or_init` 在持锁状态下调用 `init()`，所以两个并发调用方不会创建出两个值。保持 `init` 轻量：构造一个空容器，把重的惰性工作放进容器内部。
-- **值的同步由你负责。** 存储保护的是它自己的映射，而不是里面的对象。被并发工具调用更新的计数器需要自己的锁，[内置示例](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-example)就是这么做的。
+- **值的同步由你负责。** 存储保护的是它自己的映射，而不是里面的对象。被并发工具调用更新的计数器需要自己的锁，[内置示例](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-example)就是这么做的。
 
 ```python
 from dataclasses import dataclass, field

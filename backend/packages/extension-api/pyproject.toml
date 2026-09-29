@@ -1,10 +1,10 @@
 [project]
 name = "deerflow-extension-api"
 version = "0.2.4"
-description = "Public contracts for DeerFlow extensions"
+description = "Public contracts for BerkshireAgent extensions"
 requires-python = ">=3.12"
 # Keep the contract package import-light and independent from the host. Public
-# values are stdlib-based; concrete middleware types are validated by DeerFlow.
+# values are stdlib-based; concrete middleware types are validated by BerkshireAgent.
 dependencies = []
 
 [build-system]

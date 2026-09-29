@@ -1,6 +1,6 @@
-# DeerFlow Helm Chart
+# BerkshireAgent Helm Chart
 
-Deploys the full DeerFlow stack to Kubernetes: **gateway** (backend + embedded
+Deploys the full BerkshireAgent stack to Kubernetes: **gateway** (backend + embedded
 LangGraph runtime), **frontend** (Next.js), **nginx** (internal reverse proxy
 preserving the compose routing), and the **provisioner** (K8s-native sandbox
 that spawns code-execution Pods on demand).
@@ -12,7 +12,7 @@ Kubernetes resources. No existing repo files are modified.
 
 - A Kubernetes cluster (Docker Desktop K8s, OrbStack, kind, k3d, or a real cluster).
 - `kubectl` + `helm` 3.8+ installed (OCI registry support stabilized in 3.8; earlier 3.x needs `HELM_EXPERIMENTAL_OCI=1`).
-- The three DeerFlow images — either the published ones (see "Install the
+- The three BerkshireAgent images — either the published ones (see "Install the
   published chart" below) or built locally (see step 1).
 - An Ingress controller (e.g. ingress-nginx) if you enable `ingress`.
 
@@ -23,9 +23,9 @@ The chart and all three images are published to GHCR on every `v*` release tag
 and install directly:
 
 ```bash
-helm install deer-flow oci://ghcr.io/<owner>/charts/deer-flow \
+helm install berkshire-agent oci://ghcr.io/<owner>/charts/berkshire-agent \
   --version <version> \
-  -n deer-flow --create-namespace \
+  -n berkshire-agent --create-namespace \
   -f my-values.yaml
 ```
 
@@ -34,23 +34,23 @@ matches the release tag without the leading `v` (tag `v0.1.0` → `--version
 0.1.0`).
 
 > **Note:** the helm chart is new in 2.1.0 - no chart was published before it.
-> It publishes to `oci://ghcr.io/<owner>/charts/deer-flow` (the `charts/` prefix
-> keeps it distinct from the `deer-flow-{backend,frontend,provisioner}` image
+> It publishes to `oci://ghcr.io/<owner>/charts/berkshire-agent` (the `charts/` prefix
+> keeps it distinct from the `berkshire-agent-{backend,frontend,provisioner}` image
 > packages).
 
 Point the chart at the published images:
 
 ```yaml
 image:
-  registry: ghcr.io/<owner>     # owner prefix; images are <owner>/deer-flow-<name>
+  registry: ghcr.io/<owner>     # owner prefix; images are <owner>/berkshire-agent-<name>
   tag: "<version>"              # match the release tag (sans leading `v`)
   pullSecrets:
     - { name: regcred }         # only if the GHCR package is private
 ```
 
 The chart's `gatewayImage` / `frontendImage` / `provisionerImage` defaults
-already match the published image names (`deer-flow-backend`,
-`deer-flow-frontend`, `deer-flow-provisioner`), so only `registry` and `tag`
+already match the published image names (`berkshire-agent-backend`,
+`berkshire-agent-frontend`, `berkshire-agent-provisioner`), so only `registry` and `tag`
 are required. New GHCR packages default to **private** — flip the package to
 public in its GHCR settings page for unauthenticated pulls, otherwise create a
 pull secret (step 1) and reference it via `image.pullSecrets`.
@@ -70,15 +70,15 @@ TAG=latest
 
 # backend - build with the `postgres` extra so multi-replica deploys can use
 # shared Postgres (matches the published image)
-docker build -t $REGISTRY/deer-flow-backend:$TAG --build-arg UV_EXTRAS=postgres -f backend/Dockerfile .
+docker build -t $REGISTRY/berkshire-agent-backend:$TAG --build-arg UV_EXTRAS=postgres -f backend/Dockerfile .
 # frontend
-docker build -t $REGISTRY/deer-flow-frontend:$TAG -f frontend/Dockerfile .
+docker build -t $REGISTRY/berkshire-agent-frontend:$TAG -f frontend/Dockerfile .
 # provisioner
-docker build -t $REGISTRY/deer-flow-provisioner:$TAG -f docker/provisioner/Dockerfile docker/provisioner
+docker build -t $REGISTRY/berkshire-agent-provisioner:$TAG -f docker/provisioner/Dockerfile docker/provisioner
 
-docker push $REGISTRY/deer-flow-backend:$TAG
-docker push $REGISTRY/deer-flow-frontend:$TAG
-docker push $REGISTRY/deer-flow-provisioner:$TAG
+docker push $REGISTRY/berkshire-agent-backend:$TAG
+docker push $REGISTRY/berkshire-agent-frontend:$TAG
+docker push $REGISTRY/berkshire-agent-provisioner:$TAG
 ```
 
 These names match the chart's `gatewayImage` / `frontendImage` /
@@ -92,7 +92,7 @@ kubectl create secret docker-registry regcred \
   --docker-server=ghcr.io \
   --docker-username=youruser \
   --docker-password=yourtoken \
-  -n deer-flow
+  -n berkshire-agent
 ```
 
 ## 2. Configure values
@@ -109,10 +109,10 @@ image:
 ingress:
   enabled: true
   className: nginx
-  host: deer-flow.example.com
+  host: berkshire-agent.example.com
   tls:
     enabled: true
-    secretName: deer-flow-tls
+    secretName: berkshire-agent-tls
 
 secrets:
   OPENAI_API_KEY: sk-...
@@ -126,7 +126,7 @@ call or a whole run all need — skill install and custom-skill edits (each file
 is scanned by an LLM), `/api/threads/{id}/compact`, `/api/input-polish`, and
 `/api/runs/wait`. If you replace `ingress.annotations`, preserve equivalent
 size, streaming, and response-timeout settings for your ingress controller, or
-local skill uploads may fail before DeerFlow completes the installation and
+local skill uploads may fail before BerkshireAgent completes the installation and
 those requests may time out while Gateway is still working — for
 `/api/runs/wait` the disconnect also cancels the run.
 
@@ -210,7 +210,7 @@ sections shown above.
 
 `extensionsConfig` is an initial seed, not a live read-only mount. An init
 container copies it into
-`/app/backend/.deer-flow/extensions-config/extensions_config.json`, where the
+`/app/backend/.berkshire-agent/extensions-config/extensions_config.json`, where the
 Gateway can persist MCP and skill-state API updates. With
 `persistence.home.enabled: true`, the runtime file is kept on the home PVC and
 is not overwritten by later Helm upgrades; delete that runtime file before a
@@ -223,16 +223,16 @@ and is reseeded whenever the Pod is replaced.
 For a custom build or local development, install from the chart directory:
 
 ```bash
-helm install deer-flow deploy/helm/deer-flow \
-  -n deer-flow --create-namespace \
+helm install berkshire-agent deploy/helm/berkshire-agent \
+  -n berkshire-agent --create-namespace \
   -f my-values.yaml
 ```
 
 ## 4. Verify
 
 ```bash
-kubectl -n deer-flow get pods
-kubectl -n deer-flow port-forward svc/nginx 2026:2026
+kubectl -n berkshire-agent get pods
+kubectl -n berkshire-agent port-forward svc/nginx 2026:2026
 curl http://localhost:2026/health          # gateway health via nginx
 ```
 
@@ -241,7 +241,7 @@ Hit the Ingress host (map it in `/etc/hosts` for local clusters) to load the UI.
 Provisioner sanity check:
 
 ```bash
-kubectl -n deer-flow exec deploy/deer-flow-provisioner -- curl -s localhost:8002/health
+kubectl -n berkshire-agent exec deploy/berkshire-agent-provisioner -- curl -s localhost:8002/health
 ```
 
 ## Architecture notes
@@ -274,7 +274,7 @@ kubectl -n deer-flow exec deploy/deer-flow-provisioner -- curl -s localhost:8002
   `gateway.replicas` past 1 yet.** Run control — `create_or_reject` dedup,
   `cancel`, and orphan reconciliation — is still worker-local (in-process
   `asyncio.Lock` + in-memory `record.task`), tracked by [issue
-  #3948](https://github.com/bytedance/deer-flow/issues/3948). With >1 replica a
+  #3948](https://github.com/bytedance/berkshire-agent/issues/3948). With >1 replica a
   double-submit can create two runs on one thread (checkpoint corruption), a
   cancel can land on a non-owner pod (409), and a crashed pod's runs stay
   `pending`/`running` forever. Stay on 1 replica until that work lands.
@@ -297,9 +297,9 @@ kubectl -n deer-flow exec deploy/deer-flow-provisioner -- curl -s localhost:8002
   redis` by default. No-auth by default (ClusterIP isolation, matching compose);
   set `redis.auth.password` to enable AUTH. For a managed Redis, disable the
   bundled instance and point at it via `redis.external`.
-- **Persistence.** A PVC (`<release>-home`) backs `/app/backend/.deer-flow`
+- **Persistence.** A PVC (`<release>-home`) backs `/app/backend/.berkshire-agent`
   (sqlite DB, memory, custom agents, per-thread user-data). The gateway mounts
-  it with `subPath: deer-flow` so the layout matches the provisioner's PVC
+  it with `subPath: berkshire-agent` so the layout matches the provisioner's PVC
   user-data mode. Default `ReadWriteOnce`; use `ReadWriteMany` (NFS) on
   multi-node clusters so sandbox Pods on other nodes can mount it.
 - **Provisioner RBAC.** The provisioner gets a ServiceAccount with a namespaced
@@ -320,7 +320,7 @@ container escalates privileges or runs as uid 0.
 
 | workload | runAsUser | fsGroup | writable-path handling |
 |---|---|---|---|
-| gateway | 1000 | 1000 | `.deer-flow` PVC group-writable via fsGroup; `PYTHONDONTWRITEBYTECODE=1` suppresses `.pyc` writes; `UV_CACHE_DIR=/tmp` |
+| gateway | 1000 | 1000 | `.berkshire-agent` PVC group-writable via fsGroup; `PYTHONDONTWRITEBYTECODE=1` suppresses `.pyc` writes; `UV_CACHE_DIR=/tmp` |
 | frontend | 1000 (`node`) | 1000 | `emptyDir` at `/app/frontend/.next/cache` (root-owned in the image) |
 | nginx | 101 (`nginx`) | 101 | command writes the rendered config to `/tmp/nginx.conf` and loads `nginx -c /tmp/nginx.conf` (since `/etc/nginx` is root-owned); `emptyDir` at `/var/cache/nginx` |
 | provisioner | 1000 | — | no PVC; `PYTHONDONTWRITEBYTECODE=1` |
@@ -397,26 +397,26 @@ To fix an existing root-written PVC, run a one-shot root pod that chowns the
 volume to the gateway uid (1000), then restart the gateway:
 
 ```bash
-cat <<'EOF' | kubectl apply -n deer-flow -f -
+cat <<'EOF' | kubectl apply -n berkshire-agent -f -
 apiVersion: v1
 kind: Pod
-metadata: { name: fix-home-perms, namespace: deer-flow }
+metadata: { name: fix-home-perms, namespace: berkshire-agent }
 spec:
   restartPolicy: Never
   containers:
     - name: chown
       image: busybox:1.36
       command: ["sh", "-c"]
-      args: ["chown -R 1000:1000 /home-pvc/deer-flow && chmod -R g+rwX /home-pvc/deer-flow"]
+      args: ["chown -R 1000:1000 /home-pvc/berkshire-agent && chmod -R g+rwX /home-pvc/berkshire-agent"]
       volumeMounts:
         - { name: home, mountPath: /home-pvc }
   volumes:
     - name: home
-      persistentVolumeClaim: { claimName: deer-flow-deer-flow-home }
+      persistentVolumeClaim: { claimName: berkshire-agent-berkshire-agent-home }
 EOF
-kubectl -n deer-flow wait --for=condition=Ready pod/fix-home-perms --timeout=30s
-kubectl -n deer-flow delete pod fix-home-perms
-kubectl -n deer-flow rollout restart deploy/deer-flow-deer-flow-gateway
+kubectl -n berkshire-agent wait --for=condition=Ready pod/fix-home-perms --timeout=30s
+kubectl -n berkshire-agent delete pod fix-home-perms
+kubectl -n berkshire-agent rollout restart deploy/berkshire-agent-berkshire-agent-gateway
 ```
 
 (On a single-node cluster the fix pod can mount the RWO PVC concurrently with the
@@ -465,15 +465,15 @@ sandbox Pod can be scheduled on a node other than the gateway's).
 ## Lint / dry-run
 
 ```bash
-helm lint deploy/helm/deer-flow
-helm template deer-flow deploy/helm/deer-flow -n deer-flow -f my-values.yaml | \
+helm lint deploy/helm/berkshire-agent
+helm template berkshire-agent deploy/helm/berkshire-agent -n berkshire-agent -f my-values.yaml | \
   kubectl apply --dry-run=client -f -
 ```
 
 ## Uninstall
 
 ```bash
-helm uninstall deer-flow -n deer-flow
+helm uninstall berkshire-agent -n berkshire-agent
 # the PVC is NOT deleted by default — remove it manually if desired:
-kubectl -n deer-flow delete pvc -l app.kubernetes.io/instance=deer-flow
+kubectl -n berkshire-agent delete pvc -l app.kubernetes.io/instance=berkshire-agent
 ```

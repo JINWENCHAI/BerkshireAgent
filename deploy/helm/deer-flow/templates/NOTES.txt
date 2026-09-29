@@ -1,6 +1,6 @@
-DeerFlow has been deployed.
+BerkshireAgent has been deployed.
 
-  namespace: {{ include "deer-flow.namespace" . }}
+  namespace: {{ include "berkshire-agent.namespace" . }}
 
 {{- if not .Values.image.registry }}
 
@@ -11,11 +11,11 @@ DeerFlow has been deployed.
 
 Get the status:
 
-  kubectl -n {{ include "deer-flow.namespace" . }} get pods
+  kubectl -n {{ include "berkshire-agent.namespace" . }} get pods
 
 Quick port-forward to nginx (bypasses Ingress):
 
-  kubectl -n {{ include "deer-flow.namespace" . }} port-forward svc/nginx 2026:2026
+  kubectl -n {{ include "berkshire-agent.namespace" . }} port-forward svc/nginx 2026:2026
   # then open http://localhost:2026
 
 {{- if .Values.ingress.enabled }}
@@ -35,8 +35,8 @@ Provisioner / sandbox notes:
     narrow ClusterRole (namespace get + create, cluster-wide). These verbs
     apply to *all* Pods in the namespace, not just sandbox Pods - scoping to
     sandbox Pods is deferred hardening (see README "Not yet enforced").
-  • Sandbox Pods are created in namespace {{ include "deer-flow.namespace" . }}.
-  • PVC mode is enabled: sandbox Pods mount the `{{ include "deer-flow.homePVC" . }}`
+  • Sandbox Pods are created in namespace {{ include "berkshire-agent.namespace" . }}.
+  • PVC mode is enabled: sandbox Pods mount the `{{ include "berkshire-agent.homePVC" . }}`
     PVC for per-thread user-data.
 
   • Sandbox reachability: per-sandbox Services are type
@@ -58,7 +58,7 @@ Provisioner / sandbox notes:
     the gateway runs in-cluster.
 {{- else }}
     The provisioner returns a cluster-DNS URL
-    (`http://sandbox-<id>-svc.{{ include "deer-flow.namespace" . }}.svc.cluster.local:{{ .Values.provisioner.sandboxPort }}`)
+    (`http://sandbox-<id>-svc.{{ include "berkshire-agent.namespace" . }}.svc.cluster.local:{{ .Values.provisioner.sandboxPort }}`)
     so the gateway reaches its sandbox inside the cluster - no node IP, no
     external port, no exposure on node interfaces.
 {{- end }}
@@ -70,15 +70,15 @@ Provisioner / sandbox notes:
 Generated secrets (persisted across upgrades):
 
   • BETTER_AUTH_SECRET and DEER_FLOW_INTERNAL_AUTH_TOKEN are stored in the
-    Secret `{{ include "deer-flow.appSecret" . }}`.
+    Secret `{{ include "berkshire-agent.appSecret" . }}`.
 
 Database ({{ if .Values.postgresql.enabled }}bundled postgres{{ else }}external postgres{{ end }}):
 
 {{- if .Values.postgresql.enabled }}
-  • A postgres StatefulSet (`{{ include "deer-flow.postgresFullname" . }}`)
+  • A postgres StatefulSet (`{{ include "berkshire-agent.postgresFullname" . }}`)
     is deployed in this namespace. The gateway connects via the in-cluster
-    Service `{{ include "deer-flow.postgresFullname" . }}:5432`.
-  • DATABASE_URL is in Secret `{{ include "deer-flow.databaseUrlSecret" . }}`
+    Service `{{ include "berkshire-agent.postgresFullname" . }}:5432`.
+  • DATABASE_URL is in Secret `{{ include "berkshire-agent.databaseUrlSecret" . }}`
     (key `database-url`); the auto-generated password is in key
     `postgres-password`. Both persist across upgrades.
   • Schema is bootstrapped automatically on gateway startup (alembic
@@ -87,25 +87,25 @@ Database ({{ if .Values.postgresql.enabled }}bundled postgres{{ else }}external 
     managed DB via `postgresql.external`.
 {{- else }}
   • The gateway reads DATABASE_URL from Secret
-    `{{ include "deer-flow.databaseUrlSecret" . }}` (key `database-url`).
+    `{{ include "berkshire-agent.databaseUrlSecret" . }}` (key `database-url`).
     Ensure that Secret exists and contains your managed-postgres DSN.
 {{- end }}
 
-Redis stream bridge ({{ if .Values.redis.enabled }}bundled redis{{ else if (include "deer-flow.redisConfigured" .) }}external redis{{ else }}none{{ end }}):
+Redis stream bridge ({{ if .Values.redis.enabled }}bundled redis{{ else if (include "berkshire-agent.redisConfigured" .) }}external redis{{ else }}none{{ end }}):
 
 {{- if .Values.redis.enabled }}
-  • A redis StatefulSet (`{{ include "deer-flow.redisFullname" . }}`) is deployed
+  • A redis StatefulSet (`{{ include "berkshire-agent.redisFullname" . }}`) is deployed
     in this namespace. The gateway connects via the in-cluster Service
-    `{{ include "deer-flow.redisFullname" . }}:6379`.
+    `{{ include "berkshire-agent.redisFullname" . }}:6379`.
   • DEER_FLOW_STREAM_BRIDGE_REDIS_URL is in Secret
-    `{{ include "deer-flow.redisUrlSecret" . }}` (key `redis-url`).
+    `{{ include "berkshire-agent.redisUrlSecret" . }}` (key `redis-url`).
   • Per-run SSE events are stored in Redis Streams so a client connected to any
     gateway pod receives live events; reconnect resumes from Last-Event-ID.
   • To use a managed Redis, disable this (`redis.enabled: false`) and point at it
     via `redis.external`.
-{{- else if (include "deer-flow.redisConfigured" .) }}
+{{- else if (include "berkshire-agent.redisConfigured" .) }}
   • The gateway reads DEER_FLOW_STREAM_BRIDGE_REDIS_URL from Secret
-    `{{ include "deer-flow.redisUrlSecret" . }}` (key `redis-url`). Ensure that
+    `{{ include "berkshire-agent.redisUrlSecret" . }}` (key `redis-url`). Ensure that
     Secret exists and contains your managed-Redis URL.
 {{- else }}
   • No redis configured — the gateway falls back to the in-process memory stream
@@ -115,7 +115,7 @@ Redis stream bridge ({{ if .Values.redis.enabled }}bundled redis{{ else if (incl
 
 {{- if or .Values.secrets .Values.existingSecret }}
 
-Provider/channel keys are in Secret `{{ include "deer-flow.providerSecret" . }}`
+Provider/channel keys are in Secret `{{ include "berkshire-agent.providerSecret" . }}`
 and injected into the gateway via envFrom. Reference them from config.yaml as
 $VAR.
 {{- else }}

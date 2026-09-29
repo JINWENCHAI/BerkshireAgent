@@ -193,20 +193,20 @@ def test_browser_navigate_redacts_failure_url_from_logs_and_response(caplog):
 
 
 def test_browser_stream_seed_applies_to_blank_page():
-    assert _should_apply_browser_seed("about:blank", "https://github.com/bytedance/deer-flow")
+    assert _should_apply_browser_seed("about:blank", "https://github.com/bytedance/berkshire-agent")
 
 
 def test_browser_stream_seed_applies_when_current_url_differs():
     assert _should_apply_browser_seed(
         "https://docs.byteplus.com/en/docs/InfoQuest/What_is_Info_Quest",
-        "https://github.com/bytedance/deer-flow",
+        "https://github.com/bytedance/berkshire-agent",
     )
 
 
 def test_browser_stream_seed_ignores_hash_and_trailing_slash_for_same_page():
     assert not _should_apply_browser_seed(
-        "https://github.com/bytedance/deer-flow/#readme",
-        "https://github.com/bytedance/deer-flow/",
+        "https://github.com/bytedance/berkshire-agent/#readme",
+        "https://github.com/bytedance/berkshire-agent/",
     )
 
 
@@ -342,4 +342,4 @@ def test_validate_browser_url_rejects_private_and_non_http(monkeypatch):
     assert validate_browser_url("ftp://example.com") is not None
     # A normal public URL passes (returns None = allowed).
     monkeypatch.setattr(browser_tools, "_resolve_host_addresses", lambda _host: [ipaddress.ip_address("93.184.215.14")])
-    assert validate_browser_url("https://github.com/bytedance/deer-flow") is None
+    assert validate_browser_url("https://github.com/bytedance/berkshire-agent") is None

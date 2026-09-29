@@ -670,7 +670,7 @@ Update `backend/AGENTS.md` to state:
 - `secret_context.py` owns admission and output-redaction policy;
 - historical API hiding does not delete old database/event/log/snapshot/backup material;
 - deployments that previously used `metadata.auth_token` must rotate the credential and clean all retained copies;
-- restarting or upgrading DeerFlow does not perform that cleanup.
+- restarting or upgrading BerkshireAgent does not perform that cleanup.
 
 - [ ] **Step 7: Commit supported flow and docs**
 

@@ -81,7 +81,7 @@ test.describe("Notification settings", () => {
       .poll(() => page.evaluate(() => window.__deerflowNotifications ?? []))
       .toEqual([
         {
-          title: "DeerFlow",
+          title: "BerkshireAgent",
           body: "This is a test notification.",
         },
       ]);
@@ -108,7 +108,7 @@ test.describe("Notification settings", () => {
       .toEqual([
         {
           title: "New Chat",
-          body: "Hello from DeerFlow!",
+          body: "Hello from BerkshireAgent!",
         },
       ]);
   });

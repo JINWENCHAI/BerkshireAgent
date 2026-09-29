@@ -1,1 +1,1 @@
-"""DeerFlow terminal workbench (TUI), embedded over DeerFlowClient."""
+"""BerkshireAgent terminal workbench (TUI), embedded over BerkshireAgentClient."""

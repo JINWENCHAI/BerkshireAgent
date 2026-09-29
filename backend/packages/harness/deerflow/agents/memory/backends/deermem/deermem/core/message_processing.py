@@ -119,7 +119,7 @@ def _is_human_clarification_response(additional_kwargs: Any) -> bool:
     """Return True iff ``additional_kwargs`` carries a well-formed human
     clarification response (a user-authored answer worth remembering).
 
-    Host-agnostic structural mirror of deer-flow's ``read_human_input_response``
+    Host-agnostic structural mirror of berkshire-agent's ``read_human_input_response``
     (which the host injects via ``should_keep_hidden_message`` in production):
     a ``human_input_response`` mapping with version 1 + kind
     ``human_input_response``, non-empty source/request_id/value, and (for
@@ -152,7 +152,7 @@ def filter_messages_for_memory(messages: list[Any], *, should_keep_hidden_messag
 
     ``hide_from_ui`` framework messages are skipped, but user-authored
     clarification answers (a well-formed ``human_input_response``) are kept by
-    default via a host-agnostic structural check (mirrors deer-flow's
+    default via a host-agnostic structural check (mirrors berkshire-agent's
     ``read_human_input_response``). Pass a ``should_keep_hidden_message(
     additional_kwargs) -> bool`` hook to override the keep decision; the host
     injects one delegating to the authoritative ``read_human_input_response``

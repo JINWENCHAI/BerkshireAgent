@@ -1,6 +1,6 @@
 # Blocking IO detection usage and maintenance
 
-This document describes how to use and maintain DeerFlow backend blocking-IO
+This document describes how to use and maintain BerkshireAgent backend blocking-IO
 detection for async event-loop safety.
 
 The goal is narrow: find and prevent synchronous IO from blocking backend
@@ -27,7 +27,7 @@ make detect-blocking-io
 The report is written to:
 
 ```text
-.deer-flow/blocking-io-findings.json
+.berkshire-agent/blocking-io-findings.json
 ```
 
 Use this output for review and triage. A static finding is a candidate, not
@@ -86,7 +86,7 @@ backend/tests/support/detectors/blocking_io_runtime.py
 ```
 
 Add them to `_PROJECT_BLOCKING_RULES`, not directly inside individual tests.
-Keeping rules centralized makes it clear which extra primitives DeerFlow
+Keeping rules centralized makes it clear which extra primitives BerkshireAgent
 expects Blockbuster to catch.
 
 Example shape:

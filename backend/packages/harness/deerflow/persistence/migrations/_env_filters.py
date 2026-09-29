@@ -1,4 +1,4 @@
-"""Object filters used by ``env.py`` to scope alembic to DeerFlow tables.
+"""Object filters used by ``env.py`` to scope alembic to BerkshireAgent tables.
 
 LangGraph checkpointer tables live in the same database but are owned by
 LangGraph. Without this filter, ``alembic revision --autogenerate`` would

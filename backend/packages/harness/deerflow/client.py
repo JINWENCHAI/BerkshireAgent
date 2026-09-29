@@ -1,12 +1,12 @@
-"""DeerFlowClient — Embedded Python client for DeerFlow agent system.
+"""BerkshireAgentClient — Embedded Python client for BerkshireAgent agent system.
 
-Provides direct programmatic access to DeerFlow's agent capabilities
+Provides direct programmatic access to BerkshireAgent's agent capabilities
 without requiring LangGraph Server or Gateway API processes.
 
 Usage:
-    from deerflow.client import DeerFlowClient
+    from deerflow.client import BerkshireAgentClient
 
-    client = DeerFlowClient()
+    client = BerkshireAgentClient()
     response = client.chat("Analyze this paper for me", thread_id="my-thread")
     print(response)
 
@@ -146,10 +146,10 @@ class StreamEvent:
     data: dict[str, Any] = field(default_factory=dict)
 
 
-class DeerFlowClient:
-    """Embedded Python client for DeerFlow agent system.
+class BerkshireAgentClient:
+    """Embedded Python client for BerkshireAgent agent system.
 
-    Provides direct programmatic access to DeerFlow's agent capabilities
+    Provides direct programmatic access to BerkshireAgent's agent capabilities
     without requiring LangGraph Server or Gateway API processes.
 
     Note:
@@ -164,9 +164,9 @@ class DeerFlowClient:
 
     Example::
 
-        from deerflow.client import DeerFlowClient
+        from deerflow.client import BerkshireAgentClient
 
-        client = DeerFlowClient()
+        client = BerkshireAgentClient()
 
         # Simple one-shot
         print(client.chat("hello"))
@@ -373,7 +373,7 @@ class DeerFlowClient:
         # Phase 3: enforce model:use authorization on the embedded/library path
         # too, mirroring the Gateway runtime path in ``_make_lead_agent`` so the
         # role-scoped model policy cannot be bypassed by constructing the agent
-        # through ``DeerFlowClient``. Resolve the ``None`` default to a concrete
+        # through ``BerkshireAgentClient``. Resolve the ``None`` default to a concrete
         # name first (what ``create_chat_model(name=None)`` would pick) so the
         # policy covers the implicit default model. ``cfg`` already carries the
         # identity that ``apply_tool_authorization`` reads below.
@@ -529,7 +529,7 @@ class DeerFlowClient:
             "type": "ai",
             "content": "",
             "id": msg_id,
-            "tool_calls": DeerFlowClient._serialize_tool_calls(tool_calls),
+            "tool_calls": BerkshireAgentClient._serialize_tool_calls(tool_calls),
         }
         if additional_kwargs:
             data["additional_kwargs"] = additional_kwargs
@@ -540,7 +540,7 @@ class DeerFlowClient:
         """Build a ``messages-tuple`` tool-result event from a ToolMessage."""
         data: dict[str, Any] = {
             "type": "tool",
-            "content": DeerFlowClient._extract_text(msg.content),
+            "content": BerkshireAgentClient._extract_text(msg.content),
             "name": msg.name,
             "tool_call_id": msg.tool_call_id,
             "id": msg.id,
@@ -555,33 +555,33 @@ class DeerFlowClient:
         if isinstance(msg, AIMessage):
             d: dict[str, Any] = {"type": "ai", "content": msg.content, "id": getattr(msg, "id", None)}
             if msg.tool_calls:
-                d["tool_calls"] = DeerFlowClient._serialize_tool_calls(msg.tool_calls)
+                d["tool_calls"] = BerkshireAgentClient._serialize_tool_calls(msg.tool_calls)
             if getattr(msg, "usage_metadata", None):
                 d["usage_metadata"] = msg.usage_metadata
-            if additional_kwargs := DeerFlowClient._serialize_additional_kwargs(msg):
+            if additional_kwargs := BerkshireAgentClient._serialize_additional_kwargs(msg):
                 d["additional_kwargs"] = additional_kwargs
             return d
         if isinstance(msg, ToolMessage):
             d = {
                 "type": "tool",
-                "content": DeerFlowClient._extract_text(msg.content),
+                "content": BerkshireAgentClient._extract_text(msg.content),
                 "name": getattr(msg, "name", None),
                 "tool_call_id": getattr(msg, "tool_call_id", None),
                 "id": getattr(msg, "id", None),
             }
-            if additional_kwargs := DeerFlowClient._serialize_additional_kwargs(msg):
+            if additional_kwargs := BerkshireAgentClient._serialize_additional_kwargs(msg):
                 d["additional_kwargs"] = additional_kwargs
             if (artifact := getattr(msg, "artifact", None)) is not None:
                 d["artifact"] = artifact
             return d
         if isinstance(msg, HumanMessage):
             d = {"type": "human", "content": msg.content, "id": getattr(msg, "id", None)}
-            if additional_kwargs := DeerFlowClient._serialize_additional_kwargs(msg):
+            if additional_kwargs := BerkshireAgentClient._serialize_additional_kwargs(msg):
                 d["additional_kwargs"] = additional_kwargs
             return d
         if isinstance(msg, SystemMessage):
             d = {"type": "system", "content": msg.content, "id": getattr(msg, "id", None)}
-            if additional_kwargs := DeerFlowClient._serialize_additional_kwargs(msg):
+            if additional_kwargs := BerkshireAgentClient._serialize_additional_kwargs(msg):
                 d["additional_kwargs"] = additional_kwargs
             return d
         return {"type": "unknown", "content": str(msg), "id": getattr(msg, "id", None)}
@@ -786,7 +786,7 @@ class DeerFlowClient:
         thread_id: str | None = None,
         **kwargs,
     ) -> Generator[StreamEvent, None, None]:
-        """Stream a conversation turn with a DeerFlow request trace context.
+        """Stream a conversation turn with a BerkshireAgent request trace context.
 
         The embedded entry point, and like every other one it binds a trace id
         for the turn so logs, Langfuse metadata, and delegated work correlate.
@@ -892,7 +892,7 @@ class DeerFlowClient:
           heartbeats, multi-subscriber fan-out).  A single in-process
           caller with a direct iterator needs none of that.
 
-        So ``DeerFlowClient.stream()`` is a parallel, sync, in-process
+        So ``BerkshireAgentClient.stream()`` is a parallel, sync, in-process
         consumer of the same ``create_agent()`` factory — not a wrapper
         around Gateway.  The two paths **should** stay in sync on which
         LangGraph stream modes they subscribe to; that invariant is

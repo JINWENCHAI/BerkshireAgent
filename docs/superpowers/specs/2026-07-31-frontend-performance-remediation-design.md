@@ -3,7 +3,7 @@
 ## Background
 
 A production-oriented audit identified seventeen performance risks across the
-default DeerFlow web deployment. The audit was originally performed against an
+default BerkshireAgent web deployment. The audit was originally performed against an
 older `main`, so this design starts from a source re-audit of
 `origin/main@17461ee5` rather than treating the old findings as immutable.
 
@@ -39,7 +39,7 @@ after each slice.
 - Replacing LangGraph, Streamdown, Nextra, CodeMirror, or the existing query
   layer.
 - Changing model, sandbox, agent, or scheduler behavior.
-- Optimizing third-party hosted deployments that bypass DeerFlow's bundled
+- Optimizing third-party hosted deployments that bypass BerkshireAgent's bundled
   nginx; the default nginx/Next deployment is the delivery contract here.
 - Claiming a performance win from source shape alone. Production build output
   and runtime measurements are required.

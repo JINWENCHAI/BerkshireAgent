@@ -139,7 +139,7 @@ async def test_async_acquire_offloads_ownership_publish(tmp_path, monkeypatch):
     info = SandboxInfo(
         sandbox_id="sb-async",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-sb-async",
+        container_name="berkshire-agent-sandbox-sb-async",
         created_at=1.0,
     )
     provider._backend.discover = MagicMock(return_value=info)

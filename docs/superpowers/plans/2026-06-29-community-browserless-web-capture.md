@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:test-driven-development for code changes. Commit and push steps are intentionally deferred because this local branch must stay uncommitted until user review.
 
-**Goal:** Add an opt-in community `web_capture` tool backed by Browserless `/screenshot` that renders a URL in headless Chrome, saves a PNG/JPEG/WebP screenshot into the current thread outputs directory, and exposes the file as a DeerFlow artifact path.
+**Goal:** Add an opt-in community `web_capture` tool backed by Browserless `/screenshot` that renders a URL in headless Chrome, saves a PNG/JPEG/WebP screenshot into the current thread outputs directory, and exposes the file as a BerkshireAgent artifact path.
 
-**Architecture:** Keep the integration inside the existing `deerflow.community.browserless` package. `BrowserlessClient` owns HTTP request construction and binary response handling; `tools.py` owns DeerFlow runtime/config resolution, output filename generation, file persistence, and artifact-state updates. The feature uses existing thread-data outputs semantics rather than inventing a new artifact channel.
+**Architecture:** Keep the integration inside the existing `deerflow.community.browserless` package. `BrowserlessClient` owns HTTP request construction and binary response handling; `tools.py` owns BerkshireAgent runtime/config resolution, output filename generation, file persistence, and artifact-state updates. The feature uses existing thread-data outputs semantics rather than inventing a new artifact channel.
 
 **Tech Stack:** Python 3.12, LangChain tool decorators, LangGraph `Command`, `httpx.AsyncClient`, Browserless REST `/screenshot`, pytest.
 

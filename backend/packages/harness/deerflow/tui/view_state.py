@@ -1,4 +1,4 @@
-"""Pure view-state reducer for the DeerFlow TUI.
+"""Pure view-state reducer for the BerkshireAgent TUI.
 
 This module has **no** Textual / rendering dependency. It models the visible
 conversation as an immutable list of typed rows and a small set of actions,
@@ -9,7 +9,7 @@ tool cards, error rows) testable with plain ``pytest`` and a handful of
 synthetic actions, independent of any terminal.
 
 The runtime bridge (``deerflow.tui.runtime``) is responsible for translating
-``DeerFlowClient`` ``StreamEvent`` objects into these actions; the Textual app
+``BerkshireAgentClient`` ``StreamEvent`` objects into these actions; the Textual app
 renders ``ViewState`` into widgets. Both sides depend on this module, not on
 each other.
 """

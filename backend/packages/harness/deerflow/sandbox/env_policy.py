@@ -9,7 +9,7 @@ inherited environment before request-scoped secrets are layered on top.
 
 The pattern set mirrors codex's ``*KEY*/*SECRET*/*TOKEN*`` default excludes and
 hermes's fixed provider blocklist; unlike codex (which defaults the exclude
-*off*), DeerFlow scrubs by default — security first.
+*off*), BerkshireAgent scrubs by default — security first.
 """
 
 from __future__ import annotations

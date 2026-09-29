@@ -1,6 +1,6 @@
 # Blob storage (content-addressed, cross-instance)
 
-Resolves the multi-instance half of [#4189](https://github.com/bytedance/deer-flow/issues/4189) item 2: two producers persist blob-shaped data outside the checkpoint payload and address it with a **server-local filesystem path**, which only resolves on the instance that wrote it.
+Resolves the multi-instance half of [#4189](https://github.com/bytedance/berkshire-agent/issues/4189) item 2: two producers persist blob-shaped data outside the checkpoint payload and address it with a **server-local filesystem path**, which only resolves on the instance that wrote it.
 
 | Producer | Write | Reads |
 |---|---|---|
@@ -96,7 +96,7 @@ What this means for the two migration PRs:
   sweep is safe while that remains true; `kind` is what makes the "while"
   checkable.
 
-This is also the seam [#5188](https://github.com/bytedance/deer-flow/issues/5188) needs: a thread-scoped blob sweep keyed by thread incarnation, rather than by the reusable thread id.
+This is also the seam [#5188](https://github.com/bytedance/berkshire-agent/issues/5188) needs: a thread-scoped blob sweep keyed by thread incarnation, rather than by the reusable thread id.
 
 ## Adding a backend
 

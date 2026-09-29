@@ -164,7 +164,7 @@ test.describe("Agent chat", () => {
     const textarea = page.getByPlaceholder(/how can i assist you/i);
     await expect(textarea).toBeVisible({ timeout: 15_000 });
     await expect(
-      page.getByText("DeerFlow is AI and can make mistakes", { exact: true }),
+      page.getByText("BerkshireAgent is AI and can make mistakes", { exact: true }),
     ).toBeVisible();
   });
 
@@ -624,7 +624,7 @@ test.describe("Agent chat", () => {
             content: {
               type: "ai",
               id: "msg-ai-1",
-              content: "Hello from DeerFlow!",
+              content: "Hello from BerkshireAgent!",
             },
           },
         ];
@@ -676,6 +676,6 @@ test.describe("Agent chat", () => {
     });
     await expect(page.getByText("Edited agent question")).toBeVisible();
     await expect(page.getByText("Original agent question")).not.toBeVisible();
-    await expect(page.getByText("Hello from DeerFlow!")).toBeVisible();
+    await expect(page.getByText("Hello from BerkshireAgent!")).toBeVisible();
   });
 });

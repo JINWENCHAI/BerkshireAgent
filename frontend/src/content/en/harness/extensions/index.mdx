@@ -1,6 +1,6 @@
 ---
 title: Extensions
-description: An extension is a separately released Python package that plugs into the DeerFlow Gateway through one install() function. This chapter covers what extensions can contribute, when to use one instead of a tool, MCP server, or skill, how they are loaded, and how to read this manual.
+description: An extension is a separately released Python package that plugs into the BerkshireAgent Gateway through one install() function. This chapter covers what extensions can contribute, when to use one instead of a tool, MCP server, or skill, how they are loaded, and how to read this manual.
 asIndexPage: true
 ---
 
@@ -9,12 +9,12 @@ import { Callout } from "nextra/components";
 # Extensions
 
 <Callout type="info" emoji="🧩">
-  An extension is an ordinary Python package that DeerFlow imports at Gateway
+  An extension is an ordinary Python package that BerkshireAgent imports at Gateway
   startup. It depends only on the public `deerflow-extension-api` contract, so
-  it can be built, tested, and released without importing DeerFlow itself.
+  it can be built, tested, and released without importing BerkshireAgent itself.
 </Callout>
 
-Tools, MCP servers, and skills add capabilities the model can call. Extensions add behavior to the **host**: they observe every model and tool call, react when a run starts or stops, run background services next to the Gateway, and serve their own HTTP routes. An extension is the supported way to ship that kind of integration, such as audit logging, cost accounting, or a governance dashboard, without forking DeerFlow.
+Tools, MCP servers, and skills add capabilities the model can call. Extensions add behavior to the **host**: they observe every model and tool call, react when a run starts or stops, run background services next to the Gateway, and serve their own HTTP routes. An extension is the supported way to ship that kind of integration, such as audit logging, cost accounting, or a governance dashboard, without forking BerkshireAgent.
 
 ## How to read this manual
 
@@ -23,7 +23,7 @@ Tools, MCP servers, and skills add capabilities the model can call. Extensions a
 | Extension authors       | This page, [Quick Start](/docs/harness/extensions/quick-start), [Runtime Model](/docs/harness/extensions/runtime), then the chapter for each contribution kind below |
 | Operators               | [Operating Extensions](/docs/harness/extensions/operations), [Troubleshooting](/docs/harness/extensions/troubleshooting), [Trust model](#trust-model) |
 | Looking up a name       | [Reference](/docs/harness/extensions/reference)                                                                           |
-| DeerFlow contributors   | `backend/packages/harness/deerflow/extensions/AGENTS.md`, which records the host-side design decisions |
+| BerkshireAgent contributors   | `backend/packages/harness/deerflow/extensions/AGENTS.md`, which records the host-side design decisions |
 
 ## Should this be an extension?
 
@@ -46,14 +46,14 @@ The two middleware paths are easy to confuse. `extensions.middlewares` inserts a
 | --------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `registry.middlewares(contributor)`     | `AgentMiddleware` instances inserted into the Lead Agent and subagent chains at a semantic placement. See [Middleware Contributions](/docs/harness/extensions/middleware) |
 | `registry.task_lifecycle(contributor)`  | `on_task_start` / `on_task_stop` for every lead run and every delegated subagent. See [Lifecycle and Observers](/docs/harness/extensions/observers) |
-| `registry.system_model_observer(obs)`   | A snapshot of each model call DeerFlow makes for itself: goal evaluation, memory extraction, title generation, summarization. See [Lifecycle and Observers](/docs/harness/extensions/observers) |
+| `registry.system_model_observer(obs)`   | A snapshot of each model call BerkshireAgent makes for itself: goal evaluation, memory extraction, title generation, summarization. See [Lifecycle and Observers](/docs/harness/extensions/observers) |
 | `registry.agent_assembly_observer(obs)` | A descriptor of every assembled agent: model, prompt hash, tools, middleware stack, skills, and a fingerprint. See [Lifecycle and Observers](/docs/harness/extensions/observers) |
 | `registry.context_compaction_observer(obs)` | A `CompactionEvent` each time summarization removes messages from context. See [Lifecycle and Observers](/docs/harness/extensions/observers) |
 | `registry.service(service)`             | An object started after the Gateway's persistence layer is ready and stopped at shutdown. May read runs through the [Run Evidence](/docs/harness/extensions/run-evidence) reader. See [Services and Routes](/docs/harness/extensions/services-and-routes) |
 | `registry.routers(routers)`             | FastAPI routers mounted after every host route, behind Gateway authentication. See [Services and Routes](/docs/harness/extensions/services-and-routes) |
 | `registry.plugin(contribution)`         | Experimental. Browser modules, authenticated backend actions, and model tools. Returns `False` on a host without plugin support. See [Full-Stack Plugins](/docs/harness/extensions/plugins) |
 
-A single extension may register any combination. The [bundled example](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-example) registers a middleware, a task-lifecycle contributor, a system-model observer, a service, and a router.
+A single extension may register any combination. The [bundled example](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-example) registers a middleware, a task-lifecycle contributor, a system-model observer, a service, and a router.
 
 ## Installing and loading
 
@@ -103,7 +103,7 @@ The extension manager asks for confirmation before installing, rejects source UR
 
 ## Versioning
 
-The contract package is versioned separately from DeerFlow, and a host exposes its version as `deerflow_extension_api.API_VERSION`. This manual covers `deerflow-extension-api` **0.2.4**.
+The contract package is versioned separately from BerkshireAgent, and a host exposes its version as `deerflow_extension_api.API_VERSION`. This manual covers `deerflow-extension-api` **0.2.4**.
 
 - Before 1.0, a minor release may break extensions and a patch release only adds. From 1.0 on, breaking changes bump the major.
 - Every Protocol method has a default implementation and every optional dataclass field has a default, so additive releases do not break already-released extensions.
@@ -113,7 +113,7 @@ Declare the matching range in your package metadata as well, for example `deerfl
 
 ## Terminology
 
-- **Host**: the DeerFlow Gateway process that loads extensions.
+- **Host**: the BerkshireAgent Gateway process that loads extensions.
 - **Contribution**: one object registered through the registry: a contributor, observer, service, router, or plugin.
 - **Contributor**: an object the host calls back to obtain contributions, such as a `MiddlewareContributor` that returns middleware for each agent it builds.
 - **Scope**: the lifetime a piece of state belongs to. The **app scope** lives as long as the Gateway; a **task scope** lives for one lead run or one subagent execution.

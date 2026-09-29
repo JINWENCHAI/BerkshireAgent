@@ -95,7 +95,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--storage-path",
         type=Path,
         default=None,
-        help="DeerMem root directory; defaults to DeerFlow's runtime home.",
+        help="DeerMem root directory; defaults to BerkshireAgent's runtime home.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Report pending migrations without changing files.")
     return parser

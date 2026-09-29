@@ -1,7 +1,7 @@
 """JSONL file-backed RunEventStore implementation.
 
 Each run's events are stored in a single file:
-``.deer-flow/threads/{thread_id}/runs/{run_id}.jsonl``
+``.berkshire-agent/threads/{thread_id}/runs/{run_id}.jsonl``
 
 All categories (message, trace, lifecycle) are in the same file.
 This backend is suitable for lightweight single-node deployments.
@@ -48,7 +48,7 @@ _SAFE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_\-]+$")
 
 class JsonlRunEventStore(RunEventStore):
     def __init__(self, base_dir: str | Path | None = None):
-        self._base_dir = Path(base_dir) if base_dir else Path(".deer-flow")
+        self._base_dir = Path(base_dir) if base_dir else Path(".berkshire-agent")
         self._seq_counters: dict[str, int] = {}  # thread_id -> current max seq
         # Weak ownership avoids leaking one lock per historical thread without
         # splitting a live lock generation while a holder/waiter still owns it.

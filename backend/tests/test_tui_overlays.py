@@ -5,7 +5,7 @@ import asyncio
 import pytest
 
 from deerflow.client import StreamEvent
-from deerflow.tui.app import DeerFlowTUI, SelectScreen
+from deerflow.tui.app import BerkshireAgentTUI, SelectScreen
 from deerflow.tui.cli import LaunchPlan
 
 
@@ -61,7 +61,7 @@ async def _settle(pilot, predicate, timeout=2.0):
 
 @pytest.mark.asyncio
 async def test_resume_command_with_title_switches_thread():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         # Resolve a thread by its title (not id) — the by-title resume path.
@@ -74,7 +74,7 @@ async def test_resume_command_with_title_switches_thread():
 
 def test_resume_without_arg_routes_to_thread_switcher():
     # /resume with no id/title falls back to the thread switcher.
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     calls = []
     app._open_thread_switcher = lambda: calls.append("switcher")
     app._handle_builtin("resume", "")
@@ -83,7 +83,7 @@ def test_resume_without_arg_routes_to_thread_switcher():
 
 @pytest.mark.asyncio
 async def test_model_command_opens_picker_and_sets_override():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         for ch in ("slash", "m", "o", "d", "e", "l"):
@@ -99,7 +99,7 @@ async def test_model_command_opens_picker_and_sets_override():
 
 @pytest.mark.asyncio
 async def test_threads_command_opens_switcher_and_resumes():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         for ch in ("slash", "t", "h", "r", "e", "a", "d", "s"):
@@ -114,7 +114,7 @@ async def test_threads_command_opens_switcher_and_resumes():
 
 @pytest.mark.asyncio
 async def test_picker_escape_cancels_without_change():
-    app = DeerFlowTUI(_FakeSession(), LaunchPlan(mode="tui"))
+    app = BerkshireAgentTUI(_FakeSession(), LaunchPlan(mode="tui"))
     async with app.run_test() as pilot:
         await pilot.pause()
         for ch in ("slash", "m", "o", "d", "e", "l"):

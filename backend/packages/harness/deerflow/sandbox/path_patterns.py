@@ -102,7 +102,7 @@ def replace_output_path_matches(
     """Replace ``base`` path matches without compiling a path-specific regex.
 
     Dynamic thread roots are high-cardinality. Compiling one regex per root
-    leaves those roots in Python's global ``re`` caches after DeerFlow evicts
+    leaves those roots in Python's global ``re`` caches after BerkshireAgent evicts
     the owning sandbox. This scanner preserves the same boundary and path-tail
     contract while keeping no process-level reference to ``base``.
     """

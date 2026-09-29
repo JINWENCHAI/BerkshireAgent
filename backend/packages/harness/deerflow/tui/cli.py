@@ -1,8 +1,8 @@
-"""Command-line entry point and launch-mode planning for the DeerFlow TUI.
+"""Command-line entry point and launch-mode planning for the BerkshireAgent TUI.
 
 ``plan_launch`` is a pure decision function (fully unit-tested): given argv, TTY
 state and the environment, it decides whether to open the terminal UI or run a
-headless one-shot. ``main`` wires that decision to the embedded ``DeerFlowClient``
+headless one-shot. ``main`` wires that decision to the embedded ``BerkshireAgentClient``
 and lazily imports the Textual app only when actually launching the UI, so the
 ``deerflow`` console script still runs headless commands without Textual present.
 """
@@ -48,7 +48,7 @@ def _positive_int(value: str) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="deerflow",
-        description="DeerFlow terminal workbench — a TUI over the embedded DeerFlow harness.",
+        description="BerkshireAgent terminal workbench — a TUI over the embedded BerkshireAgent harness.",
         epilog="Extension management: deerflow extensions --help",
         add_help=True,
     )
@@ -194,7 +194,7 @@ def plan_launch(
 # --------------------------------------------------------------------------- #
 
 _HEADLESS_HELP = """\
-deerflow — DeerFlow terminal workbench
+deerflow — BerkshireAgent terminal workbench
 
   deerflow                      launch the terminal UI (TTY required)
   deerflow --tui                force the terminal UI

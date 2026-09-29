@@ -317,7 +317,7 @@ class UploadsMiddleware(AgentMiddleware[UploadsMiddlewareState]):
         langgraph would otherwise execute the sync hook directly on the event
         loop, so it is dispatched to a worker thread via ``run_in_executor``.
         ``run_in_executor`` copies the current context, preserving both
-        LangGraph's runnable config and DeerFlow's request ContextVar fallback.
+        LangGraph's runnable config and BerkshireAgent's request ContextVar fallback.
         The runtime itself is also passed explicitly for the authoritative
         ``runtime.context["user_id"]`` channel.
         """

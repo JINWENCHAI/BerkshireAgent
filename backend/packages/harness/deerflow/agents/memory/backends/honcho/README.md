@@ -1,6 +1,6 @@
 # Honcho memory backend
 
-Uses Honcho (self-hosted or hosted, v3 API) as DeerFlow's
+Uses Honcho (self-hosted or hosted, v3 API) as BerkshireAgent's
 user-model memory store. Honcho covers the user dimension of memory — long-term
 user modeling, preferences, and a cross-session working representation — built
 by Honcho's own server-side deriver. Ingestion is cheap plain message writes;
@@ -88,7 +88,7 @@ cannot see each other's memory by construction.
 ## Async execution and failure behavior
 
 The Honcho HTTP client is synchronous for compatibility with the
-`MemoryManager` contract. DeerFlow offloads it at every async boundary via
+`MemoryManager` contract. BerkshireAgent offloads it at every async boundary via
 `asyncio.to_thread` (the manager's `a*` methods), so a slow Honcho request
 never blocks ASGI handlers or SSE heartbeats.
 

@@ -133,7 +133,7 @@ It adopts an old `lead-agent` bucket only when no custom-agent config exists.
 Unexpected files stop migration and remain on disk.
 
 The v1-to-v2 migration is one-way during application operation.
-Operators must stop DeerFlow and snapshot the storage root before migration.
+Operators must stop BerkshireAgent and snapshot the storage root before migration.
 Every destructive migration first writes a verified `{manifest_filename}.v1.bak` file.
 Missing or mismatched backups abort migration without changing v1 data.
 Delete legacy agent JSON only after safe summary adoption or equality checks.
@@ -250,12 +250,12 @@ other settings remain permissive unless the backend overrides the resolver.
 
 OpenViking uses the maintained `langchain-openviking` package.
 Keep it in middleware mode.
-One API key is bound to one configured DeerFlow owner.
+One API key is bound to one configured BerkshireAgent owner.
 Reject another owner before remote access.
 
-DeerFlow owns capture timing, the recall query, and the transcript cursor.
+BerkshireAgent owns capture timing, the recall query, and the transcript cursor.
 The package owns transport, message conversion, batching, and Session commits.
-One DeerFlow thread maps to one stable OpenViking Session.
+One BerkshireAgent thread maps to one stable OpenViking Session.
 Store bounded hash-only cursors below `{storage_path}/openviking/sessions/`.
 
 Async OpenViking entry points must offload synchronous SDK and file operations.

@@ -76,11 +76,11 @@ logger = logging.getLogger(__name__)
 # Default configuration
 DEFAULT_IMAGE = "enterprise-public-cn-beijing.cr.volces.com/vefaas-public/all-in-one-sandbox:latest"
 DEFAULT_PORT = 8080
-DEFAULT_CONTAINER_PREFIX = "deer-flow-sandbox"
+DEFAULT_CONTAINER_PREFIX = "berkshire-agent-sandbox"
 IDLE_CHECK_INTERVAL = _SHARED_IDLE_CHECK_INTERVAL
 # The supported semver AIO images currently default to ten shell sessions.
 # Leave lower-concurrency deployments on the image default; only override it
-# when DeerFlow's configured execution capacity cannot fit.
+# when BerkshireAgent's configured execution capacity cannot fit.
 _AIO_DEFAULT_MAX_SHELL_SESSIONS = 10
 _SHELL_SESSION_HEADROOM = 1
 
@@ -205,7 +205,7 @@ class AioSandboxProvider(WarmPoolLifecycleMixin[SandboxInfo], SandboxProvider):
         use: deerflow.community.aio_sandbox:AioSandboxProvider
         image: <container image>
         port: 8080                      # Base port for local containers
-        container_prefix: deer-flow-sandbox
+        container_prefix: berkshire-agent-sandbox
         idle_timeout: 600               # Idle timeout in seconds (0 to disable)
         replicas: 3                     # Max concurrent sandbox containers (LRU eviction when exceeded)
         thread_data_mounts: null        # null = backend auto-detection

@@ -1,17 +1,17 @@
 ---
 title: 配置
-description: 本页面涵盖 DeerFlow 应用的所有配置层——`config.yaml`、前端环境变量、`extensions_config.json` 和运行时环境变量。
+description: 本页面涵盖 BerkshireAgent 应用的所有配置层——`config.yaml`、前端环境变量、`extensions_config.json` 和运行时环境变量。
 ---
 
 import { Callout, Tabs } from "nextra/components";
 
 # 配置
 
-本页面涵盖 DeerFlow 应用的所有配置层——`config.yaml`、前端环境变量、`extensions_config.json` 和运行时环境变量。
+本页面涵盖 BerkshireAgent 应用的所有配置层——`config.yaml`、前端环境变量、`extensions_config.json` 和运行时环境变量。
 
 ## config.yaml
 
-`config.yaml` 是 DeerFlow 的主要配置文件。所有 Agent 行为、模型选择、工具加载和运行时功能都由它控制。
+`config.yaml` 是 BerkshireAgent 的主要配置文件。所有 Agent 行为、模型选择、工具加载和运行时功能都由它控制。
 
 参见[配置](/docs/harness/configuration)参考页面了解文件格式和每个章节的详细说明。
 
@@ -125,10 +125,10 @@ models:
 
 `llama-server` 提供 OpenAI 兼容的 `/v1/chat/completions` 接口，因此 `base_url` 应指向它的 `/v1` 根路径。`ChatOpenAI` 需要一个非空 API key；当 llama.cpp 未启用鉴权时，`no-key` 只是占位值。如果启动服务时使用了 `--api-key`，请改为对应的真实密钥。
 
-Docker 部署时，`localhost` 指向 DeerFlow 容器本身。请改用容器能够访问的宿主机地址；例如 Docker Desktop 通常可使用 `http://host.docker.internal:8080/v1`。
+Docker 部署时，`localhost` 指向 BerkshireAgent 容器本身。请改用容器能够访问的宿主机地址；例如 Docker Desktop 通常可使用 `http://host.docker.internal:8080/v1`。
 
 <Callout type="warning">
-  DeerFlow 依赖工具调用。请确认 GGUF 模型的 chat template 支持 function/tool calls。
+  BerkshireAgent 依赖工具调用。请确认 GGUF 模型的 chat template 支持 function/tool calls。
   当前 llama.cpp 默认启用 Jinja chat-template 引擎；如果自定义模板，也必须保留工具调用支持。
 </Callout>
   </Tabs.Tab>
@@ -136,7 +136,7 @@ Docker 部署时，`localhost` 指向 DeerFlow 容器本身。请改用容器能
 
 #### 推理能力契约
 
-`supports_thinking` 和 `supports_reasoning_effort` 只能表示"有没有这个开关"。当 provider 的约定与 DeerFlow 的通用假设不同——例如 thinking 无法关闭，或 effort 取值不是 `minimal/low/medium/high`——可以改为声明映射形式的 `reasoning` 块。此时这两个布尔值会由契约推导，聊天界面只提供模型接受的取值，并且所有模型调用（对话、总结、标题生成、子代理）都遵循同一套策略。已有的 Ollama `reasoning: true` / `false`，以及 gpt-oss 一类模型使用的 `low` / `medium` / `high` 档位字符串，仍是 ChatOllama 原生参数，不会启用此契约。
+`supports_thinking` 和 `supports_reasoning_effort` 只能表示"有没有这个开关"。当 provider 的约定与 BerkshireAgent 的通用假设不同——例如 thinking 无法关闭，或 effort 取值不是 `minimal/low/medium/high`——可以改为声明映射形式的 `reasoning` 块。此时这两个布尔值会由契约推导，聊天界面只提供模型接受的取值，并且所有模型调用（对话、总结、标题生成、子代理）都遵循同一套策略。已有的 Ollama `reasoning: true` / `false`，以及 gpt-oss 一类模型使用的 `low` / `medium` / `high` 档位字符串，仍是 ChatOllama 原生参数，不会启用此契约。
 
 ```yaml
 models:
@@ -153,7 +153,7 @@ models:
       effort:
         values: [low, high, max]    # provider 自己的取值
         default: high               # 调用方未指定时使用
-        aliases:                    # DeerFlow 通用取值 -> provider 取值
+        aliases:                    # BerkshireAgent 通用取值 -> provider 取值
           minimal: low
           medium: high
     extra_body:
@@ -209,14 +209,14 @@ skills:
 
 ### 数据库后端
 
-DeerFlow 使用 `database` 配置同时管理 LangGraph 检查点数据和应用数据，例如运行记录、反馈和线程元数据。
+BerkshireAgent 使用 `database` 配置同时管理 LangGraph 检查点数据和应用数据，例如运行记录、反馈和线程元数据。
 
 默认使用 SQLite，适合本地开发和单节点单用户持久化：
 
 ```yaml
 database:
   backend: sqlite
-  sqlite_dir: .deer-flow/data
+  sqlite_dir: .berkshire-agent/data
 ```
 
 SQLite 模式会把数据写入同一个 `deerflow.db` 文件。它适合开发或单用户部署，但生产并发流量可能触发 SQLite 的单写者限制，出现 `sqlite3.OperationalError: database is locked`。
@@ -285,8 +285,8 @@ BETTER_AUTH_SECRET=local-dev-secret-at-least-32-chars
 ```
 
 <Callout type="warning">
-  不要为 DeerFlow 工作区文件引入 MCP filesystem server。它会与 DeerFlow
-  内置文件工具形成路径语义不同的重复能力，让 LLM 行为不稳定。DeerFlow
+  不要为 BerkshireAgent 工作区文件引入 MCP filesystem server。它会与 BerkshireAgent
+  内置文件工具形成路径语义不同的重复能力，让 LLM 行为不稳定。BerkshireAgent
   当前没有为 filesystem server 适配 MCP Roots 模式，也不会把{" "}
   <code>/mnt/user-data/...</code> 这类沙箱路径映射成{" "}
   <code>@modelcontextprotocol/server-filesystem</code> 可接受的路径。
@@ -294,11 +294,11 @@ BETTER_AUTH_SECRET=local-dev-secret-at-least-32-chars
 
 ### 技能启用状态
 
-技能启用状态会反映在 `extensions_config.json` 中。你可以直接编辑它，或通过 DeerFlow 应用界面进行管理。
+技能启用状态会反映在 `extensions_config.json` 中。你可以直接编辑它，或通过 BerkshireAgent 应用界面进行管理。
 
 ## 运行时环境变量
 
-这些变量由 DeerFlow 进程自身读取（通过 `.env`、Docker 环境或 shell）。
+这些变量由 BerkshireAgent 进程自身读取（通过 `.env`、Docker 环境或 shell）。
 
 这些路径变量中，只有 `DEER_FLOW_SKILLS_PATH` 会把相对值基于 `DEER_FLOW_PROJECT_ROOT` 解析；
 `DEER_FLOW_HOME` 和 `DEER_FLOW_CONFIG_PATH` 都按原值直接使用，相对值会基于进程工作目录解析。
@@ -307,16 +307,16 @@ BETTER_AUTH_SECRET=local-dev-secret-at-least-32-chars
 | 变量                     | 默认值                 | 描述                                                   |
 | ------------------------ | ---------------------- | ------------------------------------------------------ |
 | `DEER_FLOW_PROJECT_ROOT` | 当前工作目录           | 解析项目相对默认值（含 `skills` 查找）的根目录         |
-| `DEER_FLOW_HOME`         | `<项目根>/.deer-flow`  | 运行状态的可写目录（线程、上传文件）；建议使用绝对路径 |
+| `DEER_FLOW_HOME`         | `<项目根>/.berkshire-agent`  | 运行状态的可写目录（线程、上传文件）；建议使用绝对路径 |
 | `DEER_FLOW_CONFIG_PATH`  | 在项目根目录下自动发现 | `config.yaml` 的绝对路径                               |
 | `DEER_FLOW_SKILLS_PATH`  | `<项目根>/skills`      | 技能定义所在目录（相对值基于项目根解析）               |
 | `AUTH_JWT_SECRET`        | 自动生成               | Gateway 的 JWT 签名密钥                                |
 
 日志级别不是环境变量——请在 `config.yaml` 中设置 `log_level`（`debug`、`info`、`warning` 或 `error`，默认 `info`）。模块参考见 [Harness 配置](/docs/harness/configuration)。
 
-`DEER_FLOW_ROOT` 仅是 Docker Compose 开发栈使用的主机侧变量，DeerFlow 进程不会读取它，详见[部署指南](/docs/application/deployment-guide)。
+`DEER_FLOW_ROOT` 仅是 Docker Compose 开发栈使用的主机侧变量，BerkshireAgent 进程不会读取它，详见[部署指南](/docs/application/deployment-guide)。
 
-当 `AUTH_JWT_SECRET` 未设置时，DeerFlow 会在首次启动时生成一个密钥并持久化到 `.jwt_secret`，重启后会话仍然有效；生产环境请显式设置一个稳定的随机值。
+当 `AUTH_JWT_SECRET` 未设置时，BerkshireAgent 会在首次启动时生成一个密钥并持久化到 `.jwt_secret`，重启后会话仍然有效；生产环境请显式设置一个稳定的随机值。
 
 <Cards num={2}>
   <Cards.Card title="Harness 配置" href="/docs/harness/configuration" />

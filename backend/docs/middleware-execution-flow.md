@@ -170,7 +170,7 @@ sequenceDiagram
 > 列表最后的 middleware，其 `after_model` **最先执行**。
 > ClarificationMiddleware 在列表末尾，所以它第一个拦截 model 输出。
 
-## 对比：真正的洋葱 vs DeerFlow 的实际情况
+## 对比：真正的洋葱 vs BerkshireAgent 的实际情况
 
 ### 真正的洋葱（如 Koa/Express）
 
@@ -217,7 +217,7 @@ sequenceDiagram
 > [!tip] 洋葱特征
 > 每个 middleware 都有 before/after 对称操作，`activate` 跨越整个内层执行，形成完美嵌套。
 
-### DeerFlow 的实际情况
+### BerkshireAgent 的实际情况
 
 不是洋葱，是管道。大部分 middleware 只用一个钩子，不存在对称嵌套。多轮对话时 before_model / after_model 循环执行：
 
@@ -278,7 +278,7 @@ sequenceDiagram
 
 ### 结论
 
-| | 真正的洋葱 | DeerFlow 实际 |
+| | 真正的洋葱 | BerkshireAgent 实际 |
 |---|---|---|
 | 每个 middleware | before + after 对称 | 大多只用一个钩子 |
 | 激活条 | 嵌套（外长内短） | 不嵌套（串行） |

@@ -25,10 +25,10 @@ COMPOSE_PATHS = {
     "prod": REPO_ROOT / "docker" / "docker-compose.yaml",
     "dev": REPO_ROOT / "docker" / "docker-compose-dev.yaml",
 }
-HELM_NGINX_DEPLOYMENT = REPO_ROOT / "deploy" / "helm" / "deer-flow" / "templates" / "nginx-deployment.yaml"
+HELM_NGINX_DEPLOYMENT = REPO_ROOT / "deploy" / "helm" / "berkshire-agent" / "templates" / "nginx-deployment.yaml"
 NGINX_CONFS = {
     "compose": REPO_ROOT / "docker" / "nginx" / "nginx.conf",
-    "helm": REPO_ROOT / "deploy" / "helm" / "deer-flow" / "templates" / "configmap-nginx.yaml",
+    "helm": REPO_ROOT / "deploy" / "helm" / "berkshire-agent" / "templates" / "configmap-nginx.yaml",
 }
 
 GUARD_RE = re.compile(r"test -e /proc/net/if_inet6 \|\| sed -i '(?P<pattern>[^']+)' (?P<target>\S+)")

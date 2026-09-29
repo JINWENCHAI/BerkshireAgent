@@ -6,7 +6,7 @@ subclass) in its ``__init__``. The drop-in contract: folder name ==
 backend name == ``BlobStorageConfig.backend`` value.
 
 Add a new backend by dropping a new folder here and setting
-``blob_storage.backend: <name>`` -- no other deer-flow code changes.
+``blob_storage.backend: <name>`` -- no other berkshire-agent code changes.
 The depth (layout, publish rules, portability, dotted-path escape hatch)
 is owned by ``../AGENTS.md``; the retention/GC interaction lives in
 ``docs/blob-storage.md``.

@@ -105,7 +105,7 @@ def _run_deploy_build(
     env = os.environ.copy()
     for key in (*SECRETS, "UV_EXTRAS", "REAL_DOCKER", "FAKE_COMPOSE_ENVIRONMENT", "FAKE_COMPOSE_CONFIG_RC"):
         env.pop(key, None)
-    env["DEER_FLOW_HOME"] = str(tmp_path / "deer-flow-home")
+    env["DEER_FLOW_HOME"] = str(tmp_path / "berkshire-agent-home")
     env["CAPTURE_SECRETS"] = str(capture_secrets)
     env["CAPTURE_DOCKER_ARGS"] = str(capture_args)
     env["CAPTURE_CONFIG_ARGS"] = str(capture_config_args)
@@ -206,7 +206,7 @@ def test_deploy_prefers_dotenv_secret_over_the_persisted_generated_one(tmp_path,
     """An operator-written .env value wins over the file an earlier run generated."""
     worktree = _worktree(tmp_path)
     (worktree / ".env").write_text(f"{key}=from-dotenv\n", encoding="utf-8")
-    home = tmp_path / "deer-flow-home"
+    home = tmp_path / "berkshire-agent-home"
     home.mkdir()
     (home / PERSISTED_FILE[key]).write_text("from-persisted-file\n", encoding="utf-8")
 

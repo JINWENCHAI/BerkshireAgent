@@ -1,5 +1,5 @@
 #!/bin/sh
-# DeerFlow lark-cli init container entrypoint (Pattern A).
+# BerkshireAgent lark-cli init container entrypoint (Pattern A).
 #
 # Copies the staged sandbox runtime layout into the shared emptyDir the
 # provisioner mounts into both this init container and the main sandbox

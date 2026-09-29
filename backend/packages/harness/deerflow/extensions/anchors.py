@@ -1,6 +1,6 @@
 """Translating semantic placements into concrete stack indices.
 
-This is the only module that knows the shape of DeerFlow's middleware stack.
+This is the only module that knows the shape of BerkshireAgent's middleware stack.
 Restructuring the stack means updating the anchor table here; extensions,
 which declare only what they need to observe, stay untouched.
 """

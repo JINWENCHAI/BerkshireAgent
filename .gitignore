@@ -1,4 +1,4 @@
-# DeerFlow docker image cache
+# BerkshireAgent docker image cache
 docker/.cache/
 # oh-my-claudecode state
 .omc/
@@ -41,7 +41,7 @@ extensions_config.json
 # Coverage report
 coverage.xml
 coverage/
-.deer-flow/
+.berkshire-agent/
 .claude/
 skills/custom/*
 logs/

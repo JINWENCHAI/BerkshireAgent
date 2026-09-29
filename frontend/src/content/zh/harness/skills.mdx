@@ -38,7 +38,7 @@ import { Callout, FileTree, Steps } from "nextra/components";
 
 ## 内置技能
 
-DeerFlow 内置以下公共技能：
+BerkshireAgent 内置以下公共技能：
 
 | 技能                           | 描述                                         |
 | ------------------------------ | -------------------------------------------- |
@@ -105,7 +105,7 @@ skills:
 
 技能可用性在 `extensions_config.json` 中跟踪（独立于 `config.yaml`）。你可以管理技能状态：
 
-- **通过 DeerFlow 应用界面**：技能面板允许你切换技能的启用/禁用状态。
+- **通过 BerkshireAgent 应用界面**：技能面板允许你切换技能的启用/禁用状态。
 - **通过 Gateway API**：`PUT /api/skills/{name}`，请求体为 `{"enabled": true}` 或 `{"enabled": false}`（仅管理员）。
 - **直接编辑 `extensions_config.json`**。
 
@@ -136,7 +136,7 @@ E2B 会对 shell 命令及文件工具强制执行该视图。Local 仅在 host 
 
 ## 技能进化
 
-DeerFlow 包含一个可选的**技能进化**功能，允许 Agent 在 `skills/custom/` 目录中自主创建和改进技能：
+BerkshireAgent 包含一个可选的**技能进化**功能，允许 Agent 在 `skills/custom/` 目录中自主创建和改进技能：
 
 ```yaml
 skill_evolution:

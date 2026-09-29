@@ -1,4 +1,4 @@
-"""Private runtime context keys shared across DeerFlow runtime components."""
+"""Private runtime context keys shared across BerkshireAgent runtime components."""
 
 from collections.abc import Mapping
 from typing import Final

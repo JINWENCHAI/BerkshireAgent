@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Load the Memory Settings review sample into a local DeerFlow runtime."""
+"""Load the Memory Settings review sample into a local BerkshireAgent runtime."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ def default_source(repo_root: Path) -> Path:
 
 def parse_args(repo_root: Path, argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Load Memory Settings sample data into DeerFlow runtime memory.",
+        description="Load Memory Settings sample data into BerkshireAgent runtime memory.",
     )
     parser.add_argument(
         "--source",

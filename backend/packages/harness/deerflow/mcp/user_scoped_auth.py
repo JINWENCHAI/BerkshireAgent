@@ -1,9 +1,9 @@
 """Per-user credential injection for shared MCP servers.
 
-One configured HTTP/SSE MCP server can serve several DeerFlow users, each
+One configured HTTP/SSE MCP server can serve several BerkshireAgent users, each
 authenticated to the remote service with their own credential. A server opts in
 by declaring a ``user_auth`` block (:class:`McpUserScopedAuthConfig`) mapping
-DeerFlow user ids to credential header values. On every tool call the
+BerkshireAgent user ids to credential header values. On every tool call the
 interceptor resolves the authenticated user and rewrites the configured header
 via ``request.override(headers=...)`` — the same per-call mechanism the OAuth
 interceptor uses.

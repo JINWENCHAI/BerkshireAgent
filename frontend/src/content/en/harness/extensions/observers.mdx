@@ -1,18 +1,18 @@
 ---
 title: Lifecycle and Observers
-description: The four notification contributions. Task lifecycle for every lead run and subagent, system model calls DeerFlow makes for itself, a descriptor and fingerprint of every assembled agent, and an event for every context compaction. Covers timing, payloads, stores, and failure behavior for each.
+description: The four notification contributions. Task lifecycle for every lead run and subagent, system model calls BerkshireAgent makes for itself, a descriptor and fingerprint of every assembled agent, and an event for every context compaction. Covers timing, payloads, stores, and failure behavior for each.
 ---
 
 import { Callout } from "nextra/components";
 
 # Lifecycle and Observers
 
-Middleware sees each model and tool call inside an agent. The four contributions in this chapter see the events around and beside those calls: a task starting and stopping, DeerFlow's own model calls, an agent being assembled, and context being compacted. None of them can change what the host does. All of them fail open under the rules in [Runtime Model](/docs/harness/extensions/runtime).
+Middleware sees each model and tool call inside an agent. The four contributions in this chapter see the events around and beside those calls: a task starting and stopping, BerkshireAgent's own model calls, an agent being assembled, and context being compacted. None of them can change what the host does. All of them fail open under the rules in [Runtime Model](/docs/harness/extensions/runtime).
 
 | Contribution                 | Registry method                  | Called                                  | Sync or async | Store it receives        |
 | ---------------------------- | -------------------------------- | --------------------------------------- | ------------- | ------------------------ |
 | `TaskLifecycleContributor`   | `registry.task_lifecycle()`      | Start and stop of every lead run and subagent | async, awaited | The task store         |
-| `SystemModelCallObserver`    | `registry.system_model_observer()` | After each DeerFlow-owned model call   | async         | The task store, or detached |
+| `SystemModelCallObserver`    | `registry.system_model_observer()` | After each BerkshireAgent-owned model call   | async         | The task store, or detached |
 | `AgentAssemblyObserver`      | `registry.agent_assembly_observer()` | At the end of every agent construction | **sync**      | The app store only       |
 | `ContextCompactionObserver`  | `registry.context_compaction_observer()` | After each summarization          | async, fire-and-forget | Detached         |
 
@@ -139,7 +139,7 @@ class SystemModelCallObserver(Protocol):
     ) -> None: ...
 ```
 
-DeerFlow makes some model calls for itself, outside the agent's model-call chain, so middleware never sees them. This observer reports them:
+BerkshireAgent makes some model calls for itself, outside the agent's model-call chain, so middleware never sees them. This observer reports them:
 
 | `kind`          | Call                                                     | How it is reported                                   | Store               |
 | --------------- | -------------------------------------------------------- | ---------------------------------------------------- | ------------------- |

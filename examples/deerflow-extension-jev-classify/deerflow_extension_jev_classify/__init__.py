@@ -1,4 +1,4 @@
-"""Standalone text classification plugin. No imports from DeerFlow host internals."""
+"""Standalone text classification plugin. No imports from BerkshireAgent host internals."""
 
 import os
 

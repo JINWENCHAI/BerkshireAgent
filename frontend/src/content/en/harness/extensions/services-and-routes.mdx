@@ -118,7 +118,7 @@ The shadow check is conservative. It rejects a route only when an earlier route 
 Contributed routes sit behind the same middleware as the host API, and they cannot opt out:
 
 - **Authentication.** An unauthenticated request gets `401` before your handler runs. A personal access token (PAT) cannot access contributed routes: even a valid PAT gets `403 {"detail": "PAT credentials are not permitted on this route"}` from the host before your handler runs.
-- **CSRF.** A `POST`, `PUT`, `PATCH`, or `DELETE` from a browser session must carry the `csrf_token` cookie value in an `X-CSRF-Token` header, as the DeerFlow frontend already does. Without it the request gets `403` before your handler runs. A Bearer header skips the CSRF check, but does not grant PAT access to contributed routes.
+- **CSRF.** A `POST`, `PUT`, `PATCH`, or `DELETE` from a browser session must carry the `csrf_token` cookie value in an `X-CSRF-Token` header, as the BerkshireAgent frontend already does. Without it the request gets `403` before your handler runs. A Bearer header skips the CSRF check, but does not grant PAT access to contributed routes.
 
 When the Gateway runs with `DEER_FLOW_AUTH_DISABLED=1`, a local-development switch that is ignored when `DEER_FLOW_ENV` or `ENVIRONMENT` is `prod` or `production`, every request runs as a synthetic admin user and neither check applies.
 

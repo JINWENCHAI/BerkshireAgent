@@ -188,8 +188,8 @@ def _build_fake_setup_agent_model(agent_name: str):
 
 
 @pytest.fixture
-def isolated_deer_flow_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    home = tmp_path / "deer-flow-home"
+def isolated_berkshire_agent_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    home = tmp_path / "berkshire-agent-home"
     home.mkdir()
     monkeypatch.setenv("DEER_FLOW_HOME", str(home))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-fake-key-not-used")
@@ -284,14 +284,14 @@ def _preserve_process_config_singletons(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 @pytest.fixture
-def isolated_app(isolated_deer_flow_home: Path, monkeypatch: pytest.MonkeyPatch):
+def isolated_app(isolated_berkshire_agent_home: Path, monkeypatch: pytest.MonkeyPatch):
     _preserve_process_config_singletons(monkeypatch)
     _reset_process_singletons(monkeypatch)
 
     from deerflow.config import app_config as app_config_module
 
     cfg = app_config_module.get_app_config()
-    cfg.database.sqlite_dir = str(isolated_deer_flow_home / "db")
+    cfg.database.sqlite_dir = str(isolated_berkshire_agent_home / "db")
 
     from app.gateway.app import create_app
 
@@ -308,8 +308,8 @@ def test_lifespan_uses_sqlite_store_from_database_config(isolated_app):
 
 
 @pytest.fixture
-def isolated_app_with_title(isolated_deer_flow_home: Path, monkeypatch: pytest.MonkeyPatch):
-    config_path = isolated_deer_flow_home.parent / "config-title-enabled.yaml"
+def isolated_app_with_title(isolated_berkshire_agent_home: Path, monkeypatch: pytest.MonkeyPatch):
+    config_path = isolated_berkshire_agent_home.parent / "config-title-enabled.yaml"
     config_path.write_text(_MINIMAL_CONFIG_YAML.replace("title:\n  enabled: false", "title:\n  enabled: true"), encoding="utf-8")
     monkeypatch.setenv("DEER_FLOW_CONFIG_PATH", str(config_path))
 
@@ -319,7 +319,7 @@ def isolated_app_with_title(isolated_deer_flow_home: Path, monkeypatch: pytest.M
     from deerflow.config import app_config as app_config_module
 
     cfg = app_config_module.get_app_config()
-    cfg.database.sqlite_dir = str(isolated_deer_flow_home / "db")
+    cfg.database.sqlite_dir = str(isolated_berkshire_agent_home / "db")
 
     from app.gateway.app import create_app
 
@@ -567,7 +567,7 @@ def test_stream_run_completes_and_persists_runtime_state(isolated_app):
         assert any(row["content"]["content"] == "Lifecycle complete." for row in message_events if row["event_type"] == "llm.ai.response")
 
 
-def test_stream_run_executes_real_lead_agent_setup_agent_business_path(isolated_app, isolated_deer_flow_home: Path):
+def test_stream_run_executes_real_lead_agent_setup_agent_business_path(isolated_app, isolated_berkshire_agent_home: Path):
     """A runtime stream should execute real lead-agent business code and tools."""
     from starlette.testclient import TestClient
 
@@ -621,10 +621,10 @@ def test_stream_run_executes_real_lead_agent_setup_agent_business_path(isolated_
         run = _wait_for_status(client, thread_id, run_id, "success", timeout=10.0)
         assert run["assistant_id"] == "lead_agent"
 
-        expected_soul = isolated_deer_flow_home / "users" / auth_user_id / "agents" / agent_name / "SOUL.md"
-        assert expected_soul.exists(), f"setup_agent did not write SOUL.md. tmp tree: {sorted(str(p.relative_to(isolated_deer_flow_home)) for p in isolated_deer_flow_home.rglob('SOUL.md'))}"
+        expected_soul = isolated_berkshire_agent_home / "users" / auth_user_id / "agents" / agent_name / "SOUL.md"
+        assert expected_soul.exists(), f"setup_agent did not write SOUL.md. tmp tree: {sorted(str(p.relative_to(isolated_berkshire_agent_home)) for p in isolated_berkshire_agent_home.rglob('SOUL.md'))}"
         assert f"Agent name: {agent_name}" in expected_soul.read_text(encoding="utf-8")
-        assert not (isolated_deer_flow_home / "users" / "default" / "agents" / agent_name).exists()
+        assert not (isolated_berkshire_agent_home / "users" / "default" / "agents" / agent_name).exists()
 
 
 def test_cancel_interrupt_stops_running_background_run(isolated_app):

@@ -1,12 +1,12 @@
-# DeerFlow Helm chart values
+# BerkshireAgent Helm chart values
 #
 # Copy to my-values.yaml, edit, and install with:
-#   helm install deer-flow deploy/helm/deer-flow -n deer-flow --create-namespace -f my-values.yaml
+#   helm install berkshire-agent deploy/helm/berkshire-agent -n berkshire-agent --create-namespace -f my-values.yaml
 
 # -- Target namespace (also used as the K8s sandbox namespace for provisioner-spawned Pods).
-namespace: deer-flow
+namespace: berkshire-agent
 
-# -- Image registry & tag for the three DeerFlow images you build+push.
+# -- Image registry & tag for the three BerkshireAgent images you build+push.
 #    Required: set `registry` to your registry (e.g. ghcr.io/yourorg).
 image:
   registry: ""              # REQUIRED, e.g. ghcr.io/yourorg
@@ -16,12 +16,12 @@ image:
   pullSecrets: []
 
   # Image names match what .github/workflows/container.yaml publishes on GHCR
-  # as ${repository}-<name> (e.g. ghcr.io/<owner>/deer-flow-backend). Set
+  # as ${repository}-<name> (e.g. ghcr.io/<owner>/berkshire-agent-backend). Set
   # `registry` to the owner prefix (e.g. ghcr.io/<owner>) and `tag` to consume
   # the published images.
-  gatewayImage: deer-flow-backend
-  frontendImage: deer-flow-frontend
-  provisionerImage: deer-flow-provisioner
+  gatewayImage: berkshire-agent-backend
+  frontendImage: berkshire-agent-frontend
+  provisionerImage: berkshire-agent-provisioner
 
 # -- Gateway (backend) deployment.
 gateway:
@@ -199,7 +199,7 @@ redis:
     #    / Sealed Secrets so the URL never appears in values files.
     existingSecret: ""
 
-# -- Persistent volume for runtime state (.deer-flow): sqlite DB, memory,
+# -- Persistent volume for runtime state (.berkshire-agent): sqlite DB, memory,
 #    custom agents, mutable extensions_config.json, and per-thread user-data.
 #    Also mounted (PVC mode) into provisioner-spawned sandbox Pods. When
 #    disabled, Gateway runtime state uses a pod-local emptyDir instead.
@@ -233,7 +233,7 @@ existingSecret: ""
 ingress:
   enabled: true
   className: "nginx"
-  host: "deer-flow.example.com"
+  host: "berkshire-agent.example.com"
   annotations:
     # Allows a 100 MiB .skill archive plus multipart framing at the outer ingress.
     nginx.ingress.kubernetes.io/proxy-body-size: "101m"
@@ -246,7 +246,7 @@ ingress:
     secretName: ""
     # hosts: []   # defaults to [ingress.host]
 
-# -- DeerFlow config.yaml content. Secrets MUST stay as $VAR references — never
+# -- BerkshireAgent config.yaml content. Secrets MUST stay as $VAR references — never
 #    inline literal secret values here. The default enables provisioner sandbox.
 config: |
   config_version: 50
@@ -403,7 +403,7 @@ config: |
       group: bash
       use: deerflow.sandbox.tools:bash_tool
 
-# -- Initial DeerFlow extensions_config.json content (MCP servers + skill
+# -- Initial BerkshireAgent extensions_config.json content (MCP servers + skill
 #    state). The Gateway copies this ConfigMap seed into its writable home
 #    volume only when no runtime file exists. With persistence enabled, API
 #    updates and the original seed survive pod replacement and Helm upgrades;

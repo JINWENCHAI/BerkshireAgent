@@ -1,6 +1,6 @@
-# DeerFlow Release SOP
+# BerkshireAgent Release SOP
 
-Standard operating procedure for cutting a DeerFlow release. The goal is a
+Standard operating procedure for cutting a BerkshireAgent release. The goal is a
 self-consistent release: **every merged milestone PR is documented in English
 *and* Chinese**, a curated release-notes file ships, and the tree is bumped to
 the next development version.
@@ -16,7 +16,7 @@ the next development version.
 
 ```bash
 VER=2.0.0
-REPO=bytedance/deer-flow
+REPO=bytedance/berkshire-agent
 
 # All merged milestone PRs: number, title, labels
 gh search prs --repo $REPO --milestone "$VER" --merged --limit 300 \
@@ -63,13 +63,13 @@ gh search prs --repo $REPO --milestone "$VER" --merged --limit 300 \
    `wc -l` total from step 1.
 
 4. **Rebuild the reference block** — keep everything up to and including the
-   `[2.0.0]: https://github.com/bytedance/deer-flow/releases/tag/v2.0.0` line,
+   `[2.0.0]: https://github.com/bytedance/berkshire-agent/releases/tag/v2.0.0` line,
    then append a globally-sorted `[#NNNN]: …/pull/NNNN` list for every cited PR:
 
    ```bash
    { cat /tmp/changelog_prs.txt; comm -23 /tmp/milestone_prs.txt /tmp/changelog_prs.txt; } \
      | sort -n | uniq | while read n; do
-       printf '[#%s]: https://github.com/bytedance/deer-flow/pull/%s\n' "$n" "$n"
+       printf '[#%s]: https://github.com/bytedance/berkshire-agent/pull/%s\n' "$n" "$n"
      done > /tmp/refs.txt
    # then splice /tmp/refs.txt after the release-tag line
    ```
@@ -96,7 +96,7 @@ python3 - <<'PY'
 import re
 def analyze(path):
     t = open(path).read()
-    m = "[2.0.0]: https://github.com/bytedance/deer-flow/releases/tag/v2.0.0"
+    m = "[2.0.0]: https://github.com/bytedance/berkshire-agent/releases/tag/v2.0.0"
     body, _, refs = t.partition(m)
     cited   = set(int(n) for n in re.findall(r"\[#(\d+)\]", body))
     defined = set(int(n) for n in re.findall(r"^\[#(\d+)\]:", refs, re.M))
@@ -124,10 +124,10 @@ The project version lives in **five** places:
 
 | File | What |
 |------|------|
-| `backend/pyproject.toml` | root `deer-flow` |
+| `backend/pyproject.toml` | root `berkshire-agent` |
 | `backend/packages/harness/pyproject.toml` | `deerflow-harness` |
-| `frontend/package.json` | `deer-flow-frontend` |
-| `backend/uv.lock` | `deer-flow` + `deerflow-harness` `[[package]]` entries |
+| `frontend/package.json` | `berkshire-agent-frontend` |
+| `backend/uv.lock` | `berkshire-agent` + `deerflow-harness` `[[package]]` entries |
 
 > `frontend/pnpm-lock.yaml` does **not** store our project version — leave it
 > alone (its `2.0.0` hits are third-party deps like `cffi`).

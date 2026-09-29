@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a redacted DeerFlow support bundle for community troubleshooting."""
+"""Create a redacted BerkshireAgent support bundle for community troubleshooting."""
 
 from __future__ import annotations
 
@@ -258,10 +258,10 @@ def _validate_thread_id(thread_id: str) -> None:
 def _candidate_thread_data_dirs(project_root: Path, thread_id: str) -> list[Path]:
     _validate_thread_id(thread_id)
     candidates = [
-        project_root / ".deer-flow" / "threads" / thread_id / "user-data",
-        project_root / "backend" / ".deer-flow" / "threads" / thread_id / "user-data",
+        project_root / ".berkshire-agent" / "threads" / thread_id / "user-data",
+        project_root / "backend" / ".berkshire-agent" / "threads" / thread_id / "user-data",
     ]
-    for base in (project_root / ".deer-flow" / "users", project_root / "backend" / ".deer-flow" / "users"):
+    for base in (project_root / ".berkshire-agent" / "users", project_root / "backend" / ".berkshire-agent" / "users"):
         if base.exists():
             candidates.extend(user_dir / "threads" / thread_id / "user-data" for user_dir in base.iterdir() if user_dir.is_dir())
     return candidates
@@ -569,7 +569,7 @@ def render_issue_summary(triage: dict[str, Any]) -> str:
     doctor = triage["doctor"]
     versions = triage["versions"]
     lines = [
-        "## DeerFlow support bundle summary",
+        "## BerkshireAgent support bundle summary",
         "",
         f"- Triage status: {triage['status']}",
         f"- Active signals: {', '.join(triage['active_signals']) or 'none'}",
@@ -650,7 +650,7 @@ def render_ai_issue_draft(triage: dict[str, Any], issue_summary: str, doctor: di
     lines = [
         "# AI issue draft",
         "",
-        "Use this when a coding agent or AI assistant files a DeerFlow bug report.",
+        "Use this when a coding agent or AI assistant files a BerkshireAgent bug report.",
         "Do not file this issue until every REQUIRED placeholder is replaced.",
         "Do not invent if unknown; ask the reporter for missing reproduction facts instead.",
         "",
@@ -660,7 +660,7 @@ def render_ai_issue_draft(triage: dict[str, Any], issue_summary: str, doctor: di
         "",
         "### Before you start",
         "",
-        "- [ ] I searched [existing issues](https://github.com/bytedance/deer-flow/issues?q=is%3Aissue) and this is not a duplicate.",
+        "- [ ] I searched [existing issues](https://github.com/bytedance/berkshire-agent/issues?q=is%3Aissue) and this is not a duplicate.",
         "- [ ] I can reproduce this on the latest `main`.",
         "",
         "### Problem summary",
@@ -696,7 +696,7 @@ def render_ai_issue_draft(triage: dict[str, Any], issue_summary: str, doctor: di
         _doctor_excerpt(doctor),
         "```",
         "",
-        "### How are you running DeerFlow?",
+        "### How are you running BerkshireAgent?",
         "",
         "<REQUIRED: choose Local, Docker, CI, or Other>",
         "",
@@ -746,7 +746,7 @@ def render_ai_issue_draft(triage: dict[str, Any], issue_summary: str, doctor: di
 def render_bundle_readme(triage: dict[str, Any]) -> str:
     """Render the support bundle README."""
     lines = [
-        "# DeerFlow Support Bundle",
+        "# BerkshireAgent Support Bundle",
         "",
         "## Start here",
         "",
@@ -787,7 +787,7 @@ def render_bundle_readme(triage: dict[str, Any]) -> str:
 
 def _default_out_path(project_root: Path) -> Path:
     timestamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
-    return project_root / ".deer-flow" / "support-bundles" / f"deer-flow-support-bundle-{timestamp}.zip"
+    return project_root / ".berkshire-agent" / "support-bundles" / f"berkshire-agent-support-bundle-{timestamp}.zip"
 
 
 def _write_json(zf: zipfile.ZipFile, name: str, data: Any) -> None:
@@ -881,7 +881,7 @@ def create_support_bundle(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     repo_root = Path(__file__).resolve().parents[1]
-    parser.add_argument("--project-root", type=Path, default=repo_root, help="DeerFlow project root")
+    parser.add_argument("--project-root", type=Path, default=repo_root, help="BerkshireAgent project root")
     parser.add_argument("--config", type=Path, default=None, help="Path to config.yaml")
     parser.add_argument("--extensions-config", type=Path, default=None, help="Path to extensions_config.json")
     parser.add_argument("--thread-id", default=None, help="Optional thread id to include file manifests for")

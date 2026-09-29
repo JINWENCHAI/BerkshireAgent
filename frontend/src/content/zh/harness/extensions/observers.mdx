@@ -1,18 +1,18 @@
 ---
 title: 生命周期与观察者
-description: 四种通知类贡献：每次 Lead 运行和子 Agent 的任务生命周期、DeerFlow 自己发起的系统模型调用、每个组装完成的 Agent 的描述与指纹，以及每次上下文压缩的事件。涵盖各自的时机、载荷、存储和失败行为。
+description: 四种通知类贡献：每次 Lead 运行和子 Agent 的任务生命周期、BerkshireAgent 自己发起的系统模型调用、每个组装完成的 Agent 的描述与指纹，以及每次上下文压缩的事件。涵盖各自的时机、载荷、存储和失败行为。
 ---
 
 import { Callout } from "nextra/components";
 
 # 生命周期与观察者
 
-中间件看到的是 Agent 内部的每次模型调用和工具调用。本章的四种贡献看到的是这些调用周围和旁边的事件：任务开始与结束、DeerFlow 自己的模型调用、Agent 被组装、上下文被压缩。它们都无法改变宿主的行为，并且都按[运行时模型](/docs/harness/extensions/runtime)中的规则故障放行。
+中间件看到的是 Agent 内部的每次模型调用和工具调用。本章的四种贡献看到的是这些调用周围和旁边的事件：任务开始与结束、BerkshireAgent 自己的模型调用、Agent 被组装、上下文被压缩。它们都无法改变宿主的行为，并且都按[运行时模型](/docs/harness/extensions/runtime)中的规则故障放行。
 
 | 贡献                         | 注册方法                                 | 调用时机                           | 同步还是异步       | 收到的存储          |
 | ---------------------------- | ---------------------------------------- | ---------------------------------- | ------------------ | ------------------- |
 | `TaskLifecycleContributor`   | `registry.task_lifecycle()`              | 每次 Lead 运行和子 Agent 的开始与结束 | 异步，被等待     | 任务存储            |
-| `SystemModelCallObserver`    | `registry.system_model_observer()`       | 每次 DeerFlow 自有模型调用之后     | 异步               | 任务存储，或分离存储 |
+| `SystemModelCallObserver`    | `registry.system_model_observer()`       | 每次 BerkshireAgent 自有模型调用之后     | 异步               | 任务存储，或分离存储 |
 | `AgentAssemblyObserver`      | `registry.agent_assembly_observer()`     | 每次 Agent 构建结束时              | **同步**           | 仅应用存储          |
 | `ContextCompactionObserver`  | `registry.context_compaction_observer()` | 每次摘要压缩之后                   | 异步，即发即弃     | 分离存储            |
 
@@ -138,7 +138,7 @@ class SystemModelCallObserver(Protocol):
     ) -> None: ...
 ```
 
-DeerFlow 会为自己发起一些模型调用，这些调用不经过 Agent 的模型调用链，所以中间件看不到。这个观察者报告它们：
+BerkshireAgent 会为自己发起一些模型调用，这些调用不经过 Agent 的模型调用链，所以中间件看不到。这个观察者报告它们：
 
 | `kind`          | 调用                                   | 报告方式                         | 存储              |
 | --------------- | -------------------------------------- | -------------------------------- | ----------------- |

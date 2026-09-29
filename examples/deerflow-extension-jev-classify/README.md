@@ -6,11 +6,11 @@ backend is chosen by the deployment: **Jev** (TypeSafe System One, one typed
 `choice` question per item) or an **OpenAI-compatible chat endpoint** (one JSON
 label list per batch). It uses extension API 0.2.2 and the full-stack plugin
 catalog, with no host code changes and no browser code. The measurements behind
-the design are in [RFC #5653](https://github.com/bytedance/deer-flow/issues/5653).
+the design are in [RFC #5653](https://github.com/bytedance/berkshire-agent/issues/5653).
 
 ## Install and configure
 
-From `backend/` in a compatible DeerFlow deployment:
+From `backend/` in a compatible BerkshireAgent deployment:
 
 ```sh
 uv run deerflow extensions install ../examples/deerflow-extension-jev-classify --yes
@@ -152,7 +152,7 @@ Optional deployment fields (all validated; unknown fields rejected):
 
 The chat backend holds its own key because the extension API has no host model
 capability yet. Once the host model invocation proposed in
-[#5679](https://github.com/bytedance/deer-flow/issues/5679) exists, that backend
+[#5679](https://github.com/bytedance/berkshire-agent/issues/5679) exists, that backend
 is the place to switch to it; the Jev backend stays plugin-owned by design.
 
 ## Verify

@@ -31,7 +31,7 @@ describe("speech recognition helpers", () => {
     expect(getSpeechRecognitionConstructor({})).toBeNull();
   });
 
-  it("maps DeerFlow locales to browser recognition locales", () => {
+  it("maps BerkshireAgent locales to browser recognition locales", () => {
     expect(getSpeechRecognitionLanguage("zh-CN")).toBe("zh-CN");
     expect(getSpeechRecognitionLanguage("zh-Hans")).toBe("zh-CN");
     expect(getSpeechRecognitionLanguage("en-US")).toBe("en-US");

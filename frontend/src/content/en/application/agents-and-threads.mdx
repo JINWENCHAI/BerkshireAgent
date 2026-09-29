@@ -1,13 +1,13 @@
 ---
 title: Agents and Threads
-description: DeerFlow App supports multiple named agents and maintains conversation state across sessions through threads and checkpointing.
+description: BerkshireAgent App supports multiple named agents and maintains conversation state across sessions through threads and checkpointing.
 ---
 
 import { Callout, Steps } from "nextra/components";
 
 # Agents and Threads
 
-DeerFlow App supports multiple named agents and maintains conversation state across sessions through threads and checkpointing.
+BerkshireAgent App supports multiple named agents and maintains conversation state across sessions through threads and checkpointing.
 
 ## Agents
 
@@ -34,7 +34,7 @@ Both paths require `agents_api.enabled: true` in `config.yaml`. The management A
 
 The `name` must match `^[A-Za-z0-9-]+$` and be unique per user. The backend stores it in lowercase. Use `/api/agents/check?name={name}` to validate a name and check whether it is available before creating the agent.
 
-With the default `agent_storage.backend: file`, agent configuration is stored per user at `{base_dir}/users/{user_id}/agents/{name}/config.yaml`, where `{base_dir}` is `DEER_FLOW_HOME` (default: `backend/.deer-flow`). The older `{base_dir}/agents/{name}/` layout remains a read-only fallback for installations that have not yet run `backend/scripts/migrate_user_isolation.py`. With `agent_storage.backend: db`, definitions are stored in the shared SQL database instead; it requires `database.backend: sqlite` or `database.backend: postgres`. Use `backend/scripts/migrate_agents_to_db.py` to migrate existing file-backed definitions.
+With the default `agent_storage.backend: file`, agent configuration is stored per user at `{base_dir}/users/{user_id}/agents/{name}/config.yaml`, where `{base_dir}` is `DEER_FLOW_HOME` (default: `backend/.berkshire-agent`). The older `{base_dir}/agents/{name}/` layout remains a read-only fallback for installations that have not yet run `backend/scripts/migrate_user_isolation.py`. With `agent_storage.backend: db`, definitions are stored in the shared SQL database instead; it requires `database.backend: sqlite` or `database.backend: postgres`. Use `backend/scripts/migrate_agents_to_db.py` to migrate existing file-backed definitions.
 
 For the file backend, you can edit these files directly; changes are picked up on the agent's next invocation, with no restart needed.
 
@@ -101,7 +101,7 @@ The `database` section controls the default persistence backend for thread state
 # SQLite (local development and single-user deployments)
 database:
   backend: sqlite
-  sqlite_dir: .deer-flow/data
+  sqlite_dir: .berkshire-agent/data
 
 # Postgres (production and multi-user deployments)
 # database:
@@ -128,12 +128,12 @@ LangGraph's `DeltaChannel` — is a separate switch,
 Working files produced during a thread (uploads, intermediate files, output artifacts) are stored under:
 
 ```
-backend/.deer-flow/threads/{thread_id}/user-data/
+backend/.berkshire-agent/threads/{thread_id}/user-data/
 ```
 
 This directory is mounted into the sandbox as `/mnt/user-data/` for the agent to read and write.
 
-In Docker deployments, this path is bind-mounted from the host so that thread data persists across container restarts. Set `DEER_FLOW_ROOT` to the absolute path of your deer-flow repository root to ensure the correct host path is used.
+In Docker deployments, this path is bind-mounted from the host so that thread data persists across container restarts. Set `DEER_FLOW_ROOT` to the absolute path of your berkshire-agent repository root to ensure the correct host path is used.
 
 <Cards num={2}>
   <Cards.Card

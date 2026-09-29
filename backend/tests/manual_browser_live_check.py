@@ -6,7 +6,7 @@ NOT a unit test. Run manually with DEEPSEEK_API_KEY in the environment:
 
 It:
   1. serves a tiny local HTML form,
-  2. builds an isolated DeerFlow config (DeepSeek model + browser tool group),
+  2. builds an isolated BerkshireAgent config (DeepSeek model + browser tool group),
   3. runs a real agent turn that must navigate, type, submit, and read the result,
   4. asserts the agent-visible tool trace shows the browser loop actually ran.
 """
@@ -19,7 +19,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
-FORM_PAGE = """<!doctype html><html><head><title>DeerFlow Browser Test</title></head>
+FORM_PAGE = """<!doctype html><html><head><title>BerkshireAgent Browser Test</title></head>
 <body>
 <h1>Sign-in demo</h1>
 <form method="GET" action="/welcome">
@@ -127,14 +127,14 @@ def main() -> int:
     base = f"http://127.0.0.1:{port}/"
     tmpdir = Path(tempfile.mkdtemp(prefix="deerflow-browser-live-"))
     try:
-        from deerflow.client import DeerFlowClient
+        from deerflow.client import BerkshireAgentClient
 
         config_path = _write_config(tmpdir)
         # Make config resolution deterministic: get_available_tools() re-resolves
         # via get_app_config(), which would otherwise pick up a project-root
         # config.yaml. DEER_FLOW_CONFIG_PATH is resolution priority #2.
         os.environ["DEER_FLOW_CONFIG_PATH"] = str(config_path)
-        client = DeerFlowClient(config_path=str(config_path))
+        client = BerkshireAgentClient(config_path=str(config_path))
 
         prompt = (
             f"Use the browser tools to complete this task. "

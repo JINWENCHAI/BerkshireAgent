@@ -57,7 +57,7 @@ def _deep_merge_dicts(base: dict | None, override: dict) -> dict:
 
 
 # The two spellings of the vLLM/Qwen chat-template thinking switch: the legacy
-# ``thinking`` alias DeerFlow documented first and ``enable_thinking``, which
+# ``thinking`` alias BerkshireAgent documented first and ``enable_thinking``, which
 # vLLM's Qwen reasoning parser reads. ``VllmChatModel`` maps the alias onto
 # ``enable_thinking`` just before sending; other OpenAI-compatible classes
 # forward both keys as written.
@@ -396,7 +396,7 @@ def _apply_stream_chunk_timeout_default(model_class: type, model_settings_from_c
     """Inject a generous ``stream_chunk_timeout`` for OpenAI-compatible clients.
 
     ``stream_chunk_timeout`` is a field of langchain-openai's ``BaseChatOpenAI``, so
-    it is accepted by ``ChatOpenAI`` and by every DeerFlow provider that subclasses
+    it is accepted by ``ChatOpenAI`` and by every BerkshireAgent provider that subclasses
     it: ``PatchedChatOpenAI`` plus the self-hosted / reasoning adapters
     ``VllmChatModel``, ``MindIEChatModel``, ``PatchedChatDeepSeek``,
     ``PatchedChatMiMo``, ``PatchedChatStepFun`` and ``PatchedChatMiniMax``. We gate on

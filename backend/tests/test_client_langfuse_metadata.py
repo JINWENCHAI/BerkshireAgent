@@ -1,8 +1,8 @@
-"""Tests for DeerFlowClient's graph-root tracing wiring.
+"""Tests for BerkshireAgentClient's graph-root tracing wiring.
 
 Regression coverage for the Copilot review on PR #2944: when the title
 and summarization middlewares request ``attach_tracing=False`` we must
-make sure ``DeerFlowClient`` injects the tracing callbacks at the graph
+make sure ``BerkshireAgentClient`` injects the tracing callbacks at the graph
 invocation root instead, otherwise those middlewares produce untraced
 LLM calls.
 """
@@ -14,7 +14,7 @@ from typing import Any
 
 import pytest
 
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 from deerflow.config.authorization_config import AuthorizationConfig
 from deerflow.trace_context import DEERFLOW_TRACE_METADATA_KEY, request_trace_context
 
@@ -56,11 +56,11 @@ def _stub_agent_creation(monkeypatch, fake_agent: _FakeAgent) -> dict[str, Any]:
         self._agent = fake_agent
         self._agent_config_key = ("stub",)
 
-    monkeypatch.setattr(DeerFlowClient, "_ensure_agent", _stub_ensure_agent)
+    monkeypatch.setattr(BerkshireAgentClient, "_ensure_agent", _stub_ensure_agent)
     return captured
 
 
-def _make_client(_monkeypatch) -> DeerFlowClient:
+def _make_client(_monkeypatch) -> BerkshireAgentClient:
     """Build a client without going through ``__init__`` so we never load
     config.yaml or perform any other side-effectful startup work.
     """
@@ -68,7 +68,7 @@ def _make_client(_monkeypatch) -> DeerFlowClient:
         models=[SimpleNamespace(name="stub-model")],
         authorization=AuthorizationConfig(enabled=False),
     )
-    client = DeerFlowClient.__new__(DeerFlowClient)
+    client = BerkshireAgentClient.__new__(BerkshireAgentClient)
     client._app_config = fake_app_config
     client._checkpoint_channel_mode = "full"
     client._extensions_config = None
@@ -130,7 +130,7 @@ def test_stream_tags_the_effective_default_model(monkeypatch):
         self._effective_model_name = "stub-model"
         self._agent = fake_agent
 
-    monkeypatch.setattr(DeerFlowClient, "_ensure_agent", ensure_agent)
+    monkeypatch.setattr(BerkshireAgentClient, "_ensure_agent", ensure_agent)
     client = _make_client(monkeypatch)
     client._model_name = None
 
@@ -170,7 +170,7 @@ def test_stream_preserves_caller_metadata_overrides(monkeypatch):
 
     # Drive stream with a pre-populated metadata so the worker-equivalent
     # ``setdefault`` semantics are exercised.
-    original_get_config = DeerFlowClient._get_runnable_config
+    original_get_config = BerkshireAgentClient._get_runnable_config
 
     def patched_get_runnable_config(self, thread_id, **overrides):
         cfg = original_get_config(self, thread_id, **overrides)
@@ -181,7 +181,7 @@ def test_stream_preserves_caller_metadata_overrides(monkeypatch):
         }
         return cfg
 
-    monkeypatch.setattr(DeerFlowClient, "_get_runnable_config", patched_get_runnable_config)
+    monkeypatch.setattr(BerkshireAgentClient, "_get_runnable_config", patched_get_runnable_config)
     with request_trace_context("client-trace-3"):
         list(client.stream("hi", thread_id="thread-client-3"))
 

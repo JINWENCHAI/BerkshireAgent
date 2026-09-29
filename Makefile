@@ -1,4 +1,4 @@
-# DeerFlow - Unified Development Environment
+# BerkshireAgent - Unified Development Environment
 
 .PHONY: help config config-upgrade check check-agent-guidance install extension-install extension-upgrade extension-list extension-enable extension-disable extension-remove setup doctor support-bundle detect-thread-boundaries detect-blocking-io dev dev-daemon start start-daemon nginx stop up down prod-logs clean docker-init docker-start docker-stop docker-logs docker-logs-frontend docker-logs-gateway docker-logs-redis setup-sandbox
 
@@ -22,7 +22,7 @@ endif
 FRONTEND_PNPM = $(PYTHON) ../scripts/pnpm.py
 
 help:
-	@echo "DeerFlow Development Commands:"
+	@echo "BerkshireAgent Development Commands:"
 	@echo "  make setup           - Interactive setup wizard (recommended for new users)"
 	@echo "  make doctor          - Check configuration and system requirements"
 	@echo "  make support-bundle  - Create a redacted issue summary, AI draft, and evidence bundle"
@@ -73,7 +73,7 @@ support-bundle:
 	@$(BACKEND_UV_RUN) python ../scripts/support_bundle.py --include-doctor
 
 detect-thread-boundaries:
-	@$(BACKEND_UV_RUN) python ../scripts/detect_thread_boundaries.py --json-output ../.deer-flow/thread-boundary-inventory.json
+	@$(BACKEND_UV_RUN) python ../scripts/detect_thread_boundaries.py --json-output ../.berkshire-agent/thread-boundary-inventory.json
 
 detect-blocking-io:
 	@$(MAKE) -C backend detect-blocking-io
@@ -175,7 +175,7 @@ stop:
 # Clean up
 clean: stop
 	@echo "Cleaning up..."
-	@-rm -rf backend/.deer-flow 2>/dev/null || true
+	@-rm -rf backend/.berkshire-agent 2>/dev/null || true
 	@-rm -rf logs/*.log 2>/dev/null || true
 	@echo "✓ Cleanup complete"
 

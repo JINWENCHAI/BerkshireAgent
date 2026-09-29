@@ -203,7 +203,7 @@ def test_app_config_defaults_missing_database_to_sqlite(tmp_path, monkeypatch):
     config = AppConfig.from_file(str(config_path))
 
     assert config.database.backend == "sqlite"
-    assert config.database.sqlite_dir == ".deer-flow/data"
+    assert config.database.sqlite_dir == ".berkshire-agent/data"
 
 
 def test_app_config_preserves_config_yaml_extension_middlewares(tmp_path, monkeypatch):
@@ -329,7 +329,7 @@ def test_app_config_defaults_empty_database_to_sqlite(tmp_path, monkeypatch):
     config = AppConfig.from_file(str(config_path))
 
     assert config.database.backend == "sqlite"
-    assert config.database.sqlite_dir == ".deer-flow/data"
+    assert config.database.sqlite_dir == ".berkshire-agent/data"
 
 
 def test_app_config_coerces_commented_out_list_sections(tmp_path, monkeypatch):

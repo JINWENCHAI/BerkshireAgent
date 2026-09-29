@@ -60,7 +60,7 @@ def _make_local_backend():
     return LocalContainerBackend(
         image="test-image:latest",
         base_port=8080,
-        container_prefix="deer-flow-sandbox",
+        container_prefix="berkshire-agent-sandbox",
         config_mounts=[],
         environment={},
     )
@@ -117,10 +117,10 @@ def test_list_running_returns_containers(monkeypatch):
 
     _mock_ps_and_inspect(
         monkeypatch,
-        ps_output="deer-flow-sandbox-abc12345\ndeer-flow-sandbox-def67890\n",
+        ps_output="berkshire-agent-sandbox-abc12345\nberkshire-agent-sandbox-def67890\n",
         inspect_payload=[
-            _make_inspect_entry("deer-flow-sandbox-abc12345", "2026-04-08T01:22:50.000000000Z", "8081"),
-            _make_inspect_entry("deer-flow-sandbox-def67890", "2026-04-08T02:22:50.000000000Z", "8082"),
+            _make_inspect_entry("berkshire-agent-sandbox-abc12345", "2026-04-08T01:22:50.000000000Z", "8081"),
+            _make_inspect_entry("berkshire-agent-sandbox-def67890", "2026-04-08T02:22:50.000000000Z", "8082"),
         ],
     )
 
@@ -150,9 +150,9 @@ def test_list_running_skips_non_matching_names(monkeypatch):
 
     _mock_ps_and_inspect(
         monkeypatch,
-        ps_output="deer-flow-sandbox-abc12345\nsome-other-container\n",
+        ps_output="berkshire-agent-sandbox-abc12345\nsome-other-container\n",
         inspect_payload=[
-            _make_inspect_entry("deer-flow-sandbox-abc12345", "2026-04-08T01:22:50Z", "8081"),
+            _make_inspect_entry("berkshire-agent-sandbox-abc12345", "2026-04-08T01:22:50Z", "8081"),
         ],
     )
 
@@ -168,9 +168,9 @@ def test_list_running_includes_containers_without_port(monkeypatch):
 
     _mock_ps_and_inspect(
         monkeypatch,
-        ps_output="deer-flow-sandbox-abc12345\n",
+        ps_output="berkshire-agent-sandbox-abc12345\n",
         inspect_payload=[
-            _make_inspect_entry("deer-flow-sandbox-abc12345", "2026-04-08T01:22:50Z", host_port=None),
+            _make_inspect_entry("berkshire-agent-sandbox-abc12345", "2026-04-08T01:22:50Z", host_port=None),
         ],
     )
 
@@ -207,7 +207,7 @@ def test_list_running_handles_inspect_failure(monkeypatch):
 
     _mock_ps_and_inspect(
         monkeypatch,
-        ps_output="deer-flow-sandbox-abc12345\n",
+        ps_output="berkshire-agent-sandbox-abc12345\n",
         inspect_payload=None,  # Signals inspect failure
     )
 
@@ -225,7 +225,7 @@ def test_list_running_handles_malformed_inspect_json(monkeypatch):
         result = MagicMock()
         if len(cmd) >= 2 and cmd[1] == "ps":
             result.returncode = 0
-            result.stdout = "deer-flow-sandbox-abc12345\n"
+            result.stdout = "berkshire-agent-sandbox-abc12345\n"
             result.stderr = ""
         else:
             result.returncode = 0
@@ -251,19 +251,19 @@ def test_list_running_uses_single_batch_inspect_call(monkeypatch):
         result = MagicMock()
         if len(cmd) >= 2 and cmd[1] == "ps":
             result.returncode = 0
-            result.stdout = "deer-flow-sandbox-a\ndeer-flow-sandbox-b\ndeer-flow-sandbox-c\n"
+            result.stdout = "berkshire-agent-sandbox-a\nberkshire-agent-sandbox-b\nberkshire-agent-sandbox-c\n"
             result.stderr = ""
             return result
         if len(cmd) >= 2 and cmd[1] == "inspect":
             inspect_call_count["count"] += 1
             # Expect all three names passed in a single call
-            assert cmd[2:] == ["deer-flow-sandbox-a", "deer-flow-sandbox-b", "deer-flow-sandbox-c"]
+            assert cmd[2:] == ["berkshire-agent-sandbox-a", "berkshire-agent-sandbox-b", "berkshire-agent-sandbox-c"]
             result.returncode = 0
             result.stdout = json.dumps(
                 [
-                    _make_inspect_entry("deer-flow-sandbox-a", "2026-04-08T01:22:50Z", "8081"),
-                    _make_inspect_entry("deer-flow-sandbox-b", "2026-04-08T01:22:50Z", "8082"),
-                    _make_inspect_entry("deer-flow-sandbox-c", "2026-04-08T01:22:50Z", "8083"),
+                    _make_inspect_entry("berkshire-agent-sandbox-a", "2026-04-08T01:22:50Z", "8081"),
+                    _make_inspect_entry("berkshire-agent-sandbox-b", "2026-04-08T01:22:50Z", "8082"),
+                    _make_inspect_entry("berkshire-agent-sandbox-c", "2026-04-08T01:22:50Z", "8083"),
                 ]
             )
             result.stderr = ""
@@ -473,7 +473,7 @@ def test_reconcile_adopts_old_containers_into_warm_pool(tmp_path):
     old_info = SandboxInfo(
         sandbox_id="old12345",
         sandbox_url="http://localhost:8081",
-        container_name="deer-flow-sandbox-old12345",
+        container_name="berkshire-agent-sandbox-old12345",
         created_at=now - 1200,  # 20 minutes old, > 600s idle_timeout
     )
     provider._backend.list_running.return_value = [old_info]
@@ -493,7 +493,7 @@ def test_reconcile_adopts_young_containers(tmp_path):
     young_info = SandboxInfo(
         sandbox_id="young123",
         sandbox_url="http://localhost:8082",
-        container_name="deer-flow-sandbox-young123",
+        container_name="berkshire-agent-sandbox-young123",
         created_at=now - 60,  # 1 minute old, < 600s idle_timeout
     )
     provider._backend.list_running.return_value = [young_info]
@@ -514,13 +514,13 @@ def test_reconcile_mixed_containers_all_adopted(tmp_path):
     old_info = SandboxInfo(
         sandbox_id="old_one",
         sandbox_url="http://localhost:8081",
-        container_name="deer-flow-sandbox-old_one",
+        container_name="berkshire-agent-sandbox-old_one",
         created_at=now - 1200,
     )
     young_info = SandboxInfo(
         sandbox_id="young_one",
         sandbox_url="http://localhost:8082",
-        container_name="deer-flow-sandbox-young_one",
+        container_name="berkshire-agent-sandbox-young_one",
         created_at=now - 60,
     )
     provider._backend.list_running.return_value = [old_info, young_info]
@@ -540,7 +540,7 @@ def test_reconcile_skips_already_tracked_containers(tmp_path):
     existing_info = SandboxInfo(
         sandbox_id="existing1",
         sandbox_url="http://localhost:8081",
-        container_name="deer-flow-sandbox-existing1",
+        container_name="berkshire-agent-sandbox-existing1",
         created_at=now - 1200,
     )
     # Pre-populate _sandboxes to simulate already-tracked container
@@ -585,7 +585,7 @@ def test_reconcile_skips_container_owned_by_peer():
     info = SandboxInfo(
         sandbox_id="shared01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-shared01",
+        container_name="berkshire-agent-sandbox-shared01",
         created_at=now - 50,
     )
     worker_a._publish_ownership("shared01")
@@ -607,7 +607,7 @@ def test_reconcile_does_not_replace_mismatched_policy_while_peer_owns_container(
     info = SandboxInfo(
         sandbox_id="rolling01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-rolling01",
+        container_name="berkshire-agent-sandbox-rolling01",
         created_at=time.time() - 50,
         requires_replacement=True,
     )
@@ -629,7 +629,7 @@ def test_reconcile_replaces_mismatched_policy_after_orphan_grace_and_destroy_cla
     info = SandboxInfo(
         sandbox_id="rolling02",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-rolling02",
+        container_name="berkshire-agent-sandbox-rolling02",
         created_at=time.time() - 50,
         requires_replacement=True,
     )
@@ -668,7 +668,7 @@ def test_reconcile_does_not_replace_mismatched_policy_during_local_teardown():
     info = SandboxInfo(
         sandbox_id="rolling03",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-rolling03",
+        container_name="berkshire-agent-sandbox-rolling03",
         requires_replacement=True,
     )
     worker._backend.list_running.return_value = [info]
@@ -691,7 +691,7 @@ def test_discover_or_create_defers_mismatched_policy_owned_by_live_peer(tmp_path
     info = SandboxInfo(
         sandbox_id="rolling04",
         sandbox_url="",
-        container_name="deer-flow-sandbox-rolling04",
+        container_name="berkshire-agent-sandbox-rolling04",
         requires_replacement=True,
     )
     worker_a._publish_ownership(info.sandbox_id)
@@ -720,7 +720,7 @@ async def test_async_discover_or_create_defers_mismatched_policy_owned_by_live_p
     info = SandboxInfo(
         sandbox_id="rolling05",
         sandbox_url="",
-        container_name="deer-flow-sandbox-rolling05",
+        container_name="berkshire-agent-sandbox-rolling05",
         requires_replacement=True,
     )
     worker_a._publish_ownership(info.sandbox_id)
@@ -749,7 +749,7 @@ def test_idle_reap_does_not_destroy_peer_owned_warm_entry():
     info = SandboxInfo(
         sandbox_id="a99c8444",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-a99c8444",
+        container_name="berkshire-agent-sandbox-a99c8444",
         created_at=now - 50,
     )
     # Simulate the bad old path: B already has it in warm (or adopted wrongly).
@@ -782,7 +782,7 @@ def test_multi_worker_release_then_peer_reconcile_cannot_kill():
     info = SandboxInfo(
         sandbox_id=sid,
         sandbox_url="http://localhost:8080",
-        container_name=f"deer-flow-sandbox-{sid}",
+        container_name=f"berkshire-agent-sandbox-{sid}",
         created_at=time.time() - 50,
     )
     running[sid] = info
@@ -822,7 +822,7 @@ def test_expired_lease_lets_peer_adopt_crashed_owner_container():
     info = SandboxInfo(
         sandbox_id="crashed1",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-crashed1",
+        container_name="berkshire-agent-sandbox-crashed1",
         created_at=time.time() - 50,
     )
     dead._publish_ownership("crashed1")
@@ -865,7 +865,7 @@ def test_acquire_fails_closed_when_ownership_cannot_be_published():
     info = SandboxInfo(
         sandbox_id="new001",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-new001",
+        container_name="berkshire-agent-sandbox-new001",
         created_at=time.time(),
     )
 
@@ -887,7 +887,7 @@ def test_reuse_fails_closed_when_ownership_cannot_be_published():
     info = SandboxInfo(
         sandbox_id="sb1",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-sb1",
+        container_name="berkshire-agent-sandbox-sb1",
         created_at=time.time(),
     )
     worker._sandboxes["sb1"] = MagicMock()
@@ -912,7 +912,7 @@ def test_destroy_fails_closed_when_ownership_unknown():
     info = SandboxInfo(
         sandbox_id="unknown1",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-unknown1",
+        container_name="berkshire-agent-sandbox-unknown1",
         created_at=time.time() - 50,
     )
 
@@ -937,7 +937,7 @@ def test_reconcile_fails_closed_when_ownership_unknown():
     info = SandboxInfo(
         sandbox_id="unknown2",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-unknown2",
+        container_name="berkshire-agent-sandbox-unknown2",
         created_at=time.time() - 50,
     )
     worker._backend.list_running.return_value = [info]
@@ -1006,7 +1006,7 @@ def test_renewal_keeps_the_sandbox_when_the_store_cannot_answer():
     info = SandboxInfo(
         sandbox_id="live02",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-live02",
+        container_name="berkshire-agent-sandbox-live02",
         created_at=time.time(),
     )
     sandbox = MagicMock()
@@ -1157,7 +1157,7 @@ def test_renewal_covers_warm_entries_not_just_active():
     info = SandboxInfo(
         sandbox_id="warm01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-warm01",
+        container_name="berkshire-agent-sandbox-warm01",
         created_at=time.time(),
     )
     worker._sandboxes["active01"] = MagicMock()
@@ -1186,7 +1186,7 @@ def test_renewal_does_not_forget_a_warm_entry_mid_teardown():
     info = SandboxInfo(
         sandbox_id="warm-stop",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-warm-stop",
+        container_name="berkshire-agent-sandbox-warm-stop",
         created_at=time.time(),
     )
     worker._warm_pool["warm-stop"] = (info, time.time())
@@ -1243,7 +1243,7 @@ def test_lost_lease_drops_sandbox_without_destroying_container():
     info = SandboxInfo(
         sandbox_id="moved01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-moved01",
+        container_name="berkshire-agent-sandbox-moved01",
         created_at=time.time(),
     )
     sandbox = MagicMock()
@@ -1277,7 +1277,7 @@ def test_ownership_rollback_on_create_closes_the_client_it_drops():
     info = SandboxInfo(
         sandbox_id="new002",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-new002",
+        container_name="berkshire-agent-sandbox-new002",
         created_at=time.time(),
     )
 
@@ -1309,7 +1309,7 @@ def test_ownership_rollback_does_not_destroy_when_teardown_claim_is_unavailable(
     info = SandboxInfo(
         sandbox_id="new003",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-new003",
+        container_name="berkshire-agent-sandbox-new003",
         created_at=time.time(),
     )
 
@@ -1343,7 +1343,7 @@ def test_acquire_takes_over_ownership_so_a_thread_can_move_instances():
     info = SandboxInfo(
         sandbox_id="thread01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-thread01",
+        container_name="berkshire-agent-sandbox-thread01",
         created_at=time.time(),
     )
     worker_a._publish_ownership("thread01")
@@ -1368,7 +1368,7 @@ def test_store_losing_all_state_does_not_evict_live_sandboxes():
     info = SandboxInfo(
         sandbox_id="live01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-live01",
+        container_name="berkshire-agent-sandbox-live01",
         created_at=time.time(),
     )
     sandbox = MagicMock()
@@ -1406,7 +1406,7 @@ def test_peer_reconcile_after_state_loss_does_not_steal_a_live_container():
     info = SandboxInfo(
         sandbox_id="live01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-live01",
+        container_name="berkshire-agent-sandbox-live01",
         created_at=time.time(),
     )
     sandbox = MagicMock()
@@ -1451,7 +1451,7 @@ def test_adoption_grace_expires_so_a_truly_orphaned_container_is_still_adopted()
     info = SandboxInfo(
         sandbox_id="crashed1",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-crashed1",
+        container_name="berkshire-agent-sandbox-crashed1",
         created_at=time.time() - 50,
     )
     worker_b._backend.list_running.return_value = [info]
@@ -1487,7 +1487,7 @@ def test_adoption_grace_restarts_when_a_live_owner_republishes():
     info = SandboxInfo(
         sandbox_id="live01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-live01",
+        container_name="berkshire-agent-sandbox-live01",
         created_at=time.time(),
     )
     worker_b._backend.list_running.return_value = [info]
@@ -1532,7 +1532,7 @@ def test_acquire_refuses_a_container_a_peer_is_destroying():
     info = SandboxInfo(
         sandbox_id="dying01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-dying01",
+        container_name="berkshire-agent-sandbox-dying01",
         created_at=time.time(),
     )
 
@@ -1571,7 +1571,7 @@ def test_teardown_marker_is_held_for_a_stop_that_outlives_the_lease_ttl():
     info = SandboxInfo(
         sandbox_id="doomed1",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-doomed1",
+        container_name="berkshire-agent-sandbox-doomed1",
         created_at=time.time(),
     )
 
@@ -1630,7 +1630,7 @@ def test_unhealthy_drop_holds_the_teardown_marker_for_its_stop():
     info = SandboxInfo(
         sandbox_id="sick01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-sick01",
+        container_name="berkshire-agent-sandbox-sick01",
         created_at=time.time(),
     )
 
@@ -1682,7 +1682,7 @@ def test_destroy_holds_the_teardown_marker_for_its_stop():
     info = SandboxInfo(
         sandbox_id="doomed3",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-doomed3",
+        container_name="berkshire-agent-sandbox-doomed3",
         created_at=time.time(),
     )
 
@@ -1731,7 +1731,7 @@ def test_destroy_releases_the_teardown_marker_when_the_stop_fails():
     info = SandboxInfo(
         sandbox_id="boom01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-boom01",
+        container_name="berkshire-agent-sandbox-boom01",
         created_at=time.time(),
     )
     worker._sandboxes["boom01"] = MagicMock()
@@ -1847,7 +1847,7 @@ def test_teardown_release_waits_for_the_heartbeat_to_exit():
     info = SandboxInfo(
         sandbox_id="defer1",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-defer1",
+        container_name="berkshire-agent-sandbox-defer1",
         created_at=time.time(),
     )
 
@@ -1897,7 +1897,7 @@ def test_evict_keeps_the_warm_entry_when_the_claim_is_refused():
     info = SandboxInfo(
         sandbox_id="peer01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-peer01",
+        container_name="berkshire-agent-sandbox-peer01",
         created_at=time.time(),
     )
     worker_a._warm_pool["peer01"] = (info, time.time() - 5)
@@ -1926,7 +1926,7 @@ def test_reclaim_drops_a_container_a_peer_is_destroying():
     info = SandboxInfo(
         sandbox_id="dying02",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-dying02",
+        container_name="berkshire-agent-sandbox-dying02",
         created_at=time.time(),
     )
     worker_a._warm_pool["dying02"] = (info, time.time())
@@ -1959,7 +1959,7 @@ def test_created_sandbox_is_not_rolled_back_when_a_peer_is_destroying_its_id():
     info = SandboxInfo(
         sandbox_id="fresh01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-fresh01",
+        container_name="berkshire-agent-sandbox-fresh01",
         created_at=time.time(),
     )
     # A peer's teardown marker is still on this id when we finish creating.
@@ -2015,7 +2015,7 @@ def test_teardown_heartbeat_stops_when_the_stop_returns():
     info = SandboxInfo(
         sandbox_id="doomed2",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-doomed2",
+        container_name="berkshire-agent-sandbox-doomed2",
         created_at=time.time(),
     )
     worker_a._warm_pool["doomed2"] = (info, time.time())
@@ -2040,7 +2040,7 @@ def test_cached_sandbox_being_destroyed_is_dropped_not_reused():
     info = SandboxInfo(
         sandbox_id="dying02",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-dying02",
+        container_name="berkshire-agent-sandbox-dying02",
         created_at=time.time(),
     )
     sandbox = MagicMock()
@@ -2070,7 +2070,7 @@ def test_destroy_claims_before_untracking():
     info = SandboxInfo(
         sandbox_id="peer01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-peer01",
+        container_name="berkshire-agent-sandbox-peer01",
         created_at=time.time(),
     )
     sandbox = MagicMock()
@@ -2094,7 +2094,7 @@ def test_refused_idle_destroy_keeps_the_warm_entry():
     info = SandboxInfo(
         sandbox_id="warmpeer",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-warmpeer",
+        container_name="berkshire-agent-sandbox-warmpeer",
         created_at=time.time(),
     )
     worker_a._warm_pool["warmpeer"] = (info, time.time() - 999)
@@ -2114,7 +2114,7 @@ def test_unhealthy_sandbox_owned_by_peer_is_not_destroyed():
     info = SandboxInfo(
         sandbox_id="sick01",
         sandbox_url="http://localhost:8080",
-        container_name="deer-flow-sandbox-sick01",
+        container_name="berkshire-agent-sandbox-sick01",
         created_at=time.time(),
     )
     worker_a._sandboxes["sick01"] = MagicMock()
@@ -2256,7 +2256,7 @@ def _info(sandbox_id, *, created_at=None):
     return SandboxInfo(
         sandbox_id=sandbox_id,
         sandbox_url="http://localhost:8080",
-        container_name=f"deer-flow-sandbox-{sandbox_id}",
+        container_name=f"berkshire-agent-sandbox-{sandbox_id}",
         created_at=time.time() if created_at is None else created_at,
     )
 

@@ -40,12 +40,12 @@ def test_default_runtime_paths_resolve_from_current_project(tmp_path: Path, monk
 
     assert AppConfig.resolve_config_path() == tmp_path / "config.yaml"
     assert ExtensionsConfig.resolve_config_path() == tmp_path / "extensions_config.json"
-    assert Paths().base_dir == tmp_path / ".deer-flow"
+    assert Paths().base_dir == tmp_path / ".berkshire-agent"
     assert SkillsConfig().get_skills_path() == tmp_path / "skills"
     assert get_or_new_skill_storage(skills_path=SkillsConfig().get_skills_path()).get_skills_root_path() == tmp_path / "skills"
 
 
-def test_deer_flow_project_root_overrides_current_directory(tmp_path: Path, monkeypatch):
+def test_berkshire_agent_project_root_overrides_current_directory(tmp_path: Path, monkeypatch):
     _clear_path_env(monkeypatch)
     project_root = tmp_path / "project"
     other_cwd = tmp_path / "other"
@@ -62,11 +62,11 @@ def test_deer_flow_project_root_overrides_current_directory(tmp_path: Path, monk
 
     assert AppConfig.resolve_config_path() == project_root / "config.yaml"
     assert ExtensionsConfig.resolve_config_path() == project_root / "mcp_config.json"
-    assert Paths().base_dir == project_root / ".deer-flow"
+    assert Paths().base_dir == project_root / ".berkshire-agent"
     assert SkillsConfig(path="custom-skills").get_skills_path() == project_root / "custom-skills"
 
 
-def test_deer_flow_skills_path_overrides_project_default(tmp_path: Path, monkeypatch):
+def test_berkshire_agent_skills_path_overrides_project_default(tmp_path: Path, monkeypatch):
     _clear_path_env(monkeypatch)
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("DEER_FLOW_SKILLS_PATH", "team-skills")
@@ -75,7 +75,7 @@ def test_deer_flow_skills_path_overrides_project_default(tmp_path: Path, monkeyp
     assert get_or_new_skill_storage(skills_path=SkillsConfig().get_skills_path()).get_skills_root_path() == tmp_path / "team-skills"
 
 
-def test_deer_flow_project_root_must_exist(tmp_path: Path, monkeypatch):
+def test_berkshire_agent_project_root_must_exist(tmp_path: Path, monkeypatch):
     _clear_path_env(monkeypatch)
     missing_root = tmp_path / "missing"
     monkeypatch.setenv("DEER_FLOW_PROJECT_ROOT", str(missing_root))
@@ -84,7 +84,7 @@ def test_deer_flow_project_root_must_exist(tmp_path: Path, monkeypatch):
         project_root()
 
 
-def test_deer_flow_project_root_must_be_directory(tmp_path: Path, monkeypatch):
+def test_berkshire_agent_project_root_must_be_directory(tmp_path: Path, monkeypatch):
     _clear_path_env(monkeypatch)
     project_root_file = tmp_path / "project-root"
     project_root_file.write_text("", encoding="utf-8")

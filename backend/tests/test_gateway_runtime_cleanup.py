@@ -87,7 +87,7 @@ def test_local_dev_gateway_reload_excludes_runtime_state_with_absolute_dirs():
     serve_sh = _read("scripts/serve.sh")
 
     assert 'export DEER_FLOW_PROJECT_ROOT="$REPO_ROOT"' in serve_sh
-    assert 'BACKEND_RUNTIME_HOME="$REPO_ROOT/backend/.deer-flow"' in serve_sh
+    assert 'BACKEND_RUNTIME_HOME="$REPO_ROOT/backend/.berkshire-agent"' in serve_sh
     assert 'export DEER_FLOW_HOME="$BACKEND_RUNTIME_HOME"' in serve_sh
     # Every absolute reload-exclude must be pre-created, including backend/sandbox
     # (#3459 / #3454) — see test_uvicorn_reload_exclude.py for the mechanism.
@@ -95,13 +95,13 @@ def test_local_dev_gateway_reload_excludes_runtime_state_with_absolute_dirs():
     assert "--reload-exclude='$DEER_FLOW_HOME'" in serve_sh
     assert "--reload-exclude='$BACKEND_RUNTIME_HOME'" in serve_sh
     assert "--reload-exclude='sandbox/'" not in serve_sh
-    assert "--reload-exclude='.deer-flow/'" not in serve_sh
+    assert "--reload-exclude='.berkshire-agent/'" not in serve_sh
 
 
 def test_backend_make_dev_gateway_reload_excludes_runtime_state_with_absolute_dirs():
     makefile = _read("backend/Makefile")
 
-    assert "DEER_FLOW_HOME ?= $(CURDIR)/.deer-flow" in makefile
+    assert "DEER_FLOW_HOME ?= $(CURDIR)/.berkshire-agent" in makefile
     assert "DEER_FLOW_HOME := $(abspath $(DEER_FLOW_HOME))" in makefile
     assert "BACKEND_SANDBOX_HOME := $(abspath $(CURDIR)/sandbox)" in makefile
     assert 'mkdir -p "$(DEER_FLOW_HOME)" "$(BACKEND_SANDBOX_HOME)"' in makefile
@@ -216,7 +216,7 @@ def test_smoke_test_docs_do_not_expect_standalone_langgraph_server():
     for path, content in smoke_files.items():
         assert "localhost:2024" not in content, path
         assert "127.0.0.1:2024" not in content, path
-        assert "deer-flow-langgraph" not in content, path
+        assert "berkshire-agent-langgraph" not in content, path
         assert "langgraph.log" not in content, path
         assert "LangGraph service" not in content, path
         assert "langgraph dev" not in content, path

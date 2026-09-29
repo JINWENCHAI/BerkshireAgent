@@ -1,8 +1,8 @@
-"""Tests for DeerFlowClient message serialization helpers."""
+"""Tests for BerkshireAgentClient message serialization helpers."""
 
 from langchain_core.messages import AIMessage, HumanMessage
 
-from deerflow.client import DeerFlowClient
+from deerflow.client import BerkshireAgentClient
 
 
 def test_serialize_ai_message_preserves_additional_kwargs():
@@ -19,7 +19,7 @@ def test_serialize_ai_message_preserves_additional_kwargs():
         usage_metadata={"input_tokens": 12, "output_tokens": 3, "total_tokens": 15},
     )
 
-    serialized = DeerFlowClient._serialize_message(message)
+    serialized = BerkshireAgentClient._serialize_message(message)
 
     assert serialized["type"] == "ai"
     assert serialized["usage_metadata"] == {
@@ -43,7 +43,7 @@ def test_serialize_human_message_preserves_additional_kwargs():
         additional_kwargs={"files": [{"name": "diagram.png"}]},
     )
 
-    serialized = DeerFlowClient._serialize_message(message)
+    serialized = BerkshireAgentClient._serialize_message(message)
 
     assert serialized == {
         "type": "human",

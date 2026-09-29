@@ -7,11 +7,11 @@ import { Callout, Steps } from "nextra/components";
 
 # 快速上手
 
-本章完整走一遍一个名为 `hello` 的扩展。它贡献一个中间件，为每次工具调用计时，调用慢于配置阈值时记录一条警告。读完你会把它打包、在不依赖 DeerFlow 的情况下做单元测试、安装进一个 checkout，并看到它运行。
+本章完整走一遍一个名为 `hello` 的扩展。它贡献一个中间件，为每次工具调用计时，调用慢于配置阈值时记录一条警告。读完你会把它打包、在不依赖 BerkshireAgent 的情况下做单元测试、安装进一个 checkout，并看到它运行。
 
 ## 前提
 
-- 一个能用 `make dev` 运行的 DeerFlow checkout。见[快速上手](/docs/application/quick-start)。
+- 一个能用 `make dev` 运行的 BerkshireAgent checkout。见[快速上手](/docs/application/quick-start)。
 - Python 3.12 及以上，以及 [uv](https://docs.astral.sh/uv/) 0.8.0 及以上。扩展管理器会拒绝更旧的 uv。
 - 运行 Gateway 那台机器的 shell 权限。安装扩展是运维操作，Web 界面不能做。
 
@@ -19,7 +19,7 @@ import { Callout, Steps } from "nextra/components";
 
 ### 创建包
 
-扩展就是一个普通的 Python 包。把它建在 DeerFlow checkout **之外**，例如 `~/src/deerflow-extension-hello`：
+扩展就是一个普通的 Python 包。把它建在 BerkshireAgent checkout **之外**，例如 `~/src/deerflow-extension-hello`：
 
 ```text
 deerflow-extension-hello/
@@ -135,7 +135,7 @@ def install(registry: ExtensionRegistry, config: Mapping[str, Any]) -> None:
 - `Placement.TOOL_VISIBLE` 要求位于工具链的外层端，所以计时包含输出截断和错误包装，也就是模型最终等待的时间。`AgentScope.BOTH` 把中间件装进 Lead Agent 和每个子 Agent。两者详见[中间件贡献](/docs/harness/extensions/middleware)。
 - 中间件同时实现了 `wrap_tool_call` 和 `awrap_tool_call`。如果只实现一侧，另一条执行路径会直接透传，什么也观察不到。
 
-### 不依赖 DeerFlow 进行测试
+### 不依赖 BerkshireAgent 进行测试
 
 契约就是普通 Python，所以用一个替身注册表就能测试注册逻辑，中间件也可以直接调用：
 
@@ -181,18 +181,18 @@ def test_slow_tool_calls_log_a_warning(caplog):
     assert caplog.records[-1].levelno == logging.WARNING
 ```
 
-契约包目前从 DeerFlow checkout 获取，所以从那里以 editable 模式安装：
+契约包目前从 BerkshireAgent checkout 获取，所以从那里以 editable 模式安装：
 
 ```bash
 cd ~/src/deerflow-extension-hello
 uv venv --python 3.12
-uv pip install -e /path/to/deer-flow/backend/packages/extension-api -e . pytest
+uv pip install -e /path/to/berkshire-agent/backend/packages/extension-api -e . pytest
 uv run --no-project pytest -q
 ```
 
-### 安装到 DeerFlow
+### 安装到 BerkshireAgent
 
-在 DeerFlow checkout 根目录下，以**绝对**路径传入包目录。Make 包装命令是在 `backend/` 下运行管理器的，相对路径会解析到错误的目录：
+在 BerkshireAgent checkout 根目录下，以**绝对**路径传入包目录。Make 包装命令是在 `backend/` 下运行管理器的，相对路径会解析到错误的目录：
 
 ```bash
 make extension-install SOURCE="$HOME/src/deerflow-extension-hello"
@@ -205,7 +205,7 @@ make extension-install SOURCE="$HOME/src/deerflow-extension-hello"
 3. 同步锁定的环境；
 4. 在 `config.yaml` 中追加一条已启用的 `plugins:` 记录。
 
-然后打印 `Installed and enabled hello (deerflow-extension-hello). Restart DeerFlow to load it.`。检查记录：
+然后打印 `Installed and enabled hello (deerflow-extension-hello). Restart BerkshireAgent to load it.`。检查记录：
 
 ```bash
 make extension-list
@@ -268,4 +268,4 @@ make extension-remove NAME=hello    # 卸载，删除记录和快照
 ## 下一步
 
 - [中间件贡献](/docs/harness/extensions/middleware)：五种放置位置、作用域和排序，以及扩展中间件能改什么、不能改什么。
-- [内置示例](https://github.com/bytedance/deer-flow/tree/main/examples/deerflow-extension-example)把中间件与任务生命周期状态、系统模型观察者、服务和 HTTP 路由组合在一起。
+- [内置示例](https://github.com/bytedance/berkshire-agent/tree/main/examples/deerflow-extension-example)把中间件与任务生命周期状态、系统模型观察者、服务和 HTTP 路由组合在一起。

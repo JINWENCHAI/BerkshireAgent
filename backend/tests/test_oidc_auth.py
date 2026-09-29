@@ -13,7 +13,7 @@ def _provider_config(**overrides):
     return OIDCProviderConfig(
         display_name="Test SSO",
         issuer="https://issuer.example.com",
-        client_id="deer-flow",
+        client_id="berkshire-agent",
         **overrides,
     )
 
@@ -128,10 +128,10 @@ async def test_oidc_validate_id_token_refreshes_jwks_once_on_kid_miss(monkeypatc
     monkeypatch.setattr("app.gateway.auth.oidc.jwt.get_unverified_header", lambda token: {"kid": "new-kid", "alg": "RS256"})
     monkeypatch.setattr(
         "app.gateway.auth.oidc.jwt.decode",
-        lambda *args, **kwargs: {"iss": metadata.issuer, "sub": "subject", "aud": "deer-flow", "exp": 9999999999},
+        lambda *args, **kwargs: {"iss": metadata.issuer, "sub": "subject", "aud": "berkshire-agent", "exp": 9999999999},
     )
 
-    claims = await service.validate_id_token(metadata, "deer-flow", "id-token")
+    claims = await service.validate_id_token(metadata, "berkshire-agent", "id-token")
 
     assert claims["sub"] == "subject"
     assert load_calls == [False, True]
@@ -165,7 +165,7 @@ async def test_oidc_validate_id_token_rejects_hmac_algorithms(monkeypatch):
     monkeypatch.setattr("app.gateway.auth.oidc.jwt.decode", decode)
 
     with pytest.raises(OIDCValidationError, match="unsupported algorithm"):
-        await service.validate_id_token(metadata, "deer-flow", "id-token")
+        await service.validate_id_token(metadata, "berkshire-agent", "id-token")
 
     await service.close()
 
@@ -254,7 +254,7 @@ async def test_oidc_authenticate_callback_treats_string_false_email_verified_as_
     identity = await service.authenticate_callback(
         provider_id="keycloak",
         metadata=metadata,
-        client_id="deer-flow",
+        client_id="berkshire-agent",
         client_secret=None,
         code="code",
         redirect_uri="https://app.example.com/callback",

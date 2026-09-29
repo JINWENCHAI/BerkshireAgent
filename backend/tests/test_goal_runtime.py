@@ -118,7 +118,7 @@ def test_evaluate_goal_completion_uses_non_thinking_model(monkeypatch):
     assert captured["thinking_enabled"] is False
     # The goal evaluator runs from runtime/runs/worker.py after the main graph
     # run has already finished, so there is no graph root for it to inherit
-    # tracing callbacks from (unlike make_lead_agent/DeerFlowClient.stream,
+    # tracing callbacks from (unlike make_lead_agent/BerkshireAgentClient.stream,
     # which attach build_tracing_callbacks() at the graph root and correctly
     # pass attach_tracing=False to avoid double-attaching). It must attach its
     # own model-level tracing callbacks, same as the other standalone,

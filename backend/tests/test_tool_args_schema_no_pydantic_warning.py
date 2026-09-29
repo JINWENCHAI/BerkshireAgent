@@ -1,12 +1,12 @@
 """Regression test: tool args schemas must not emit Pydantic serialization warnings.
 
-DeerFlow tools annotate their runtime parameter as ``Runtime``
+BerkshireAgent tools annotate their runtime parameter as ``Runtime``
 (``deerflow.tools.types.Runtime`` = ``ToolRuntime[dict[str, Any], ThreadState]``)
 so the LangChain tool framework injects the runtime automatically.
 When the inner ``Runtime.context`` field is left as the unbound ``ContextT``
 TypeVar (default ``None``), Pydantic's ``model_dump()`` on the auto-generated
 args schema emits a ``PydanticSerializationUnexpectedValue`` warning on every
-tool call because the actual context DeerFlow installs is a dict. Using the
+tool call because the actual context BerkshireAgent installs is a dict. Using the
 ``Runtime`` alias (which binds the context to ``dict[str, Any]``) keeps
 Pydantic's serialization expectations aligned with reality.
 """

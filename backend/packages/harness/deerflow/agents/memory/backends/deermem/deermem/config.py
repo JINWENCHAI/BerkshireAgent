@@ -347,7 +347,7 @@ class DeerMemConfig(BaseModel):
         default=None,
         description=(
             "Host-injected pre-built chat model for memory extraction (zero-config "
-            "UX). The deer-flow factory injects its default model here when "
+            "UX). The berkshire-agent factory injects its default model here when "
             "``model`` is empty, mirroring pre-abstraction ``model_name: null`` -> "
             "app default. Takes precedence over ``build_llm(model)``. None = build "
             "from ``model`` (or no LLM when ``model`` is also empty). Set "

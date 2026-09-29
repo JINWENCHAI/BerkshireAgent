@@ -289,7 +289,7 @@ class TestMarkdownMemoryStorage:
         schema losslessly: load() must not crash AND must not return an
         invalid shape -- the file is quarantined so nothing is silently lost."""
         memory_file = tmp_path / "memory.json"
-        body = "# DeerFlow Memory\n\n- version: 2\n- revision: 5\n\n## User\n- summary: likes tea\n"
+        body = "# BerkshireAgent Memory\n\n- version: 2\n- revision: 5\n\n## User\n- summary: likes tea\n"
         memory_file.write_text(body, encoding="utf-8")
         storage = self._markdown_storage_at(memory_file)
         loaded = storage.load()  # must not raise
@@ -316,7 +316,7 @@ class TestMarkdownMemoryStorage:
         """Remembered code snippets must not terminate the JSON block."""
         manifest = create_empty_memory()
         manifest["user"]["workContext"] = {"summary": "prefers ```python\nprint('hi')\n``` snippets"}
-        rendered = "# DeerFlow Memory\n\n```memory-json\n" + json.dumps(manifest, ensure_ascii=False) + "\n```\n"
+        rendered = "# BerkshireAgent Memory\n\n```memory-json\n" + json.dumps(manifest, ensure_ascii=False) + "\n```\n"
         parsed = mf._parse_markdown_memory(rendered)
         assert parsed == manifest
 

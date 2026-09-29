@@ -70,7 +70,7 @@ logger = logging.getLogger(__name__)
 
 CONFIG_FILE_DATABASE_DEFAULTS = {
     "backend": "sqlite",
-    "sqlite_dir": ".deer-flow/data",
+    "sqlite_dir": ".berkshire-agent/data",
 }
 
 
@@ -192,7 +192,7 @@ def apply_logging_level(name: str | None) -> None:
 
 
 class AppConfig(BaseModel):
-    """Config for the DeerFlow application"""
+    """Config for the BerkshireAgent application"""
 
     lead_prompt_overlay: PromptOverlay = Field(default_factory=PromptOverlay, description="Operator-owned literal prepend/append around the assembled lead-agent system prompt")
 
@@ -723,7 +723,7 @@ def _load_and_cache_app_config(config_path: str | None = None) -> AppConfig:
 
 
 def get_app_config() -> AppConfig:
-    """Get the DeerFlow config instance.
+    """Get the BerkshireAgent config instance.
 
     Returns a cached singleton instance and automatically reloads it when the
     underlying config file path or content signature changes. Use

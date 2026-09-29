@@ -195,7 +195,7 @@ class LocalSandboxProvider(SandboxProvider):
                     # ``host_path`` is resolved against the filesystem of the
                     # process running this provider — for ``make dev`` that is
                     # the host machine, but for ``make up`` it is the
-                    # ``deer-flow-gateway`` container, so any host path that
+                    # ``berkshire-agent-gateway`` container, so any host path that
                     # isn't bind-mounted into the gateway image will be missing
                     # here. Skipping silently makes this a high-cost-to-debug
                     # silent failure (sandbox skill / tool reads an empty dir

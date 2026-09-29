@@ -146,7 +146,7 @@ def test_pricing_metadata_never_reaches_the_provider_client(monkeypatch):
 
 
 def test_context_window_never_reaches_the_provider_client(monkeypatch):
-    """Context sizing metadata belongs to DeerFlow, not the provider SDK."""
+    """Context sizing metadata belongs to BerkshireAgent, not the provider SDK."""
     model = _make_model("large-context")
     model.context_window = 200_000
     cfg = _make_app_config([model])
@@ -671,7 +671,7 @@ def test_required_thinking_profile_keeps_base_payload_when_runtime_requests_disa
     Required-thinking models such as GLM-5.3-Flash intentionally declare no
     conditional thinking settings.  A runtime ``thinking_enabled=False`` must
     therefore leave the profile's unconditional ``extra_body.thinking`` block
-    untouched, while the capability guard drops DeerFlow's generic effort value.
+    untouched, while the capability guard drops BerkshireAgent's generic effort value.
     """
     model = ModelConfig(
         name="glm-5.3-flash",

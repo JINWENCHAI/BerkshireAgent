@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SHOWCASE_ROUTE_PREFIX } from "@/core/threads/static-demo";
 import { uuid } from "@/core/utils/uuid";
 
-export const THREAD_CHAT_RESET_EVENT = "deer-flow:thread-chat-reset";
+export const THREAD_CHAT_RESET_EVENT = "berkshire-agent:thread-chat-reset";
 
 type ThreadChatResetDetail = {
   deletedThreadId: string;
