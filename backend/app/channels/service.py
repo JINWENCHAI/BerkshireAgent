@@ -31,6 +31,7 @@ _CHANNEL_REGISTRY: dict[str, str] = {
     "discord": "app.channels.discord:DiscordChannel",
     "feishu": "app.channels.feishu:FeishuChannel",
     "github": "app.channels.github:GitHubChannel",
+    "qq": "app.channels.qq:QQChannel",
     "slack": "app.channels.slack:SlackChannel",
     "telegram": "app.channels.telegram:TelegramChannel",
     "wechat": "app.channels.wechat:WechatChannel",
@@ -141,6 +142,23 @@ class ChannelService:
         channel_sessions = {name: channel_config.get("session") for name, channel_config in config.items() if isinstance(channel_config, dict)}
         from app.channels.dedupe_store import make_inbound_dedupe_store
 
+        # Outbox integration. Opt-in via ``channels.outbox.enabled`` so
+        # the default deployment keeps the legacy in-memory fan-out.
+        # When enabled, the bus persists every outbound message before
+        # fanning out; failed or crashed deliveries are replayed on
+        # the next ChannelService.start().
+        outbox_enabled = bool(isinstance(config, dict) and config.get("outbox", {}).get("enabled", False))
+        self.bus.enable_outbox(enabled=outbox_enabled)
+        self._outbox_replay_tasks: list[asyncio.Task[int]] = []
+        self._outbox_replay_interval_seconds = float((config.get("outbox", {}) if isinstance(config, dict) else {}).get("replay_interval_seconds", 30.0) if isinstance(config, dict) else 30.0)
+        self._outbox_horizon_seconds = int((config.get("outbox", {}) if isinstance(config, dict) else {}).get("horizon_seconds", 24 * 60 * 60) if isinstance(config, dict) else 24 * 60 * 60)
+        self._sqlite_dir: str | None = None
+        outbox_section = config.get("outbox", {}) if isinstance(config, dict) else {}
+        if isinstance(outbox_section, dict):
+            sqlite_dir = outbox_section.get("sqlite_dir")
+            if isinstance(sqlite_dir, str) and sqlite_dir.strip():
+                self._sqlite_dir = sqlite_dir.strip()
+
         self.manager = ChannelManager(
             bus=self.bus,
             store=self.store,
@@ -199,6 +217,14 @@ class ChannelService:
         """Start the manager and all enabled channels."""
         if self._running:
             return
+
+        # Initialise the outbox engine before any channel starts so the
+        # first ``publish_outbound`` does not race the schema create.
+        # Falls through silently when the outbox is disabled; the
+        # engine is never instantiated in that case so no file is
+        # created on disk.
+        if self.bus.outbox_enabled:
+            await self._init_outbox_engine()
 
         await self.manager.start()
         self._running = True
@@ -309,6 +335,26 @@ class ChannelService:
         if stop_errors:
             raise ExceptionGroup("one or more channels failed to stop", stop_errors)
 
+        # Cancel any periodic replay tasks before tearing down the
+        # engine so a sweep in flight does not hit a disposed pool.
+        for task in self._outbox_replay_tasks:
+            if not task.done():
+                task.cancel()
+        for task in self._outbox_replay_tasks:
+            try:
+                await task
+            except (asyncio.CancelledError, Exception):
+                pass
+        self._outbox_replay_tasks.clear()
+
+        if self.bus.outbox_enabled:
+            try:
+                from app.channels.outbox.engine import close_outbox_engine
+
+                await close_outbox_engine()
+            except Exception:
+                logger.exception("[Outbox] failed to close engine on shutdown")
+
         logger.info("ChannelService stopped")
 
     def _load_channel_config(self, name: str) -> dict[str, Any] | None:
@@ -392,6 +438,89 @@ class ChannelService:
         logger.info("Channel stopped and removed")
         return True
 
+    async def _init_outbox_engine(self) -> None:
+        """Initialise the channel outbox engine.
+
+        Reads ``channels.outbox.sqlite_dir`` if set, otherwise falls
+        back to ``database.sqlite_dir`` from the app config. If neither
+        is available (e.g. ``database.backend: memory``), the outbox is
+        silently disabled — losing the durability benefit is the
+        visible consequence, and the operator gets a clear log line
+        so they know to opt into a SQL backend.
+        """
+        from app.channels.outbox.engine import init_outbox_engine, is_outbox_disabled_by_env
+
+        if is_outbox_disabled_by_env():
+            logger.warning("[Outbox] disabled via DEER_FLOW_DISABLE_OUTBOX=1; outbound replay will NOT recover from crashes")
+            return
+
+        sqlite_dir = self._sqlite_dir
+        if sqlite_dir is None:
+            sqlite_dir = self._resolve_database_sqlite_dir()
+        if sqlite_dir is None:
+            logger.warning("[Outbox] cannot initialise: neither channels.outbox.sqlite_dir nor database.sqlite_dir is set. Outbound replay will NOT recover from crashes. Set database.backend: sqlite in config.yaml.")
+            return
+
+        try:
+            await init_outbox_engine(sqlite_dir)
+        except Exception:
+            logger.exception("[Outbox] failed to initialise engine; outbound replay will NOT recover from crashes")
+
+    def _resolve_database_sqlite_dir(self) -> str | None:
+        """Find ``database.sqlite_dir`` from the live app config."""
+        try:
+            from deerflow.config.app_config import get_app_config
+
+            app_config = get_app_config()
+            database = getattr(app_config, "database", None)
+            if database is None:
+                return None
+            sqlite_dir = getattr(database, "sqlite_dir", None)
+            if isinstance(sqlite_dir, str) and sqlite_dir.strip():
+                return sqlite_dir.strip()
+        except Exception:  # noqa: BLE001 — never let config lookup break the bus
+            logger.exception("[Outbox] failed to resolve database.sqlite_dir")
+        return None
+
+    async def _replay_pending_for(self, channel_name: str) -> None:
+        """Replay this channel's pending outbox rows on startup."""
+        from app.channels.outbox.replay import replay_pending_for_channel
+
+        async def _dispatch(msg: Any) -> bool:
+            """Route the replayed message through the live outbound path.
+
+            Returning ``True`` means the channel accepted the message
+            for delivery (its ``_on_outbound`` ack is what marks the
+            row delivered). A ``False`` return keeps the row pending
+            for the next sweep.
+            """
+            channel = self._channels.get(channel_name)
+            if channel is None or not channel.is_running:
+                logger.warning("[Outbox] cannot replay for %s: channel not running", channel_name)
+                return False
+            try:
+                # Drive the same _on_outbound the live bus uses; the
+                # ack flows through MessageBus.ack_outbound exactly
+                # like a fresh publish would.
+                await channel._on_outbound(msg)
+                return True
+            except Exception:
+                logger.exception("[Outbox] replay dispatch raised for channel=%s", channel_name)
+                return False
+
+        try:
+            count = await replay_pending_for_channel(
+                channel_name=channel_name,
+                dispatcher=_dispatch,
+                horizon_seconds=self._outbox_horizon_seconds,
+            )
+            if count:
+                logger.info("[Outbox] replayed %d pending message(s) for channel=%s on startup", count, channel_name)
+            else:
+                logger.debug("[Outbox] no pending messages to replay for channel=%s", channel_name)
+        except Exception:  # noqa: BLE001 — replay failure must not block channel startup
+            logger.exception("[Outbox] replay sweep failed for channel=%s; pending rows will retry on next sweep", channel_name)
+
     async def _stop_and_discard_channel(self, name: str, channel: Channel) -> None:
         """Stop a channel and drop it only once its ``stop()`` has completed.
 
@@ -450,10 +579,20 @@ class ChannelService:
             logger.warning("Refusing to start %s: another channel instance is still tracked under this name (previous cleanup incomplete, or the instance is still running)", name)
             return False
 
+        channel_cls: type[Channel]
         try:
             from deerflow.reflection import resolve_class
 
-            channel_cls = resolve_class(import_path, base_class=None)
+            # QQ has two transports (webhook + websocket) sharing one
+            # channel name; resolve to the right subclass before
+            # importing so a single ``qq`` config entry can dispatch to
+            # either. Other channels go through the registry directly.
+            if name == "qq":
+                from app.channels.qq import _resolve_qq_class
+
+                channel_cls = _resolve_qq_class(config)
+            else:
+                channel_cls = resolve_class(import_path, base_class=None)
         except Exception:
             logger.exception("Failed to import channel class")
             return False
@@ -485,6 +624,16 @@ class ChannelService:
                 logger.error("Channel did not enter a running state after start()")
                 await self._stop_and_discard_channel(name, channel)
                 return False
+
+            # Replay any pending outbox rows that the previous Gateway
+            # crashed before delivering. Runs after ``channel.start()``
+            # so the channel is fully wired (its outbound callback is
+            # registered with the bus) — the dispatcher below invokes
+            # that callback, so replay reuses the live code path and
+            # automatically acks on success.
+            if self.bus.outbox_enabled:
+                await self._replay_pending_for(name)
+
             logger.info("Channel started")
             return True
         except Exception:

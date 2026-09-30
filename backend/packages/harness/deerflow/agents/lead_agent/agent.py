@@ -1130,6 +1130,7 @@ def _assemble_lead_agent(config: RunnableConfig, *, app_config: AppConfig) -> Le
             subagent_enabled=subagent_enabled,
             max_concurrent_subagents=max_concurrent_subagents,
             max_total_subagents=max_total_subagents,
+            persona_style=cfg.get("persona_style"),
             available_skills=set(_BOOTSTRAP_SKILL_NAMES),
             app_config=resolved_app_config,
             deferred_names=setup.deferred_names,
@@ -1272,6 +1273,7 @@ def _assemble_lead_agent(config: RunnableConfig, *, app_config: AppConfig) -> Le
         subagent_execution_capacity=subagent_execution_capacity,
         interaction_policy=interaction_policy,
         memory_enabled=memory_enabled,
+        persona_style=cfg.get("persona_style"),
     )
     graph = create_agent(
         model=chat_model,

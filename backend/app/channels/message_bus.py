@@ -193,6 +193,17 @@ class MessageBus:
         self._full_rejection_count = 0
         self._last_full_warning_at = 0.0
         self._outbound_listeners: list[OutboundCallback] = []
+        # Outbox integration. Disabled by default so the existing
+        # in-memory fan-out behaviour is preserved; ``enable_outbox``
+        # flips both flags atomically (callers are expected to call it
+        # during startup, before the first publish).
+        self._outbox_enabled = False
+        # Map: callback -> row_id of the most recent outbox row the
+        # callback is about to (or has just) processed. Consumed by
+        # ``ack_outbound`` and ``record_outbound_failure``. The map is
+        # intentionally unbounded only by listener count (small);
+        # rows are removed on ack/failure so the size stays in check.
+        self._pending_outbox_ids: dict[OutboundCallback, int] = {}
 
     # -- inbound -----------------------------------------------------------
 
@@ -335,6 +346,32 @@ class MessageBus:
 
     # -- outbound ----------------------------------------------------------
 
+    def enable_outbox(self, *, enabled: bool) -> None:
+        """Toggle durable outbound persistence.
+
+        When ``enabled`` is true, every ``publish_outbound`` call writes
+        a ``pending`` row to the channel outbox before fanning out, and
+        the channel's outbound callback must call ``ack_outbound`` once
+        its adapter confirms delivery. Failed or crashed deliveries
+        stay pending until the periodic replay sweep picks them up.
+
+        When ``enabled`` is false (default for backward compatibility),
+        the bus falls back to in-memory fan-out and a crash between
+        ``publish_outbound`` and the adapter means the user loses the
+        message — exactly the pre-outbox behaviour.
+
+        Must be called before any ``publish_outbound`` to take effect;
+        toggling at runtime is unsupported (the listener map and the
+        outbox id map are not synchronised under a writer lock).
+        """
+        self._outbox_enabled = bool(enabled)
+        if not self._outbox_enabled:
+            self._pending_outbox_ids = {}
+
+    @property
+    def outbox_enabled(self) -> bool:
+        return self._outbox_enabled
+
     def subscribe_outbound(self, callback: OutboundCallback) -> None:
         """Register an async callback for outbound messages."""
         self._outbound_listeners.append(callback)
@@ -343,17 +380,112 @@ class MessageBus:
         """Remove a previously registered outbound callback."""
         self._outbound_listeners = [cb for cb in self._outbound_listeners if cb != callback]
 
+    async def ack_outbound(self, callback: OutboundCallback) -> None:
+        """Mark the most recent outbox row this callback received as delivered.
+
+        No-op when the outbox is disabled. Idempotent — the underlying
+        ``mark_delivered`` only transitions pending → delivered once.
+        """
+        if not self._outbox_enabled:
+            return
+        row_id = self._pending_outbox_ids.pop(callback, None)
+        if row_id is None:
+            return
+        try:
+            from app.channels.outbox.engine import outbox_session
+            from app.channels.outbox.repository import OutboxRepository
+
+            async with outbox_session() as session:
+                repo = OutboxRepository(session)
+                await repo.mark_delivered(row_id=row_id)
+        except Exception:  # noqa: BLE001 — ack must never raise to the caller
+            logger.exception("[Bus] failed to ack outbox row_id=%s", row_id)
+
+    async def record_outbound_failure(self, callback: OutboundCallback, error: str) -> None:
+        """Best-effort failure recording for the most recent outbox row.
+
+        Used when the channel's outbound callback raises; the row stays
+        pending so the next replay sweep retries, but operators see the
+        error string in the row. No-op when the outbox is disabled or
+        there is no row to attribute.
+        """
+        if not self._outbox_enabled:
+            return
+        row_id = self._pending_outbox_ids.get(callback)
+        if row_id is None:
+            return
+        try:
+            from app.channels.outbox.engine import outbox_session
+            from app.channels.outbox.repository import OutboxRepository
+
+            async with outbox_session() as session:
+                repo = OutboxRepository(session)
+                await repo.record_failure(row_id=row_id, error=error)
+        except Exception:  # noqa: BLE001
+            logger.exception("[Bus] failed to record outbox failure row_id=%s", row_id)
+
     async def publish_outbound(self, msg: OutboundMessage) -> None:
-        """Dispatch an outbound message to all registered listeners."""
+        """Dispatch an outbound message to all registered listeners.
+
+        When the outbox is enabled, the message is persisted as a
+        ``pending`` row first; the row id is stashed in a per-listener
+        map so ``ack_outbound`` / ``record_outbound_failure`` can
+        attribute the outcome back to the same row even after a
+        restart. Each listener is responsible for calling one of those
+        helpers from its own ``finally`` block — the bus does not ack
+        on the listener's behalf, because the listener is the only
+        party that knows whether the platform accepted the message.
+        """
+        listeners = self._outbound_listeners
         logger.info(
-            "[Bus] outbound dispatching: channel=%s, chat_id=%s, listeners=%d, text_len=%d",
+            "[Bus] outbound dispatching: channel=%s, chat_id=%s, listeners=%d, text_len=%d outbox=%s",
             msg.channel_name,
             msg.chat_id,
-            len(self._outbound_listeners),
+            len(listeners),
             len(msg.text),
+            self._outbox_enabled,
         )
-        for callback in self._outbound_listeners:
+
+        # Persist once per publish, regardless of how many listeners
+        # are attached. Multi-listener setups (e.g. a test recorder
+        # plus the live channel) all see the same row id and the live
+        # channel's ack covers the delivery.
+        row_id: int | None = None
+        if self._outbox_enabled:
+            try:
+                from app.channels.outbox.engine import outbox_session
+                from app.channels.outbox.repository import OutboxRepository
+
+                async with outbox_session() as session:
+                    repo = OutboxRepository(session)
+                    row_id = await repo.enqueue(msg=msg)
+            except Exception:  # noqa: BLE001 — never block live dispatch on outbox I/O
+                logger.exception("[Bus] outbox enqueue failed; dispatching live only (delivery will NOT survive a crash)")
+                row_id = None
+
+        for callback in listeners:
+            if row_id is not None:
+                self._pending_outbox_ids[callback] = row_id
             try:
                 await callback(msg)
-            except Exception:
-                logger.exception("Error in outbound callback for channel=%s", msg.channel_name)
+            except Exception as exc:  # noqa: BLE001 — one bad listener must not stop the rest
+                logger.exception(
+                    "Error in outbound callback for channel=%s",
+                    msg.channel_name,
+                )
+                if row_id is not None:
+                    # record_outbound_failure reads the row id from the
+                    # same map, so do not pop before calling it. The map
+                    # entry is cleared by the listener's own success path
+                    # (which acks) — on the failure path we leave it
+                    # behind so the periodic replay sweep can retry.
+                    await self.record_outbound_failure(callback, f"{type(exc).__name__}: {exc}")
+                    self._pending_outbox_ids.pop(callback, None)
+            else:
+                # Successful callback path: the listener will call
+                # ack_outbound from its own finally block. We do NOT
+                # clear _pending_outbox_ids here because the ack is
+                # what consumes it; if the listener forgets to ack,
+                # the periodic replay sweep will retry the row, which
+                # is the correct at-least-once behaviour.
+                continue

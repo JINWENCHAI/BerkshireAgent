@@ -1012,6 +1012,7 @@ def apply_prompt_template(
     subagent_enabled: bool = False,
     max_concurrent_subagents: int = 3,
     max_total_subagents: int | None = None,
+    persona_style: str | None = None,
     *,
     agent_name: str | None = None,
     available_skills: set[str] | None = None,
@@ -1025,6 +1026,29 @@ def apply_prompt_template(
     memory_enabled: bool = True,
     interaction_policy: RunInteractionPolicy | None = None,
 ) -> str:
+    """Build the lead-agent system prompt.
+
+    Args:
+        persona_style: Berkshire-household dispatch style for the built-in
+            ``munger`` and ``buffett`` sub-agents.
+
+            - ``None`` (default): standard benefit-based delegation model;
+              the agent decides whether and when to dispatch sub-agents.
+            - ``"group"``: the agent **must** dispatch to both munger and
+              buffett in parallel (``max_concurrent_subagents`` is forced to 2
+              by the caller in ``manager._resolve_run_params``). The
+              ``subagent_thinking`` block below replaces the generic benefit-
+              based wording with an explicit routing instruction.
+            - ``"munger"``: the agent **must** dispatch to ``munger`` only
+              (concurrency = 1).  Buffett's angle is available on request
+              via the normal delegation tool.
+            - ``"buffett"``: the agent **must** dispatch to ``buffett`` only
+              (concurrency = 1).  Munger's angle is available on request.
+
+            When a style is set ``subagent_enabled`` is already ``True`` —
+            this parameter only controls the *routing* wording inside the
+            prompt.
+    """
     interaction_policy = interaction_policy or RunInteractionPolicy.interactive()
     # Include subagent section only if enabled (from runtime parameter)
     n = (
@@ -1058,25 +1082,66 @@ def apply_prompt_template(
         subagent_section = ""
 
     # Add subagent reminder to critical_reminders if enabled
-    reminder_benefits = "specialist capability or context isolation" if n == 1 else "real parallel latency, specialist capability, or context isolation"
-    subagent_reminder = (
-        f"- **Benefit-Based Delegation**: Default to direct execution. Use `task` only when expected benefit from {reminder_benefits} "
-        "clearly exceeds delegation, duplicate-discovery, synthesis, conflict, and side-effect costs. "
-        f"Use the fewest subagents needed. HARD LIMITS ARE NON-NEGOTIABLE: max {n} `task` calls per response, max {total} per run; excess calls are discarded and their work is lost.\n"
-        if subagent_enabled
-        else ""
-    )
+    # When persona_style is set we override the generic benefit-based wording
+    # with a style-specific note (the real routing is in subagent_thinking above).
+    if persona_style == "group":
+        subagent_reminder = (
+            "- **BERKSHIRE GROUP MODE**: Both ``munger`` and ``buffett`` are always "
+            "active. Dispatch to both every turn; synthesise their angles before replying.\n"
+        )
+    elif persona_style in ("munger", "buffett"):
+        persona_name = persona_style.title()
+        subagent_reminder = (
+            f"- **BERKSHIRE {persona_name.upper()} MODE**: ``{persona_style}`` is always active. "
+            f"Dispatch to ``{persona_style}`` every turn; the other persona is on demand.\n"
+        )
+    elif subagent_enabled:
+        reminder_benefits = "specialist capability or context isolation" if n == 1 else "real parallel latency, specialist capability, or context isolation"
+        subagent_reminder = (
+            f"- **Benefit-Based Delegation**: Default to direct execution. Use `task` only when expected benefit from {reminder_benefits} "
+            "clearly exceeds delegation, duplicate-discovery, synthesis, conflict, and side-effect costs. "
+            f"Use the fewest subagents needed. HARD LIMITS ARE NON-NEGOTIABLE: max {n} `task` calls per response, max {total} per run; excess calls are discarded and their work is lost.\n"
+        )
+    else:
+        subagent_reminder = ""
 
     # Add subagent thinking guidance if enabled
-    if subagent_enabled and n == 1:
+    # When persona_style is set we replace the generic benefit-based wording
+    # with an explicit routing instruction for the chosen Berkshire-household style.
+    if persona_style == "group":
+        # Agent must dispatch to both munger and buffett in parallel; the
+        # subagent_section is already populated with both sub-agents' descriptions.
         subagent_thinking = (
-            "- **DELEGATION CHECK: Default to direct execution; complexity alone is not a reason to delegate. Before each `task` call, "
+            "- **REQUIRED DUAL DISPATCH**: This conversation is configured for the Berkshire "
+            "household group persona. **Every** user question — without exception — must be "
+            "dispatched to BOTH ``munger`` and ``buffett`` simultaneously using "
+            "``task(subagent_type='munger', ...)`` and ``task(subagent_type='buffett', ...)``. "
+            "Run them in parallel (concurrency=2). After both return, synthesise their "
+            "answers into a single coherent reply that surfaces Munger's rationality/inversion "
+            "angle and Buffett's value/moat angle without duplication. "
+            "Do NOT answer directly from your own reasoning — always go through both sub-agents.\n"
+        )
+    elif persona_style in ("munger", "buffett"):
+        persona_name = persona_style.title()
+        subagent_thinking = (
+            f"- **REQUIRED SINGLE DISPATCH**: This conversation is configured for the "
+            f"Berkshire {persona_name} persona. **Every** user question — without exception — "
+            f"must be dispatched to ``{persona_style}`` using "
+            f"``task(subagent_type='{persona_style}', ...)``. "
+            f"The ``{persona_style}`` sub-agent reasons in {persona_name}'s voice with "
+            f"his latticework (Munger: inversion/rationality; Buffett: value/moat). "
+            f"Do NOT answer directly from your own reasoning — always go through the sub-agent. "
+            f"The other Berkshire persona is available on request via the task tool.\n"
+        )
+    elif subagent_enabled and n == 1:
+        subagent_thinking = (
+            "- **DELEGATION CHECK**: Default to direct execution; complexity alone is not a reason to delegate. Before each `task` call, "
             "require clear positive net benefit from specialist capability or context isolation. "
             f"Never exceed {n} `task` call in one response or {total} total in this run.**\n"
         )
     elif subagent_enabled:
         subagent_thinking = (
-            "- **DELEGATION CHECK: Default to direct execution; complexity alone is not a reason to delegate. Before each `task` call, "
+            "- **DELEGATION CHECK**: Default to direct execution; complexity alone is not a reason to delegate. Before each `task` call, "
             "require clear positive net benefit; before parallel calls, rule out inter-agent dependencies and overlapping state or side effects. "
             f"If delegating, use the fewest agents needed and never exceed {n} `task` calls in one response or {total} total in this run.**\n"
         )

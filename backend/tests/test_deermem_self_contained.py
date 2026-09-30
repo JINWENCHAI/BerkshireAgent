@@ -1004,3 +1004,58 @@ def test_replacement_import_rejects_unrecoverable_facts_without_writes(deermem_d
     reloaded = DeerMem(backend_config=None).get_memory(user_id="alice")
     assert reloaded["facts"] == before["facts"]
     assert reloaded["revision"] == before["revision"]
+
+
+def test_apply_updates_does_not_raise_when_trace_id_is_provided(deermem_data_dir, caplog) -> None:
+    """Regression for ``NameError: name 'trace_id' is not defined``.
+
+    Before the fix, ``_apply_updates`` referenced ``trace_id`` inside its
+    operator-visible write loggers even though the method never received
+    ``trace_id`` as a parameter -- it relied on the enclosing caller's
+    closure. The closure happened to provide ``trace_id`` only on the
+    ``MemoryStorage.apply_changes`` retry path; the standard
+    ``MemoryStorage.apply_changes == MemoryStorage.apply_changes`` branch
+    let ``trace_id`` leak in regardless. Either way, *some* batches
+    reached the surviving-facts / dedup-merge logger branches and crashed
+    mid-write, which the operator log showed as ``Memory update failed``,
+    silently losing every fact the LLM had just extracted. Pin that the
+    standard branch (the one used in the live incident) now accepts an
+    explicit ``trace_id`` keyword and completes without raising.
+    """
+    import logging
+
+    from deerflow.agents.memory.backends.deermem import DeerMem
+
+    dm = DeerMem(backend_config=None)
+    current_memory = dm.get_memory(user_id="trace-user")
+
+    # 4 facts is the minimum that has reliably cleared the operator log in
+    # the live incident; we don't want this test to be flaky if the
+    # default capacity gate ever drifts, so leave a margin.
+    update_data = {
+        "user": {},
+        "newFacts": [
+            {
+                "content": f"trace-pin fact #{i}",
+                "category": "interests",
+                "confidence": 0.9,
+                "scope": "user",
+                "durability": "durable",
+                "authority": "descriptive",
+            }
+            for i in range(4)
+        ],
+    }
+
+    with caplog.at_level(logging.INFO, logger="deerflow.agents.memory.backends.deermem.deermem.core.updater"):
+        result = dm._updater._apply_updates(
+            current_memory,
+            update_data,
+            thread_id="thread-trace",
+            trace_id="trace-pin-abc",
+        )
+
+    assert result["facts"], "expected the surviving facts to be appended"
+    assert any("trace=trace-pin-abc" in record.getMessage() for record in caplog.records), (
+        "the operator write log must surface the provided trace_id"
+    )

@@ -638,3 +638,71 @@ class TestSkillsFilterPassthrough:
         )
         available = set(config.skills) if config.skills is not None else None
         assert available == {"data-analysis", "web-search"}
+
+
+# ---------------------------------------------------------------------------
+# Berkshire-household built-in persona subagents (munger / buffett)
+# ---------------------------------------------------------------------------
+
+
+class TestBerkshirePersonaSubagents:
+    """Pin that ``munger`` and ``buffett`` are first-class built-in sub-agents.
+
+    These are *independent thinkers*, not persona overlays: the lead agent
+    dispatches them via ``task(subagent_type="munger", ...)`` /
+    ``task(subagent_type="buffett", ...)`` and receives a Munger- or
+    Buffett-voiced paragraph back. The persona ``skills_view/legacy/*``
+    layering remains a separate path for the lead agent to speak in their
+    voice without spinning up a sub-agent.
+    """
+
+    def test_both_persona_subagents_are_registered(self):
+        from deerflow.subagents.builtins import BUILTIN_SUBAGENTS
+
+        assert "munger" in BUILTIN_SUBAGENTS, (
+            "munger must be a first-class built-in so the lead agent can dispatch it via task(subagent_type='munger', ...)"
+        )
+        assert "buffett" in BUILTIN_SUBAGENTS, (
+            "buffett must be a first-class built-in so the lead agent can dispatch it via task(subagent_type='buffett', ...)"
+        )
+
+    @pytest.mark.parametrize("persona_name", ["munger", "buffett"])
+    def test_persona_subagent_contract(self, persona_name):
+        from deerflow.subagents.builtins import BUILTIN_SUBAGENTS
+
+        cfg = BUILTIN_SUBAGENTS[persona_name]
+        assert cfg.name == persona_name
+        # Inherit the lead agent's model — the household's shared reasoning
+        # model — so a sub-agent dispatch never changes provider.
+        assert cfg.model == "inherit"
+        # Persona sub-agents answer quickly: they don't do exploratory
+        # research, they apply a fixed latticework. Bound tighter than
+        # general-purpose (150) so a runaway dispatch is bounded.
+        assert 0 < cfg.max_turns <= 60
+        # They must NEVER delegate further; otherwise a persona answer
+        # could come from a different agent entirely.
+        assert "task" in (cfg.disallowed_tools or [])
+        # They must NEVER ask the user for clarification — they are
+        # dispatched with a bounded brief and answer from it.
+        assert "ask_clarification" in (cfg.disallowed_tools or [])
+        # They must have a persona system prompt (the soul-voice binding).
+        assert cfg.system_prompt, f"{persona_name} must carry a system_prompt"
+        assert persona_name.upper() in cfg.system_prompt or persona_name.title() in cfg.system_prompt
+
+    def test_persona_subagent_descriptions_route_to_the_right_angle(self):
+        """Pin the routing descriptions so the lead agent's task tool sees
+        ``munger`` for rationality / inversion and ``buffett`` for value /
+        moat. Pinning the wording catches a silent rewrite that would
+        collapse both personas into one delegation target."""
+        from deerflow.subagents.builtins import BUILTIN_SUBAGENTS
+
+        munger_desc = BUILTIN_SUBAGENTS["munger"].description.lower()
+        buffett_desc = BUILTIN_SUBAGENTS["buffett"].description.lower()
+
+        # Munger anchors on rationality / inversion / incentives.
+        assert "rationality" in munger_desc or "inversion" in munger_desc or "incentives" in munger_desc
+        # Buffett anchors on value / moat / margin of safety.
+        assert "value" in buffett_desc or "moat" in buffett_desc or "margin of safety" in buffett_desc
+        # And they are explicitly NOT the same persona.
+        assert "芒格" in BUILTIN_SUBAGENTS["munger"].description or "munger" in munger_desc
+        assert "巴菲特" in BUILTIN_SUBAGENTS["buffett"].description or "buffett" in buffett_desc

@@ -50,6 +50,11 @@ monocle = ["deerflow-harness[monocle]"]
 ollama = ["deerflow-harness[ollama]"]
 browser = ["deerflow-harness[browser]"]
 memory-zh = ["deerflow-harness[memory-zh]"]
+# Required only when channels.qq.transport == "websocket"; webhook transport
+# works with no extra deps (it just needs `cryptography`, which is already
+# pulled in by the core image). The QQ Open Platform's WebSocket gateway is
+# documented at https://bot.qq.com/wiki/develop/api-v2/dev-prepare/interface-framework/reference.html
+qq = ["websockets>=13.0"]
 
 [dependency-groups]
 # Managed extension packages are added here by `deerflow extensions install`.

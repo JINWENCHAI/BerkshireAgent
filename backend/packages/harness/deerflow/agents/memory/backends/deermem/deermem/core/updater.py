@@ -1496,6 +1496,7 @@ class MemoryUpdater:
         thread_id: str | None,
         agent_name: str | None,
         user_id: str | None = None,
+        trace_id: str | None = None,
         *,
         metrics: dict[str, Any] | None = None,
         signals: frozenset[str] = frozenset(),
@@ -1526,6 +1527,7 @@ class MemoryUpdater:
                     agent_name=agent_name,
                     user_id=user_id,
                     capacity_decisions=capacity_decisions,
+                    trace_id=trace_id,
                 )
                 current_by_id = {str(fact.get("id")): fact for fact in current_memory.get("facts", [])}
                 updated_by_id = {str(fact.get("id")): fact for fact in updated_memory.get("facts", [])}
@@ -1574,6 +1576,7 @@ class MemoryUpdater:
             agent_name=agent_name,
             user_id=user_id,
             capacity_decisions=capacity_decisions,
+            trace_id=trace_id,
         )
         saved = self._storage.save(
             updated_memory,
@@ -1881,6 +1884,7 @@ class MemoryUpdater:
                 thread_id=thread_id,
                 agent_name=agent_name,
                 user_id=user_id,
+                trace_id=trace_id,
                 metrics=metrics,
                 signals=frozenset(feed_signals),
             )
@@ -2039,6 +2043,7 @@ class MemoryUpdater:
         agent_name: str | None = None,
         user_id: str | None = None,
         capacity_decisions: list[tuple[FactEvictionDecision, FactEvictionDecision | None]] | None = None,
+        trace_id: str | None = None,
     ) -> dict[str, Any]:
         """Apply LLM-generated updates to memory.
 
@@ -2049,6 +2054,11 @@ class MemoryUpdater:
             metrics: Optional observability dict. When provided, populated with
                 confidence and scope-gate counters counted at their real filter
                 sites, so observability cannot drift from actual acceptance.
+            trace_id: Optional request-trace identifier forwarded from the
+                caller. The writer loggers below reference it directly, so it
+                has to be in scope as a parameter rather than read from a
+                caller closure (which used to NameError whenever a write
+                actually landed).
 
         Returns:
             Updated memory data.
@@ -2613,5 +2623,45 @@ class MemoryUpdater:
             metrics["rejected_by_scope_gate"] = sum(count for reasons in scope_gate_rejections.values() for count in reasons.values())
             metrics["scope_gate_rejections"] = scope_gate_rejections
             metrics["mutations_accepted"] = mutations_accepted
+
+        # --- Operator-visible write log ----------------------------------------
+        # Only print facts that survived every gate (capacity + upload-scrub).
+        # One INFO line per surviving fact, prefixed with a summary header so a
+        # full batch is easy to scan in the terminal.
+        if added_fact_ids:
+            surviving_facts = [
+                fact for fact in current_memory.get("facts", [])
+                if isinstance(fact, dict) and fact.get("id") in set(added_fact_ids) & final_fact_ids
+            ]
+            if surviving_facts:
+                logger.info(
+                    "[MEMORY WRITE] user=%s agent=%s thread=%s trace=%s facts_written=%d",
+                    user_id or "?",
+                    agent_name or "__default__",
+                    thread_id or "?",
+                    trace_id or "?",
+                    len(surviving_facts),
+                )
+                for fact in surviving_facts:
+                    content = (fact.get("content") or "").strip().replace("\n", " ")
+                    if len(content) > 160:
+                        content = content[:157] + "..."
+                    logger.info(
+                        "[MEMORY WRITE]   - id=%s category=%s confidence=%s content=%r",
+                        fact.get("id"),
+                        fact.get("category", "?"),
+                        fact.get("confidence", "?"),
+                        content,
+                    )
+        elif mutations_accepted and changed_merge_ids:
+            # Only dedup-merges landed this batch (no brand-new facts).
+            logger.info(
+                "[MEMORY WRITE] user=%s agent=%s thread=%s trace=%s facts_merged=%d (no new facts)",
+                user_id or "?",
+                agent_name or "__default__",
+                thread_id or "?",
+                trace_id or "?",
+                mutations_accepted,
+            )
 
         return current_memory

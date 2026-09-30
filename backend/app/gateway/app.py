@@ -42,6 +42,7 @@ from app.gateway.routers import (
     models,
     personal_mcp,
     plugins,
+    qq_webhooks,
     project_documents,
     project_thread_files,
     projects,
@@ -1148,6 +1149,19 @@ This gateway provides runtime endpoints for agent runs plus custom endpoints for
         logger.info("GitHub webhooks route mounted at /api/webhooks/github")
     else:
         logger.warning("GitHub webhooks route NOT mounted: GITHUB_WEBHOOK_SECRET unset and DEER_FLOW_ALLOW_UNVERIFIED_GITHUB_WEBHOOKS not set. /api/webhooks/github will respond 404. Configure either env var to enable the route.")
+
+    # QQ webhooks API is mounted at /api/webhooks/qq. Authenticity is enforced
+    # via Ed25519 signatures the QQ Open Platform computes from the configured
+    # bot secret. The route is fail-closed by default: mounted only when
+    # QQ_BOT_APP_SECRET is set or the explicit dev opt-in
+    # DEER_FLOW_ALLOW_UNVERIFIED_QQ_WEBHOOKS=1 is set. Both auth and CSRF
+    # middleware exempt /api/webhooks/* because the platform signs every
+    # request instead of carrying a session cookie.
+    if qq_webhooks.is_route_enabled():
+        app.include_router(qq_webhooks.router)
+        logger.info("QQ webhooks route mounted at /api/webhooks/qq")
+    else:
+        logger.warning("QQ webhooks route NOT mounted: QQ_BOT_APP_SECRET unset and DEER_FLOW_ALLOW_UNVERIFIED_QQ_WEBHOOKS not set. /api/webhooks/qq will respond 404. Configure either env var to enable the route.")
 
     @app.get("/health", tags=["health"])
     async def health_check() -> dict[str, str]:

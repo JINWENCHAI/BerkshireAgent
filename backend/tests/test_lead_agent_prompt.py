@@ -775,3 +775,138 @@ def test_apply_prompt_template_deferred_path_mentions_describe_skill(monkeypatch
     assert "describe_skill(name)" in prompt
     # Must NOT contain the legacy wording
     assert "Always load the relevant skill" not in prompt
+
+
+# ---------------------------------------------------------------------------
+# Berkshire-household persona_style dispatch routing
+# ---------------------------------------------------------------------------
+
+
+class TestBerkshirePersonaStyleDispatch:
+    """Tests for ``apply_prompt_template(persona_style=...)``.
+
+    Validates that ``persona_style`` ("group", "munger", "buffett", None) generates
+    the correct ``subagent_thinking`` and ``subagent_reminder`` blocks in the
+    system prompt without interfering with other prompt sections.
+    """
+
+    @staticmethod
+    def _render(persona_style: str | None, subagent_enabled: bool = True) -> str:
+        """Render apply_prompt_template with the given persona_style.
+
+        Uses deferred skill discovery (skill_names=frozenset()) and patches
+        get_or_new_skill_storage so no real AppConfig / skills storage is needed.
+        The subagent section is stubbed to an empty string to isolate
+        subagent_thinking / subagent_reminder tests from registry resolution.
+        """
+        cfg = SimpleNamespace(
+            sandbox=SimpleNamespace(mounts=[]),
+            skills=SimpleNamespace(container_path="/mnt/skills"),
+            skill_evolution=SimpleNamespace(enabled=False),
+            tool_search=SimpleNamespace(enabled=False),
+            memory=SimpleNamespace(enabled=False, injection_enabled=True, max_injection_tokens=2000),
+            subagents=SimpleNamespace(timeout_seconds=1800, max_turns=None, custom_agents=[]),
+            acp_agents={},
+        )
+        return prompt_module.apply_prompt_template(
+            subagent_enabled=subagent_enabled,
+            max_concurrent_subagents=2,
+            max_total_subagents=6,
+            persona_style=persona_style,
+            available_skills=None,
+            app_config=cfg,
+            deferred_names=frozenset(),
+            user_id="test-user",
+            skill_names=frozenset(),
+            allowed_subagents=None,
+            subagent_execution_capacity=None,
+            interaction_policy=RunInteractionPolicy.interactive(),
+            memory_enabled=False,
+        )
+
+    def test_group_style_emits_required_dual_dispatch(self, monkeypatch):
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        prompt = self._render(persona_style="group")
+        assert "REQUIRED DUAL DISPATCH" in prompt
+        assert "dispatched to BOTH ``munger`` and ``buffett``" in prompt
+        assert "Benefit-Based Delegation" not in prompt
+        assert "Default to direct execution" not in prompt
+
+    def test_group_style_reminder_mentions_both_personas(self, monkeypatch):
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        prompt = self._render(persona_style="group")
+        assert "BERKSHIRE GROUP MODE" in prompt
+        assert "munger" in prompt
+        assert "buffett" in prompt
+
+    def test_munger_style_emits_required_single_dispatch(self, monkeypatch):
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        prompt = self._render(persona_style="munger")
+        assert "REQUIRED SINGLE DISPATCH" in prompt
+        assert "dispatched to ``munger``" in prompt
+        assert "Benefit-Based Delegation" not in prompt
+        assert "Default to direct execution" not in prompt
+
+    def test_munger_style_reminder_mentions_munger_only(self, monkeypatch):
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        prompt = self._render(persona_style="munger")
+        assert "BERKSHIRE MUNGER MODE" in prompt
+        assert "Munger" in prompt
+
+    def test_buffett_style_emits_required_single_dispatch(self, monkeypatch):
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        prompt = self._render(persona_style="buffett")
+        assert "REQUIRED SINGLE DISPATCH" in prompt
+        assert "dispatched to ``buffett``" in prompt
+        assert "Benefit-Based Delegation" not in prompt
+        assert "Default to direct execution" not in prompt
+
+    def test_buffett_style_reminder_mentions_buffett_only(self, monkeypatch):
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        prompt = self._render(persona_style="buffett")
+        assert "BERKSHIRE BUFFETT MODE" in prompt
+        assert "Buffett" in prompt
+
+    def test_none_style_preserves_generic_delegation_wording(self, monkeypatch):
+        """When persona_style is None the generic benefit-based wording must remain."""
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        prompt = self._render(persona_style=None)
+        assert "Benefit-Based Delegation" in prompt
+        assert "Default to direct execution" in prompt
+        assert "REQUIRED DUAL DISPATCH" not in prompt
+        assert "REQUIRED SINGLE DISPATCH" not in prompt
+        assert "BERKSHIRE" not in prompt
+
+    def test_persona_style_does_not_raise_on_render(self, monkeypatch):
+        """The template renders without error regardless of persona_style."""
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        for style in (None, "group", "munger", "buffett"):
+            prompt = self._render(persona_style=style)
+            # At least one of the two delegation blocks fires.
+            assert "REQUIRED" in prompt or "Benefit-Based" in prompt
+
+    def test_persona_style_none_subagent_disabled(self, monkeypatch):
+        """When subagent_enabled=False and persona_style=None, no delegation wording."""
+        monkeypatch.setattr(prompt_module, "_build_subagent_section", lambda *a, **kw: "")
+        monkeypatch.setattr(prompt_module, "get_or_new_skill_storage", lambda app_config=None: SimpleNamespace(load_skills=lambda enabled_only=True: []))
+        monkeypatch.setattr(prompt_module, "get_agent_soul", lambda agent_name=None, **kw: "")
+        prompt = self._render(persona_style=None, subagent_enabled=False)
+        assert "Benefit-Based Delegation" not in prompt
+        assert "Default to direct execution" not in prompt
+        assert "REQUIRED DUAL DISPATCH" not in prompt

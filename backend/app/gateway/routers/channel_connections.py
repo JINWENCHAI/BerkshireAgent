@@ -105,6 +105,7 @@ _PROVIDER_META: dict[str, dict[str, str]] = {
     "discord": {"display_name": "Discord", "auth_mode": "binding_code"},
     "feishu": {"display_name": "Feishu", "auth_mode": "binding_code"},
     "dingtalk": {"display_name": "DingTalk", "auth_mode": "binding_code"},
+    "qq": {"display_name": "QQ", "auth_mode": "binding_code"},
     "wechat": {"display_name": "WeChat", "auth_mode": "binding_code"},
     "wecom": {"display_name": "WeCom", "auth_mode": "binding_code"},
     "buzz": {"display_name": "Buzz", "auth_mode": "binding_code"},
@@ -128,6 +129,10 @@ _CREDENTIAL_FIELDS: dict[str, tuple[dict[str, str], ...]] = {
         {"name": "client_id", "label": "Client ID", "type": "text"},
         {"name": "client_secret", "label": "Client secret", "type": "password"},
     ),
+    "qq": (
+        {"name": "app_id", "label": "App ID", "type": "text"},
+        {"name": "app_secret", "label": "App secret", "type": "password"},
+    ),
     "wechat": ({"name": "bot_token", "label": "Bot token", "type": "password"},),
     "wecom": (
         {"name": "bot_id", "label": "Bot ID", "type": "text"},
@@ -145,6 +150,7 @@ _RUNTIME_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "discord": ("bot_token",),
     "feishu": ("app_id", "app_secret"),
     "dingtalk": ("client_id", "client_secret"),
+    "qq": ("app_id", "app_secret"),
     "wechat": ("bot_token",),
     "wecom": ("bot_id", "bot_secret"),
     "buzz": ("relay_url", "private_key"),

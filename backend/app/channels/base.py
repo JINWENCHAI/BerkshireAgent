@@ -356,10 +356,28 @@ class Channel(ABC):
         Sends the text message first, then uploads any file attachments.
         File uploads are skipped entirely when the text send fails to avoid
         partial deliveries (files without accompanying text).
+
+        Outbox ack contract: when the bus has the outbox enabled
+        (``bus.outbox_enabled`` is True), this method MUST call
+        ``bus.ack_outbound(self._on_outbound)`` exactly once per
+        invocation, regardless of whether the text send or the file
+        uploads succeeded. The ack records the *text* delivery as the
+        binding commitment — files are best-effort and a failed file
+        upload does not roll back the text the user already sees.
+
+        The ``finally`` block guarantees the ack even when an
+        unexpected exception escapes ``send()``; without that, a
+        crash between send and ack would leave the row pending and
+        trigger a duplicate replay on the next restart.
         """
-        if msg.channel_name == self.name:
+        if msg.channel_name != self.name:
+            return
+
+        text_delivered = False
+        try:
             try:
                 await self.send(msg)
+                text_delivered = True
             except Exception:
                 logger.exception("Failed to send outbound message on channel %s", self.name)
                 return  # Do not attempt file uploads when the text message failed
@@ -371,6 +389,29 @@ class Channel(ABC):
                         logger.warning("[%s] file upload skipped for %s", self.name, attachment.filename)
                 except Exception:
                     logger.exception("[%s] failed to upload file %s", self.name, attachment.filename)
+        finally:
+            # Ack the outbox row exactly once per callback invocation.
+            # ``text_delivered`` is the binding commitment; even if a
+            # later file upload fails we still treat the message as
+            # delivered from the user's perspective. Acking on
+            # failure as well would silently mark unsent messages as
+            # delivered, so we only ack on the text-success path.
+            if text_delivered:
+                ack = getattr(self.bus, "ack_outbound", None)
+                if ack is not None:
+                    try:
+                        await ack(self._on_outbound)
+                    except Exception:  # noqa: BLE001 — never let ack raise back into the bus
+                        logger.exception("[%s] failed to ack outbox for outbound message", self.name)
+            else:
+                # Record a failure for operator visibility. The row
+                # stays pending so the periodic replay sweep retries.
+                rec = getattr(self.bus, "record_outbound_failure", None)
+                if rec is not None:
+                    try:
+                        await rec(self._on_outbound, "text send failed; see gateway log for traceback")
+                    except Exception:  # noqa: BLE001
+                        logger.exception("[%s] failed to record outbox failure", self.name)
 
     async def receive_file(self, msg: InboundMessage, thread_id: str, *, user_id: str | None = None) -> InboundMessage:
         """

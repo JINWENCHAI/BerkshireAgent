@@ -79,6 +79,16 @@ DEFAULT_RUN_CONTEXT: dict[str, Any] = {
     "thinking_enabled": True,
     "is_plan_mode": False,
     "subagent_enabled": False,
+    # Berkshire-household persona dispatch style.
+    # - None        : existing behaviour (subagent_enabled controls delegation, no routing bias)
+    # - "group"     : dispatch to both munger and buffett in parallel (max_concurrent_subagents=2)
+    # - "munger"   : dispatch to munger only (max_concurrent_subagents=1)
+    # - "buffett"  : dispatch to buffett only (max_concurrent_subagents=1)
+    # When persona_style is set, subagent_enabled is forced True and
+    # max_concurrent_subagents is set to the appropriate value in
+    # _resolve_run_params so the agent factory and the subagent section
+    # are already correctly wired for the chosen style.
+    "persona_style": None,
 }
 STREAM_UPDATE_MIN_INTERVAL_SECONDS = 1.0
 STREAM_UPDATE_MIN_CHARS = 60  # flush immediately when this many chars accumulate
@@ -1708,6 +1718,20 @@ class ChannelManager:
             # /agent use lead_agent cannot claim to reset the conversation
             # while silently routing elsewhere.
             _apply_explicit_agent_choice(run_config, run_context, None)
+
+        # Apply Berkshire-household persona style: when persona_style is set in
+        # the run context, it forces subagent_enabled=True and overrides
+        # max_concurrent_subagents so the agent prompt routing is already
+        # correctly wired before assembly.  The persona_style value is then
+        # threaded into apply_prompt_template() and consumed there to
+        # generate the style-specific subagent_thinking block.
+        persona_style = run_context.get("persona_style")
+        if persona_style in ("group", "munger", "buffett"):
+            run_context["subagent_enabled"] = True
+            if persona_style == "group":
+                run_context["max_concurrent_subagents"] = 2
+            else:
+                run_context["max_concurrent_subagents"] = 1
 
         # Apply per-channel run policy (recursion_limit bump for webhook
         # channels, etc.). Looking the policy up by channel_name keeps

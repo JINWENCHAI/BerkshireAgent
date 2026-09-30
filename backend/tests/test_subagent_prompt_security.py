@@ -11,7 +11,14 @@ def test_get_available_subagent_names_hides_bash_when_host_bash_disabled(monkeyp
 
     names = registry_module.get_available_subagent_names()
 
-    assert names == ["general-purpose"]
+    assert "general-purpose" in names
+    assert "bash" not in names
+    # Berkshire-household persona sub-agents are independent thinkers and
+    # are always available regardless of host-bash policy — they don't
+    # shell out. Pin them so a future change that accidentally drops them
+    # from the default list fails here.
+    assert "munger" in names
+    assert "buffett" in names
 
 
 def test_get_available_subagent_names_keeps_bash_when_allowed(monkeypatch) -> None:
@@ -19,7 +26,12 @@ def test_get_available_subagent_names_keeps_bash_when_allowed(monkeypatch) -> No
 
     names = registry_module.get_available_subagent_names()
 
-    assert names == ["general-purpose", "bash"]
+    # bash presence is the variable under test; the rest of the catalog
+    # (general-purpose, munger, buffett) must always be there.
+    assert "bash" in names
+    assert "general-purpose" in names
+    assert "munger" in names
+    assert "buffett" in names
 
 
 def test_build_subagent_section_hides_bash_examples_when_unavailable(monkeypatch) -> None:

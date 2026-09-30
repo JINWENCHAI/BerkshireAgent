@@ -7,9 +7,11 @@ import json
 import logging
 import tempfile
 import threading
+import time
 from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -11631,3 +11633,109 @@ def test_streaming_chat_never_publishes_hidden_memory_context(monkeypatch):
         assert [m.text for m in outbound_received] == ["All green. ▉", "All green."]
 
     _run(go())
+
+
+class TestQQChannel:
+    """Regression tests for the QQ (QQBot / bot.q.qq.com) webhook channel.
+
+    These tests do not touch the network: the httpx async client is replaced
+    with a MagicMock that records ``post`` calls, and the access-token cache is
+    pre-warmed so ``_get_access_token`` never reaches the real OAuth endpoint.
+    The goal is to pin the outbound payload shape — especially the absence of
+    a ``msg_id`` field for replies that have no ``reply_to_message_id``.
+    """
+
+    @staticmethod
+    def _build_channel(bus: MessageBus) -> Any:
+        from app.channels.qq import QQChannel
+
+        channel = QQChannel(bus=bus, config={"app_id": "test-app", "app_secret": "test-secret"})
+        channel._running = True  # short-circuit the lifecycle guard in ``send``
+        channel._http_client = MagicMock()
+        channel._cached_token = "fake-access-token"
+        channel._token_expires_at = time.time() + 3600.0
+        return channel
+
+    def test_send_does_not_explode_when_reply_to_message_id_is_absent(self):
+        """Regression for ``AttributeError: 'OutboundMessage' object has no attribute 'reply_to_message_id'``.
+
+        ``OutboundMessage`` does not currently carry a ``reply_to_message_id``
+        field, so ``send()`` must read it defensively (``getattr(..., None)``)
+        rather than touching it unconditionally — otherwise every QQ outbound
+        from the agent raises, the exception is swallowed in ``_on_outbound``,
+        and the user sees nothing.
+        """
+        from app.channels.qq import QQ_C2C_SEND_PATH, QQ_OPENAPI_BASE_PRODUCTION
+
+        async def go():
+            bus = MessageBus()
+            channel = self._build_channel(bus)
+
+            response = MagicMock()
+            response.status_code = 200
+            response.json.return_value = {"err_code": 0, "msg_id": "qq-msg-1"}
+            response.text = ""
+            channel._http_client.post = AsyncMock(return_value=response)
+
+            msg = OutboundMessage(
+                channel_name="qq",
+                chat_id="A4AA655164364C344CA9618D6D287773",
+                thread_id="thread-1",
+                text="芒格今天不在——我刚才替你喊了一声。",
+            )
+            assert not hasattr(msg, "reply_to_message_id"), (
+                "this test pins the pre-fix shape; if you added reply_to_message_id "
+                "to OutboundMessage, update this test to also exercise the populated path"
+            )
+
+            await channel.send(msg)  # must not raise
+
+            assert channel._http_client.post.await_count == 1
+            call_kwargs = channel._http_client.post.await_args.kwargs
+            sent_url = channel._http_client.post.await_args.args[0]
+            assert sent_url == f"{QQ_OPENAPI_BASE_PRODUCTION}{QQ_C2C_SEND_PATH.format(openid=msg.chat_id)}"
+            assert call_kwargs["json"] == {
+                "content": msg.text,
+                "msg_type": 0,
+            }, "reply_to_message_id must NOT add a msg_id key when it is absent"
+            assert call_kwargs["headers"]["Authorization"] == "QQBot fake-access-token"
+
+        _run(go())
+
+    def test_send_threads_msg_id_when_reply_to_message_id_is_supplied(self):
+        """When a future caller (or a future ``OutboundMessage`` field) does
+        supply ``reply_to_message_id``, the QQ channel must carry it through
+        as the OpenAPI ``msg_id`` so the platform threads the reply."""
+        from app.channels.qq import QQ_C2C_SEND_PATH, QQ_OPENAPI_BASE_PRODUCTION
+
+        async def go():
+            bus = MessageBus()
+            channel = self._build_channel(bus)
+
+            response = MagicMock()
+            response.status_code = 200
+            response.json.return_value = {"err_code": 0, "msg_id": "qq-msg-2"}
+            response.text = ""
+            channel._http_client.post = AsyncMock(return_value=response)
+
+            msg = OutboundMessage(
+                channel_name="qq",
+                chat_id="A4AA655164364C344CA9618D6D287773",
+                thread_id="thread-1",
+                text="reply",
+            )
+            # Attach the attribute on the instance only — mirrors a future
+            # schema addition without having to touch OutboundMessage here.
+            object.__setattr__(msg, "reply_to_message_id", "qq-source-1")
+
+            await channel.send(msg)
+
+            sent_url = channel._http_client.post.await_args.args[0]
+            assert sent_url == f"{QQ_OPENAPI_BASE_PRODUCTION}{QQ_C2C_SEND_PATH.format(openid=msg.chat_id)}"
+            assert channel._http_client.post.await_args.kwargs["json"] == {
+                "content": "reply",
+                "msg_type": 0,
+                "msg_id": "qq-source-1",
+            }
+
+        _run(go())
