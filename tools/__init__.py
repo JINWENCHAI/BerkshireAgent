@@ -1,0 +1,1 @@
+"""BerkshireAgent runtime helpers (not a Python package, just a flat dir)."""
