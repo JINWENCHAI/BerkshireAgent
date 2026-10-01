@@ -1,4 +1,4 @@
-# 🦌 BerkshireAgent - 2.0
+# 🦌 BerkshireAgent
 
 [English](./README.md) | 中文 | [日本語](./README_ja.md) | [Français](./README_fr.md) | [Русский](./README_ru.md)
 
@@ -6,57 +6,82 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white)](./Makefile)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-<a href="https://trendshift.io/repositories/14699" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14699" alt="bytedance%2Fberkshire-agent | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-> 2026 年 2 月 28 日，BerkshireAgent 2 发布后登上 GitHub Trending 第 1 名。非常感谢社区的支持，这是大家一起做到的。
+> **BerkshireAgent = DeerFlow 2.0 ([bytedance/deer-flow](https://github.com/bytedance/deer-flow)) + 伯克希尔家庭顾问语义层。**
+> 本仓库 fork 自字节跳动官方开源的 [bytedance/deer-flow](https://github.com/bytedance/deer-flow) v2.0,
+> 在其基础上叠加了一个面向「家庭场景」的长期 AI 顾问系统,默认使用 MiniMax M3 模型,
+> 主对话走 Warren Buffett(巴菲特)和 Charlie Munger(芒格)两位「伯克希尔老人」的视角
+> 给家庭成员出主意 —— 投资、择业、婚姻、子女教育、生活方式,每件事都可以问。
+> 完整的改造清单见 [`berkshireReadMe.md`](./berkshireReadMe.md),踩坑与坑位记录见
+> [`docs/berkshireExperience.md`](./docs/berkshireExperience.md)。
 
-BerkshireAgent（**D**eep **E**xploration and **E**fficient **R**esearch **Flow**）是一个开源的 **super agent harness**。它把 **sub-agents**、**memory** 和 **sandbox** 组织在一起，再配合可扩展的 **skills**，让 agent 可以完成几乎任何事情。
+## 这是什么
 
-https://github.com/user-attachments/assets/a8bcadc4-e040-4cf2-8fda-dd768b999c18
+**BerkshireAgent** 是一个跑在你本地的「伯克希尔家庭顾问」AI 系统,后端是基于
+[DeerFlow 2.0](https://github.com/bytedance/deer-flow) 的 LangGraph super-agent
+harness,前端是 Next.js 聊天 UI,默认接入 QQ 私聊(C2C)作为家庭成员与系统的对话入口。
+所有对话长期记忆按用户隔离,共享记忆放在「家庭」collection 下,可由任意成员读写。
 
-> [!NOTE]
-> **BerkshireAgent 2.0 是一次彻底重写。** 它和 v1 没有共用代码。如果你要找的是最初的 Deep Research 框架，可以前往 [`1.x` 分支](https://github.com/bytedance/berkshire-agent/tree/main-1.x)。那里仍然欢迎贡献；当前的主要开发已经转向 2.0。
+它的核心不是 Deep Research,而是把两个有「灵魂」的人格顾问
+([Buffett](./skills/custom/buffett-persona/SKILL.md) + [Munger](./skills/custom/munger-persona/SKILL.md))
+和一个能干的 lead-agent 路由器组装在一起 —— 用户问什么,路由到合适的 persona,
+然后让 lead-agent 缝合回复。
 
-## 官网
+## 三种工作模式 (`channels.qq.context.persona_style`)
 
-想了解更多，或者直接看**真实演示**，可以访问[**官网**](https://berkshireagent.dev)。
+| 模式 | 行为 | Token 消耗 |
+|---|---|---|
+| `group`    | lead-agent **同时**并行调度 Buffett 与 Munger,然后综合两人的视角给出统一回复 | 高(双倍) |
+| `munger`  | 所有问题直接交给 Charlie Munger,lead-agent 只做路由缝合 | 中 |
+| `buffett` | 所有问题直接交给 Warren Buffett,lead-agent 只做路由缝合 | 中 |
 
-## 姐妹项目
+在 `config.yaml` 里改 `channels.qq.context.persona_style` 即可实时切换
+(重启 Gateway 后生效)。两个 persona 的 LLM 都配置为 MiniMax 的
+[minimax-m3](https://api.minimaxi.com),`thinking: adaptive`。
 
-<img width="446" height="280" alt="image" align="middle" src="https://github.com/user-attachments/assets/077edef4-d560-41af-bb0d-d0a5f14fcc20" />
+## 与上游 DeerFlow 的关系
 
-- [**LLM Space**](https://github.com/berkshire-agent/llm-space) - 认识 BerkshireAgent 背后的秘密武器——一款桌面工具，用于原型化 agent 想法、检查 harness 的每个步骤、回放失败用例并基准测试性能。
+- **代码基础**:本仓库以字节跳动官方 [bytedance/deer-flow](https://github.com/bytedance/deer-flow)
+  v2.0 (`207bb191`) 为起点,首次提交时把项目名从 `DeerFlow` 改成 `BerkshireAgent`,
+  后续所有改动都在它之上叠加,**不再与上游做主动同步**。上游发布新版本时,需要逐 PR
+  评估 cherry-pick。
+- **保留与扩展**:DeerFlow 的所有基础设施(lead_agent + subagent 调度、skills、sandbox、
+  MCP、IM Channels、checkpointer)都保留并被本项目使用,本项目的定制集中在:
+  1. **两个内置 persona subagent** (`buffett-persona` / `munger-persona`),各自带完整 soul
+  2. **lead_prompt_overlay 路由规则**,显式 `@巴菲特` / `@芒格` / 行情 / 默认多 persona 分流
+  3. **`tools/` 帮助层**(`qdrant_memory` / `embedding` / `market_quote`)封装外部 HTTP,供 persona
+     通过 `python_repl` 调用,杜绝直接联网
+  4. **长期记忆** 用 Qdrant Cloud,按用户隔离的 `berkshire_agent_user_<id>` collection + 家庭共享
+     `berkshire_agent_family_shared` collection
+  5. **QQ 私聊接入** (WebSocket 通道,AppID `1903758532`)
+  6. **可配置 persona 调度风格** (`group` / `munger` / `buffett`)
+- **三个 placeholder 用户**:`PLACEHOLDER_USER_1` (本人) / `PLACEHOLDER_USER_2` (父亲) /
+  `PLACEHOLDER_USER_3` (母亲)。Persona × Asker **完全正交** —— Buffett/Munger 不是任何
+  特定用户的"专属顾问",谁问都行;长期记忆按 `ACTIVE_USER_ID` 隔离。
 
-## 字节跳动火山引擎方舟 Coding Plan
+## 文档导航
 
-- 我们推荐使用 Doubao-Seed-2.0-Code、DeepSeek v3.2 和 Kimi 2.5 运行 BerkshireAgent
-- [现在就加入 Coding Plan](https://www.volcengine.com/activity/codingplan?utm_campaign=berkshire_agent&utm_content=berkshire_agent&utm_medium=devrel&utm_source=OWO&utm_term=berkshire_agent)
-- [海外地区的开发者请点击这里](https://www.byteplus.com/en/activity/codingplan?utm_campaign=berkshire_agent&utm_content=berkshire_agent&utm_medium=devrel&utm_source=OWO&utm_term=berkshire_agent)
-
-## InfoQuest
-
-BerkshireAgent 新近集成了 BytePlus 自研的智能搜索与抓取工具集——[InfoQuest（支持免费在线体验）](https://docs.byteplus.com/en/docs/InfoQuest/What_is_Info_Quest)
-
-<a href="https://docs.byteplus.com/en/docs/InfoQuest/What_is_Info_Quest" target="_blank">
-  <img
-    src="https://sf16-sg.tiktokcdn.com/obj/eden-sg/hubseh7bsbps/20251208-160108.png"   alt="InfoQuest_banner"
-  />
-</a>
+- [`berkshireReadMe.md`](./berkshireReadMe.md) — **本项目改造总览**(架构、新增模块、配置、测试矩阵)
+- [`docs/BERKSHIRE_AGENT.md`](./docs/BERKSHIRE_AGENT.md) — 部署与使用指南(给项目所有者)
+- [`docs/berkshireExperience.md`](./docs/berkshireExperience.md) — 开发中所有踩过的坑
+- [`Install.md`](./Install.md) — 通用安装说明
+- [`AGENTS.md`](./AGENTS.md) — AI coding agent 的入口
+- [`CHANGELOG.md`](./CHANGELOG.md) — 变更日志
 
 ## 目录
 
-- [🦌 BerkshireAgent - 2.0](#-deerflow---20)
-  - [官网](#官网)
-  - [字节跳动火山引擎方舟 Coding Plan](#字节跳动火山引擎方舟-coding-plan)
-  - [InfoQuest](#infoquest)
-  - [目录](#目录)
+- [🦌 BerkshireAgent](#-berkshireagent)
+  - [这是什么](#这是什么)
+  - [三种工作模式 (`channels.qq.context.persona_style`)](#三种工作模式-channelsqqcontextpersona_style)
+  - [与上游 DeerFlow 的关系](#与上游-deerflow-的关系)
+  - [文档导航](#文档导航)
   - [一句话交给 Coding Agent 安装](#一句话交给-coding-agent-安装)
   - [快速开始](#快速开始)
     - [配置](#配置)
     - [运行应用](#运行应用)
       - [部署建议与资源规划](#部署建议与资源规划)
-      - [方式一：Docker（推荐）](#方式一docker推荐)
+      - [方式一:Docker(推荐)](#方式一docker推荐)
       - [升级已有的代码仓库](#升级已有的代码仓库)
-      - [方式二：本地开发](#方式二本地开发)
+      - [方式二:本地开发](#方式二本地开发)
     - [进阶配置](#进阶配置)
       - [Sandbox 模式](#sandbox-模式)
       - [MCP Server](#mcp-server)
@@ -64,7 +89,6 @@ BerkshireAgent 新近集成了 BytePlus 自研的智能搜索与抓取工具集�
       - [LangSmith 链路追踪](#langsmith-链路追踪)
       - [Langfuse 链路追踪](#langfuse-链路追踪)
       - [同时使用两种追踪服务](#同时使用两种追踪服务)
-  - [从 Deep Research 到 Super Agent Harness](#从-deep-research-到-super-agent-harness)
   - [核心特性](#核心特性)
     - [Skills 与 Tools](#skills-与-tools)
       - [Claude Code 集成](#claude-code-集成)
@@ -82,11 +106,10 @@ BerkshireAgent 新近集成了 BytePlus 自研的智能搜索与抓取工具集�
     - [升级说明](#升级说明)
   - [终端工作台 (TUI)](#终端工作台-tui)
   - [文档](#文档)
-  - [⚠️ 安全使用](#️-安全使用)
+  - [⚠️ 安全使用](#%EF%B8%8F-安全使用)
   - [参与贡献](#参与贡献)
   - [许可证](#许可证)
   - [致谢](#致谢)
-    - [核心贡献者](#核心贡献者)
   - [Star History](#star-history)
 
 ## 一句话交给 Coding Agent 安装
@@ -94,7 +117,7 @@ BerkshireAgent 新近集成了 BytePlus 自研的智能搜索与抓取工具集�
 如果你在用 Claude Code、Codex、Cursor、Windsurf 或其他 coding agent，可以直接把下面这句话发给它：
 
 ```text
-如果还没 clone BerkshireAgent，就先 clone，然后按照 https://raw.githubusercontent.com/bytedance/berkshire-agent/main/Install.md 把它的本地开发环境初始化好
+如果还没 clone BerkshireAgent,就先 clone,然后按照 https://raw.githubusercontent.com/JINWENCHAI/BerkshireAgent/main/Install.md 把它的本地开发环境初始化好
 ```
 
 这条提示词是给 coding agent 用的。它会在需要时先 clone 仓库，优先选择 Docker，完成初始化，并在结束时告诉你下一条启动命令，以及还缺哪些配置需要你补充。
@@ -106,7 +129,7 @@ BerkshireAgent 新近集成了 BytePlus 自研的智能搜索与抓取工具集�
 1. **克隆 BerkshireAgent 仓库**
 
    ```bash
-   git clone https://github.com/bytedance/berkshire-agent.git
+   git clone https://github.com/JINWENCHAI/BerkshireAgent.git
    cd berkshire-agent
    ```
 
@@ -681,15 +704,15 @@ Web UI 支持从已完成的 assistant 回复分叉出一个新的主对话。�
 
 #### Claude Code 集成
 
-借助 `claude-to-deerflow` skill，你可以直接在 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 里和正在运行的 BerkshireAgent 实例交互。不用离开终端，就能下发研究任务、查看状态、管理 threads。
-
-**安装这个 skill：**
+`claude-code` 集成 skill 允许你直接在 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 里与 BerkshireAgent 实例交互 —— 发送研究任务、查看状态、管理 threads,无需离开终端。该 skill 由上游 [bytedance/deer-flow](https://github.com/bytedance/deer-flow) 发布,发布到自己的 `berkshire-agent` 仓库下:
 
 ```bash
-npx skills add https://github.com/bytedance/berkshire-agent --skill claude-to-deerflow
+# 本项目尚未发布同名的 claude-code skill;若需要使用,请 fork 一份或
+# 自行实现 skill 后把命令调整为:
+npx skills add https://github.com/JINWENCHAI/BerkshireAgent --skill claude-to-berkshireagent
 ```
 
-然后确认 BerkshireAgent 已经启动（默认地址是 `http://localhost:2026`），在 Claude Code 里使用 `/claude-to-deerflow` 命令即可。
+确认 BerkshireAgent 已经启动(默认地址 `http://localhost:2026`),然后在 Claude Code 里用 `/claude-to-berkshireagent` 命令即可触发对话。
 
 **你可以做的事情包括：**
 - 给 BerkshireAgent 发送消息，并接收流式响应
@@ -1018,4 +1041,4 @@ BerkshireAgent 建立在开源社区大量优秀工作的基础上。所有让 B
 
 ## Star History
 
-[![Star History Chart](https://star-history.dera.page/svg?repos=bytedance/berkshire-agent&type=Date)](https://star-history.dera.page/#bytedance/berkshire-agent&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=JINWENCHAI/BerkshireAgent&type=Date)](https://star-history.dera.page/#JINWENCHAI/BerkshireAgent&Date)

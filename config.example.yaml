@@ -2910,6 +2910,17 @@ run_ownership:
 #   # Maximum queued or provider-reserved inbound messages. Must be a positive integer.
 #   inbound_queue_maxsize: 1000
 #   # Fixed number of long-lived inbound handler workers. Must be a positive integer.
+#   # When ``outbox.enabled`` is true, every outbound message is persisted to
+#   # ``<sqlite_dir>/channel_outbox.db`` before the channel adapter delivers
+#   # it. If the Gateway crashes between persistence and delivery, the next
+#   # startup re-dispatches the unsent row so the user eventually receives the
+#   # orphaned reply. Requires ``database.backend: sqlite`` (or an explicit
+#   # ``sqlite_dir``).
+#   outbox:
+#     enabled: false
+#     # sqlite_dir: .berkshire-agent/data        # defaults to database.sqlite_dir
+#     horizon_seconds: 86400                     # drop pending rows older than this on the next sweep
+#     replay_interval_seconds: 30                # background sweep cadence; startup sweep always runs
 #   max_concurrency: 5
 #   # Seconds to drain accepted inbound work before cancelling active handlers.
 #   # Must be a non-negative finite number. Cancelled handlers are awaited; the Gateway's
@@ -3040,6 +3051,26 @@ run_ownership:
 #                                           # means nobody, and BerkshireAgent logs a startup warning.
 #     require_mention: true                 # @mention needed in channels
 #     mention_free_channels: []             # channel UUIDs that respond to every message
+
+#   # QQ (https://bot.q.qq.com) — Tencent QQ Bot Open Platform, private chat (C2C) only in v1.
+#   # Two transports are supported:
+#   #   - "websocket" (recommended for local development): the bot connects outbound
+#   #     to QQ's Gateway (wss://api.bot.qq.com/websocket/). No public HTTPS URL on
+#   #     your side is required; only outbound connectivity to QQ.
+#   #   - "webhook" (default for compatibility with the existing PR): the QQ
+#   #     platform POSTs events to https://<your-host>/api/webhooks/qq and signs
+#   #     each callback with Ed25519. Requires a publicly reachable HTTPS URL
+#   #     and QQ_BOT_APP_SECRET set in the environment.
+#   # Requires the `qq` dependency extra (uv sync --extra qq) for the websocket transport.
+#   qq:
+#     enabled: false
+#     transport: websocket                  # "websocket" or "webhook"
+#     app_id: $QQ_BOT_APP_ID                # Bot's AppID from the QQ Open Platform
+#     app_secret: $QQ_BOT_APP_SECRET        # Bot's AppSecret (also exported as QQ_BOT_APP_SECRET env var for webhook signature verification)
+#     allowed_users: []                     # empty = open; otherwise list of user_openid strings
+#     # Berkshire-household persona dispatch (optional):
+#     # context:
+#     #   persona_style: "group"   # "group" | "munger" | "buffett" — see BerkshireAgent docs
 
 # ============================================================================
 # Guardrails Configuration
