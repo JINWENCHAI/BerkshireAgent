@@ -7,11 +7,17 @@ loop short-circuited via a fake websocket module.
 
 from __future__ import annotations
 
+import json
+from collections.abc import AsyncIterator
+from pathlib import Path
 from unittest.mock import AsyncMock
 
 import pytest
+import pytest_asyncio
 
 from app.channels.message_bus import MessageBus
+from app.channels.outbox.engine import close_outbox_engine, init_outbox_engine
+from app.channels.outbox.repository import OutboxRepository
 from app.channels.qq import (
     _TRANSPORT_WEBHOOK,
     _TRANSPORT_WEBSOCKET,
@@ -120,3 +126,84 @@ def test_websocket_class_is_a_qq_subclass():
     assert QQWebSocketChannel is not QQChannel
     assert QQWebSocketChannel._transport == "websocket"
     assert QQChannel._transport == "webhook"
+
+
+# ---------------------------------------------------------------------------
+# Outbox ack regression — see berkshireReadMe.md §3.7 + the "replay on
+# restart" bug reproduced in backend/.berkshire-agent/data/channel_outbox.db.
+#
+# A previous override of QQChannel._on_outbound awaited self.send(msg)
+# directly without the finally block that ``Channel._on_outbound`` uses to
+# call ``bus.ack_outbound``. That left every delivered row stuck at
+# ``delivered_at IS NULL`` and triggered a duplicate replay on the next
+# gateway restart. These tests pin the contract end-to-end: every QQ
+# dispatch must produce a delivered row.
+# ---------------------------------------------------------------------------
+
+
+@pytest_asyncio.fixture
+async def qq_outbox_engine(tmp_path: Path) -> AsyncIterator[Path]:
+    """Per-test outbox engine rooted at an isolated sqlite_dir."""
+    sqlite_dir = tmp_path / "data"
+    await init_outbox_engine(sqlite_dir, echo=False)
+    try:
+        yield sqlite_dir
+    finally:
+        await close_outbox_engine()
+
+
+@pytest.mark.asyncio
+async def test_qq_on_outbound_marks_row_delivered(qq_outbox_engine: Path) -> None:
+    """QQChannel._on_outbound must transition the outbox row to delivered.
+
+    We stub ``self.send`` so the test does not need network access and the
+    transport behaves like a successful platform accept. If a future
+    refactor re-introduces a "short" _on_outbound override that bypasses
+    the base's finally + ack_outbound contract, this assertion fails.
+    """
+    bus = MessageBus()
+    # Enable the outbox on the bus so publish_outbound actually persists.
+    bus._outbox_enabled = True  # noqa: SLF001 — test-only override
+
+    channel = QQChannel(bus=bus, config={"app_id": "x", "app_secret": "y"})
+    # Stub the network call: pretend the platform accepted the message.
+    channel.send = AsyncMock(return_value=None)  # type: ignore[method-assign]
+
+    from app.channels.message_bus import OutboundMessage
+
+    msg = OutboundMessage(
+        channel_name="qq",
+        chat_id="OPENID-123",
+        thread_id="thread-x",
+        text="芒格会非常直接...",
+    )
+    await channel._on_outbound(msg)
+
+    channel.send.assert_awaited_once()
+
+    # The outbox row that publish_outbound created must be marked delivered.
+    from app.channels.outbox.engine import outbox_session
+
+    async with outbox_session() as session:
+        repo = OutboxRepository(session)
+        pending = await repo.count_pending(channel_name="qq")
+        assert pending == 0, "QQ _on_outbound must ack the outbox row; otherwise the next gateway restart will re-dispatch the same reply."
+
+
+@pytest.mark.asyncio
+async def test_qq_on_outbound_uses_base_contract(qq_outbox_engine: Path) -> None:
+    """If QQChannel overrides _on_outbound, it must call super().
+
+    A bare ``await self.send(msg)`` override silently breaks the outbox
+    ack contract (see the bug timeline in berkshireReadMe.md §3.7). This
+    test inspects the class for an explicit ``super()._on_outbound``
+    delegation so the regression surfaces in static review.
+    """
+    import inspect
+
+    src = inspect.getsource(QQChannel._on_outbound)
+    assert "super()._on_outbound" in src, (
+        "QQChannel._on_outbound must delegate to Channel._on_outbound "
+        "so the outbox ack contract runs; do not replace it with a bare "
+        "self.send() call."
+    )

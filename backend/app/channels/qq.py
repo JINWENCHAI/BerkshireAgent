@@ -560,12 +560,16 @@ class QQChannel(Channel):
         return False
 
     async def _on_outbound(self, msg: OutboundMessage) -> None:
-        if msg.channel_name != self.name:
-            return
-        try:
-            await self.send(msg)
-        except Exception:  # noqa: BLE001
-            logger.exception("[QQ] failed to send outbound message")
+        # Delegate to ``Channel._on_outbound`` so the base's outbox ack
+        # contract runs: text-send success -> ``bus.ack_outbound`` ->
+        # ``mark_delivered``; text-send failure -> ``record_outbound_failure``.
+        # The previous override here bypassed that contract (it awaited
+        # ``self.send(msg)`` directly with no ``finally`` block), which
+        # left every delivered row stuck at ``delivered_at=NULL`` and
+        # caused the next gateway restart to re-dispatch the same reply
+        # (see backend/.berkshire-agent/data/channel_outbox.db and
+        # berkshireReadMe.md §3.7 for the reproduction timeline).
+        await super()._on_outbound(msg)
 
     # -- access token ------------------------------------------------------
 
