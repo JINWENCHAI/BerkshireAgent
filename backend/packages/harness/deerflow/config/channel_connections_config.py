@@ -41,11 +41,19 @@ class BindingCodeChannelConnectionConfig(BaseModel):
 class ChannelConnectionsConfig(BaseModel):
     """Top-level config for browser-connectable IM channels."""
 
+    # QQ reuses the binding-code auth flow (per-user ``/connect <code>``) just
+    # like feishu/dingtalk/wechat. Without an explicit field here pydantic
+    # silently drops the ``channel_connections.qq`` key in config.yaml under
+    # the default ``extra="ignore"`` policy, which would hide QQ from the
+    # /api/channels/providers response even when ``channel_connections.qq.enabled``
+    # is true. Declaring the field keeps the operator's intent visible to the
+    # provider enumeration logic in app/gateway/routers/channel_connections.py.
     enabled: bool = False
     require_bound_identity: bool = True
     slack: SlackChannelConnectionConfig = Field(default_factory=SlackChannelConnectionConfig)
     telegram: TelegramChannelConnectionConfig = Field(default_factory=TelegramChannelConnectionConfig)
     discord: DiscordChannelConnectionConfig = Field(default_factory=DiscordChannelConnectionConfig)
+    qq: BindingCodeChannelConnectionConfig = Field(default_factory=BindingCodeChannelConnectionConfig)
     feishu: BindingCodeChannelConnectionConfig = Field(default_factory=BindingCodeChannelConnectionConfig)
     dingtalk: BindingCodeChannelConnectionConfig = Field(default_factory=BindingCodeChannelConnectionConfig)
     wechat: BindingCodeChannelConnectionConfig = Field(default_factory=BindingCodeChannelConnectionConfig)

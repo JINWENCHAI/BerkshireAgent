@@ -32,6 +32,7 @@ import httpx
 
 from app.channels.base import Channel
 from app.channels.commands import is_known_channel_command, strip_leading_mentions
+from app.channels.connection_identity import attach_connection_identity
 from app.channels.message_bus import (
     InboundMessage,
     InboundMessageType,
@@ -426,6 +427,70 @@ class QQChannel(Channel):
         # Other event types are not handled in v1; ACK them silently.
         return None
 
+    async def _bind_connection_from_connect_code(
+        self,
+        *,
+        sender_openid: str,
+        chat_id: str,
+        code: str,
+    ) -> bool:
+        """Resolve a browser-issued ``/connect <code>`` against the channel
+        connections store and persist the binding.
+
+        Returns ``True`` once the message has been handled (either a successful
+        bind with a confirmation reply, or an explicit "invalid code" reply
+        after consuming nothing). Returns ``False`` only when this adapter has
+        no ``connection_repo`` wired — the caller then falls back to the
+        ordinary command / chat path so the user still gets a reply.
+        """
+        if self._connection_repo is None or not code:
+            return False
+
+        state = await self._connection_repo.consume_oauth_state(provider="qq", state=code)
+        if state is None:
+            logger.info("[QQ] /connect code invalid, expired, or already consumed")
+            return False
+
+        owner_user_id = state.get("owner_user_id")
+        if not owner_user_id:
+            logger.warning("[QQ] /connect code had no owner_user_id; refusing to bind")
+            return False
+
+        await self._connection_repo.upsert_connection(
+            owner_user_id=owner_user_id,
+            provider="qq",
+            external_account_id=sender_openid,
+            workspace_id=chat_id,
+            metadata={
+                "chat_id": chat_id,
+            },
+            status="connected",
+        )
+        logger.info(
+            "[QQ] bound openid=%s to owner_user_id=%s via /connect",
+            sender_openid,
+            owner_user_id,
+        )
+
+        # Acknowledge the bind with a short reply so the user sees the
+        # confirmation immediately in QQ. The outbound path goes through the
+        # bus + send() so the reply is also persisted in the outbox.
+        try:
+            outbound = OutboundMessage(
+                channel_name=self.name,
+                chat_id=chat_id,
+                thread_id="",
+                text="QQ connected to a BerkshireAgent user. Future messages will be routed to that user.",
+                thread_ts=None,
+                connection_id=None,
+                owner_user_id=owner_user_id,
+                metadata={"qq_message_id": ""},
+            )
+            await self.bus.publish_outbound(outbound)
+        except Exception:  # noqa: BLE001
+            logger.exception("[QQ] failed to publish bind acknowledgement reply")
+        return True
+
     async def _handle_c2c_message(self, d: dict[str, Any]) -> None:
         sender = d.get("author", {}) or {}
         sender_openid = _safe_openid(sender.get("user_openid"))
@@ -457,6 +522,25 @@ class QQChannel(Channel):
             return
 
         text = strip_leading_mentions(text)
+        # The binding code is consulted *before* `allowed_users` so a freshly
+        # browser-bound user can bootstrap a bind even if the openid isn't on
+        # the operator's static roster. Mirrors the same invariant in
+        # app/channels/base.py::_pending_connect_code and the feishu/slack/
+        # discord/wecom/wechat/dingtalk adapters.
+        bind_code = self._pending_connect_code(text)
+        if bind_code is not None:
+            bound = await self._bind_connection_from_connect_code(
+                sender_openid=sender_openid,
+                chat_id=sender_openid,
+                code=bind_code,
+            )
+            if bound:
+                return
+            # If the bind path declined (no connection_repo / invalid code),
+            # fall through to the regular command / chat path so the manager
+            # can produce a meaningful reply instead of silently swallowing
+            # the message.
+
         if is_known_channel_command(text):
             logger.debug("[QQ] delegating command to manager: %r", text)
             # Commands are routed through the standard dispatcher path
@@ -472,6 +556,20 @@ class QQChannel(Channel):
             msg_type=InboundMessageType.CHAT,
             metadata={"qq_message_id": message_id} if message_id else {},
             created_at=time.time(),
+        )
+        # Resolve (provider, external_account_id) → connection_id/owner_user_id
+        # so the ChannelManager's bound-identity gate at
+        # app/channels/manager.py::_get_bound_identity_rejection accepts the
+        # message instead of bouncing it back with a "complete the in-channel
+        # connect step" reply. ``attach_connection_identity`` is a no-op when
+        # the openid is not yet bound, which keeps the rejection path intact
+        # for first-time senders. workspace_id is set to the chat_id (openid
+        # for C2C) to match the key used in ``_bind_connection_from_connect_code``.
+        msg = await attach_connection_identity(
+            msg,
+            repo=self._connection_repo,
+            provider=self.name,
+            workspace_id=chat_id,
         )
         try:
             await self.bus.publish_inbound(msg)
